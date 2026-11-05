@@ -4,7 +4,7 @@
 
 - **작성일:** 2026-11-05
 - **출처:** KJ와의 음성 대화 (2026-11-05)
-- **상태:** 초안. 결정되지 않은 부분은 [열린 질문](#7-열린-질문-open-questions)에 정리했습니다.
+- **상태:** v0.1 구현 완료 ([9. v0.1 구현 현황](#9-v01-구현-현황)). 결정되지 않은 부분은 [열린 질문](#7-열린-질문-open-questions)에 정리했습니다.
 
 ---
 
@@ -76,7 +76,7 @@
 
 ## 7. 열린 질문 (Open questions)
 
-- [ ] **Proactive 모드:** 팀원이 먼저 요청하지 않아도, 작업 스타일을 지켜보다가 필요한 도구를 먼저 제안하거나 만들어 줄 수 있을까요? 기술적으로 가능한지 검토가 필요합니다.
+- [ ] **Proactive 모드:** 팀원이 먼저 요청하지 않아도, 작업 스타일을 지켜보다가 필요한 도구를 먼저 제안하거나 만들어 줄 수 있을까요? 기술적으로 가능한지 검토가 필요합니다. 설계 메모: [PROACTIVE.md](PROACTIVE.md)
 - [ ] **유형 결정 방식:** 추천 방식과 선택 방식 중 기본값을 무엇으로 할지, 또는 둘 다 제공할지
 - [ ] **Universal 확장:** Claude 외 다른 환경까지 지원할 범위와 시점
 - [ ] **배포·교육:** 플러그인 배포 경로와 팀원 교육 방식
@@ -85,3 +85,17 @@
 
 - **이름:** `kyeongjekim/skillforge` (private)
 - **설명:** Builds skills and tools with natural language
+
+## 9. v0.1 구현 현황
+
+| 계획 항목 | v0.1 구현 |
+| --- | --- |
+| 대화로 필요 파악, 부족한 정보 안내 | `forge-intake` skill |
+| 추천 방식 / 선택 방식 | `forge-intake` (유형 설명: `reference/artifact-types.md`) |
+| Skill · MCP · Plugin · Harness 자동 생성 | `forge-skill`, `forge-mcp`, `forge-plugin`, `forge-harness` + 템플릿 |
+| 생성 결과 검증 | `scripts/forge_validate.py` (모든 생성 skill이 사용) |
+| 문서 예시에서 convention 추출 | `learn-doc-conventions` |
+| 화면 screenshot에서 디자인 양식 추출, 선두 기업 비교 | `learn-design-system` |
+| 서브팀별 출발점 | `templates/teams/` (데이터·개발, 이커머스, PM·QA, POS) |
+| Plugin 형태로 설치, 자연어 트리거 | `.claude-plugin/marketplace.json` + 각 skill의 description |
+| Proactive 모드 | 미구현, 설계 메모만 ([PROACTIVE.md](PROACTIVE.md)) |

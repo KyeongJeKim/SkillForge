@@ -8,7 +8,7 @@ Usage:
     python3 forge_validate.py mcp <server-dir-or-file>
 
 Exit code 0 when there are no errors (warnings are allowed), 1 otherwise.
-Standard library only, so it runs on any machine with Python 3.8+.
+Standard library only, so it runs on any machine with Python 3.9+.
 """
 
 from __future__ import annotations
