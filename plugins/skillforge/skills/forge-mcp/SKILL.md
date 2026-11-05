@@ -10,6 +10,11 @@ description: "Generates a minimal, working MCP (Model Context Protocol) server t
 A confirmed `forge-spec.md` with type mcp: the system, the operations (read vs write), the auth
 method (environment variable names only) and where it will run. Default to Python.
 
+**Before you build:** if this conversation has no confirmed `forge-spec.md` (the person said yes to a
+played-back summary), start `skillforge:forge-intake` first, even when the request looks complete.
+It can be short when the examples answer most questions, but it still confirms what they settle,
+asks about the hard parts and plays back the summary before anything is built.
+
 ## Requirements to state up front
 
 - Python **3.10 or newer** (the official MCP SDK 2.x needs it). Check with `python3 --version`;
@@ -38,6 +43,10 @@ method (environment variable names only) and where it will run. Default to Pytho
      expect (missing env var, bad input, refused query, system not reachable). SDK 2.x hides the text of
      any other exception, so Claude would only see `Error executing tool <name>`.
    - Return small, structured results.
+   - **When the real response shape isn't known yet** (no API doc or sample), don't wait: keep every
+     endpoint path and field name in one `ENDPOINTS` / `FIELDS` block at the top of `server.py`, mark
+     each guessed value `# [확인 필요]`, and test the tools against a small local fake response. The
+     hand-over lists exactly which lines to check once a real sample comes.
    - Cover the spec's 예외 처리 cases (no result, too many rows, system down) with a clear `ToolError`
      or an empty result that says why, and keep every 금지 item (e.g. no customer phone numbers) out
      of what the tools return.

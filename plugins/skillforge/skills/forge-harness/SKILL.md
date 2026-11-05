@@ -20,6 +20,11 @@ A confirmed `forge-spec.md` with type harness: stages, roles, automatic checks, 
 success criteria. This one spec covers the skill and the plugin you create below; don't ask the
 person to confirm separate specs for them.
 
+**Before you build:** if this conversation has no confirmed `forge-spec.md` (the person said yes to a
+played-back summary), start `skillforge:forge-intake` first, even when the request looks complete.
+It can be short when the examples answer most questions, but it still confirms what they settle,
+asks about the hard parts and plays back the summary before anything is built.
+
 ## Steps
 
 1. **Draw the workflow** as a numbered list of stages; for each, the actor (main session, a

@@ -46,7 +46,19 @@ List, briefly:
 - **Improvements:** patterns that would make the team's version better.
 - **Not adopted:** ideas that would break the team's format, and why.
 
-## 4. Design the new page
+## 4. Confirm before designing
+
+Before drawing anything, show in one message what the screenshots settle (numbered, one line
+each) and ask, one at a time, only what changes the screen and isn't in the request: the main
+task and flow (how the user finds the item, what they confirm), required fields and rules, the
+device and orientation. Offer a default for each ("잘 모르시면 ~로 하겠습니다"). Two to four
+questions is usual; if the request already answers them, confirm and go on.
+
+Policy values the person didn't give (rates, limits, fees, periods) are never invented: write
+`[확인 필요: ...]` in the spec and show a visible placeholder in the prototype. When the person
+corrects a value or a rule, change it in every file that carries it.
+
+## 5. Design the new page
 
 Produce:
 
@@ -57,13 +69,17 @@ Produce:
    Include the main flow and the key states (empty, error, approval), switchable for review.
 3. A short note on how it compares to the leaders (table stakes met, improvements added).
 
+Before hand-over, check the prototype in every state against each rule in `design-format.md`
+(for example "one primary button per screen") and fix what breaks it.
+
 Tell the person how to look at it: open the HTML file in a browser (double-click it).
 
 Improvements are expressed inside the team's format: new behavior, not a new visual style.
 
-## 5. Confirm and reuse
+## 6. Confirm and reuse
 
-Ask the person to check the design format and the prototype. Then offer to package
+Ask the person to check the design format and the prototype, and end the turn there; if they
+say they'll look later, that's the end of this step, not something to wait on. Then offer to package
 `design-format.md` as a Skill with `forge-skill`, so future pages follow it automatically.
 
 Write everything in the person's language. Don't delete files unless the person asks. Git and SkillForge files: run `git commit`, `git push` or create a repository only when the person's own words ask for it ("확인까지 해 주세요" or "마무리해 주세요" is not that). Never edit, commit or push SkillForge's own files (this plugin's folder or the SkillForge repository); if SkillForge itself has a problem, say so in the hand-over.

@@ -11,6 +11,11 @@ A confirmed `forge-spec.md` with type plugin (or a harness spec from `skillforge
 which counts as this spec). Components that don't exist yet are built first with
 `skillforge:forge-skill` or `skillforge:forge-mcp`.
 
+**Before you build:** if this conversation has no confirmed `forge-spec.md` (the person said yes to a
+played-back summary), start `skillforge:forge-intake` first, even when the request looks complete.
+It can be short when the examples answer most questions, but it still confirms what they settle,
+asks about the hard parts and plays back the summary before anything is built.
+
 ## Layout
 
 A marketplace repo that holds one or more plugins:

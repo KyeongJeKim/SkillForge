@@ -10,6 +10,12 @@ description: "Generates a working Claude Skill (a SKILL.md folder with optional 
 A confirmed `forge-spec.md` with type skill, or a clear agreement in the conversation. If the
 purpose, triggers or procedure are missing, go back to `skillforge:forge-intake`.
 
+**Before you build:** if this conversation has no confirmed `forge-spec.md` (the person said yes to a
+played-back summary), start `skillforge:forge-intake` first, even when the request looks complete.
+It can be short when the examples answer most questions, but it still confirms what they settle,
+asks about the hard parts and plays back the summary before anything is built.
+Packaging an existing skill as a ZIP (step 11 alone) needs no spec.
+
 ## Steps
 
 1. **Location** from the spec (default: project `.claude/skills/<name>/` in the current folder):
@@ -33,6 +39,11 @@ purpose, triggers or procedure are missing, go back to `skillforge:forge-intake`
 6. **Draft first:** the generated skill must produce the full result right away, marking unknown
    values as `[확인 필요: ...]` and listing them at the end, instead of asking questions before it
    starts. It asks first only when the request is too vague to begin.
+   Even when the person wants missing numbers asked for, the skill writes the draft and then asks
+   for them in one numbered list. A missing optional input (last year's data, a reference file)
+   leaves that part marked, never the whole draft. A check script reports problems next to the
+   draft; it never stops the draft from being written. Use `[확인 필요]` only for values the
+   input really lacks; write what the input states plainly, and a team default as a default.
 7. **Conventions:** if a style guide or design format was learned, copy it to
    `reference/style-guide.md` (or `reference/design-format.md`) and tell the skill to follow it.
 8. **Scripts (optional):** put deterministic checks in `scripts/` and call them as
@@ -61,7 +72,10 @@ purpose, triggers or procedure are missing, go back to `skillforge:forge-intake`
     ```
 
     They upload it in Settings > Capabilities > Skills (code execution must be on). The Code tab of
-    Claude Desktop uses the skill folder or plugin as is.
+    Claude Desktop uses the skill folder or plugin as is. You can't send a file into their chat
+    window or see their screen: give the ZIP's full path once, and the upload steps in three short
+    lines. If the upload doesn't work for them, say their organisation may need to allow skills and
+    stop there; don't switch to other workarounds unasked.
 
 ## Hand-over (in the person's language, short)
 
@@ -69,6 +83,9 @@ purpose, triggers or procedure are missing, go back to `skillforge:forge-intake`
 2. Two example sentences that start it, and one that should not.
 3. What you assumed, as a short list.
 4. One line: when they correct a result, the skill remembers it, and "이 스킬 개선해 줘" makes it permanent.
+
+End the hand-over without a question. Don't offer extras (a ZIP, a plugin, more tests) the spec
+didn't ask for; one short line saying they exist is enough.
 
 Don't paste commands they don't need to run. Don't delete files unless they ask.
 
