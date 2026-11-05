@@ -1,6 +1,6 @@
 ---
 name: forge-improve
-description: "Improves a skill, MCP server, plugin or harness that already exists (usually one SkillForge made) from what its users corrected: reads the skill's corrections.md and the person's complaints, proposes concrete changes, applies them after a yes, re-tests on the earlier example and keeps a change only if nothing that worked before breaks. Use when someone says 이 스킬 개선해 줘, 스킬이 자꾸 틀려요, 매번 같은 걸 고쳐야 해요, 고친 내용 반영해 줘, 스킬 업데이트해 줘, improve this skill, it keeps getting X wrong. Do not use to build something new (use forge-intake) or to fix a single document once."
+description: "Improves a skill, MCP server, plugin or harness that already exists (usually one SkillForge made) from what its users corrected: reads the skill's corrections.md and the person's complaints, proposes concrete changes, applies them after a yes, re-tests on the earlier example and keeps a change only if nothing that worked before breaks. Use when someone says an existing skill or tool keeps getting something wrong or leaving something out, e.g. 이 스킬 개선해 줘, 스킬이 자꾸 틀려요, 만든 스킬이 자꾸 OO을 빼먹어요 고쳐 주세요, 매번 같은 걸 고쳐야 해요, 고친 내용 반영해 줘, improve this skill, it keeps getting X wrong. Start it before searching files or editing anything yourself. Do not use to build something new (use forge-intake) or to fix a single document once."
 ---
 
 # Improve an existing artifact

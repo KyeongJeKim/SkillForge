@@ -1,6 +1,6 @@
 ---
 name: forge-plugin
-description: "Packages skills, subagents, hooks and MCP servers into an installable Claude Code plugin with a marketplace.json so a team installs it from a Git repo, tests it locally and validates it. Use after forge-intake has a confirmed spec of type plugin, or when existing SkillForge results should be shared with teammates, e.g. 이 스킬들 팀원들이 설치해서 쓰게 묶어 줘, package these for my team. If the need is still vague, start forge-intake instead."
+description: "Packages skills, subagents, hooks and MCP servers into an installable Claude Code plugin with a marketplace.json so a team installs it from a Git repo, tests it locally and validates it. Use when existing skills or tools should be shared so teammates can install and use them, and start it before explaining installation yourself, e.g. 팀원들도 이거 설치해서 쓰게 하고 싶어요, 이 스킬들 팀원들이 설치해서 쓰게 묶어 줘, 만든 스킬 팀에 배포하려면 어떻게 해요, package these for my team, or after forge-intake has a confirmed spec of type plugin. If the need is still vague, start forge-intake instead."
 ---
 
 # Forge a Plugin

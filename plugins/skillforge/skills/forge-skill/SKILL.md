@@ -12,8 +12,10 @@ purpose, triggers or procedure are missing, go back to `skillforge:forge-intake`
 
 ## Steps
 
-1. **Location** from the spec (default: project `.claude/skills/<name>/`):
+1. **Location** from the spec (default: project `.claude/skills/<name>/` in the current folder):
    personal `~/.claude/skills/<name>/`, project `.claude/skills/<name>/`, or plugin `<plugin>/skills/<name>/`.
+   Use personal only when the person chose it; if the spec marks it as an assumption, use project
+   and say so in the hand-over (personal skills load in every other project they open).
 2. **Copy** [templates/SKILL.template.md](templates/SKILL.template.md) to `<location>/SKILL.md`
    and replace every `{{SF: ...}}` blank. Delete optional lines you don't need.
 3. **Description** (the only thing Claude sees before deciding to load the skill):

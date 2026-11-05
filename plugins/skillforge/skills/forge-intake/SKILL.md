@@ -1,6 +1,6 @@
 ---
 name: forge-intake
-description: "Starts SkillForge: interviews the person, lists what is still missing, recommends or explains Skill / MCP server / Plugin / Harness, and writes a confirmed forge spec for the matching generator. Use when someone wants Claude itself to reuse a way of working: automate a repeated task, standardize a team format, connect Claude to a company system, or share a tool with the team, e.g. 이런 거 만들어야 될 것 같아, 매번 똑같은 거 반복해, 업무 자동화하고 싶어요, 좀 편하게 할 수 없을까, 스킬 만들어 줘, MCP 만들고 싶어, 플러그인 만들어 줘, 하네스 만들어 줘, 에이전트 만들어 줘, 팀에 배포하고 싶어, I keep doing the same task, can we automate this, make a tool for our team. Also use when someone asks what a Skill, MCP, Plugin or Harness is or which one they need. Do not use for ordinary one-off work such as writing a single document, fixing a formula or building an app or dashboard, unless they want it turned into something reusable."
+description: "Starts SkillForge: interviews the person, lists what is missing, recommends or explains Skill / MCP server / Plugin / Harness, and writes a confirmed spec for the matching generator. Use this first, before answering or asking anything yourself, whenever someone wants Claude itself to reuse a way of working: automate a repeated task, standardize a team format, connect Claude to a company system so it can read or change data there (Jira, a database, an internal API), or share a tool with the team, e.g. 이런 거 만들어야 될 것 같아, 매번 똑같은 거 반복해, 업무 자동화하고 싶어요, 좀 편하게 할 수 없을까, Claude가 우리 시스템 보게 연결하고 싶어요, 스킬 만들어 줘, MCP 만들고 싶어, 하네스 만들어 줘, 에이전트 만들어 줘, I keep doing the same task, make a tool for our team. Also use when someone asks what a Skill, MCP, Plugin or Harness is or which one they need (하네스가 뭐예요, 뭘 만들어야 해요), and when a request to build one includes a key or password. Do not use for ordinary one-off work such as writing a single document, fixing a formula or building an app or dashboard, unless they want it reusable."
 ---
 
 # SkillForge intake
@@ -103,7 +103,7 @@ Write `forge-spec.md` in the current folder (or where the person asks), in the p
 - 결과물 (Outputs): <form, file type, file name, where saved, who reads it next>
 - 연결 시스템 (Systems): <... or 없음>
 - 양식 (Conventions): <path to style guide / design format, or 일반 양식>
-- 설치 위치 (Install location): personal (~/.claude/skills) | project (.claude/skills) | plugin
+- 설치 위치 (Install location): project (.claude/skills in this folder, default) | personal (~/.claude/skills, only if the person chose it) | plugin
 
 ## 품질 기준 (Quality bar)
 - <what a great result always has; what reviewers send back>
@@ -135,6 +135,9 @@ The generator must carry the quality bar, edge cases and never-do list into the 
 ## Rules
 
 - Never put secrets, passwords, API keys or customer personal data into a spec or generated file.
+- Default the install location to this folder (`.claude/skills/`). Write personal
+  (`~/.claude/skills/`) only when the person said they want it in every folder, because files there
+  load in all their other projects; never assume it.
   Ask for the environment variable name only, never the value.
 - Don't invent the team's conventions. Without examples, say the result uses a generic format, get
   an OK for it, and offer to learn from examples later.
