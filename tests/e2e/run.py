@@ -69,6 +69,20 @@ def run_one(name: str, out: Path, env: dict) -> None:
                        env=env, stdout=err, stderr=err, check=False)
 
 
+def move_strays(out: Path, before: set[Path], names: list[str]) -> list[Path]:
+    """Move files a test session wrote at the top of the run folder into <out>/leaked/stray."""
+    stray = sorted(p for p in out.iterdir() if p not in before)
+    for p in stray:
+        logs = [(n, out / "runs" / f"{n}.log.json") for n in names]
+        who = [n for n, log in logs if log.is_file() and p.name in log.read_text(encoding="utf-8", errors="replace")]
+        dest = out / "leaked" / "stray"
+        dest.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(p), str(dest / p.name))
+        print(f"STRAY: a test session wrote {p} outside its folder ({', '.join(who) or 'scenario unknown'}); "
+              f"moved to {dest / p.name}")
+    return stray
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=MODES, default="sweep")
@@ -113,6 +127,10 @@ def main() -> int:
 
     personal = [Path.home() / ".claude" / d for d in ("skills", "agents", "commands")]
     before = {p for d in personal if d.is_dir() for p in d.iterdir()}
+    # Write/Edit outside a scenario folder is caught per scenario in check.py, but a Bash command
+    # can still write by absolute path (2026-11-05: a POS run wrote <out>/chk.js). Anything new at the
+    # top of the run folder is such a stray write.
+    out_before = set(out.iterdir())
     with ThreadPoolExecutor(a.jobs) as ex:
         list(ex.map(lambda n: run_one(n, out, env), names))
     # Anything a test session left in the real ~/.claude would load in every later session: move it
@@ -123,6 +141,7 @@ def main() -> int:
         dest.mkdir(parents=True, exist_ok=True)
         shutil.move(str(p), str(dest / p.name))
         print(f"LEAK: a test session wrote {p}; moved to {dest / p.name}")
+    stray = move_strays(out, out_before, names)
     rc = subprocess.run([sys.executable, str(HERE / "check.py"), str(out), *names], env=env).returncode
 
     results = json.loads((out / "results.json").read_text(encoding="utf-8"))
@@ -131,6 +150,7 @@ def main() -> int:
                ("SF_MODEL", "SF_PERSONA_MODEL", "SF_JUDGE_MODEL")}, "triggers": trig,
                "scenarios": results.get("summary", {}), "plugin_untouched": results["plugin_untouched"],
                "leaked_into_home": [str(p) for p in leaked],
+               "stray_writes": [str(p.name) for p in stray],
                "cost_usd": round(total, 2), "minutes": round((time.time() - t0) / 60, 1)}
     (out / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1), encoding="utf-8")
     for s, t in trig.items():
