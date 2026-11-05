@@ -558,6 +558,10 @@ CHECKS = {
 
 
 def main(argv: list[str]) -> int:
+    # Windows consoles often use a legacy code page; never crash printing Korean paths or messages.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     if len(argv) != 3 or argv[1] not in CHECKS:
         print(__doc__)
         return 1

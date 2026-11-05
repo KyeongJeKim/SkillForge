@@ -437,12 +437,122 @@ class ExtractText(TempDir):
         out = xt.pptx_text(self._zip("a.pptx", files))
         self.assertLess(out.index("슬라이드 2"), out.index("슬라이드 10"))
 
+    def test_hwpx(self):
+        hp = 'xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph"'
+        sec = (f'<hs:sec xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section" {hp}>'
+               '<hp:p><hp:run><hp:t>기능 명세서</hp:t></hp:run></hp:p>'
+               '<hp:p><hp:run><hp:tbl><hp:tr><hp:tc><hp:subList><hp:p><hp:run><hp:t>항목</hp:t></hp:run></hp:p>'
+               '</hp:subList></hp:tc><hp:tc><hp:subList><hp:p><hp:run><hp:t>내용</hp:t></hp:run></hp:p>'
+               '</hp:subList></hp:tc></hp:tr></hp:tbl></hp:run></hp:p></hs:sec>')
+        out = xt.hwpx_text(self._zip("a.hwpx", {"Contents/section1.xml": sec, "Contents/section0.xml":
+                                                  sec.replace("기능 명세서", "첫 구역")}))
+        self.assertLess(out.index("첫 구역"), out.index("기능 명세서"))
+        self.assertIn("| 항목 | 내용 |", out)
+
+    @staticmethod
+    def _hwp(texts: list[str], flags: int = 1) -> bytes:
+        """Build a tiny HWP 5.0 file: an OLE compound file with FileHeader and BodyText/Section0."""
+        import struct, zlib
+        body = b""
+        for s in texts:
+            # A PARA_TEXT record with one 8-unit inline control (a tab) to exercise control parsing.
+            units = [9] + [0] * 6 + [9] + [ord(c) for c in s]
+            data = struct.pack(f"<{len(units)}H", *units)
+            body += struct.pack("<I", 67 | (len(data) << 20)) + data
+        if flags & 1:
+            co = zlib.compressobj(wbits=-15)
+            body = co.compress(body) + co.flush()
+        header = b"HWP Document File".ljust(32, b"\0") + struct.pack("<II", 0x05000300, flags)
+        header = header.ljust(256, b"\0")
+        streams = [header, body]
+        sectors, starts = [], []
+        for s in streams:
+            starts.append(2 + len(sectors))
+            n = max(1, -(-len(s) // 512))
+            sectors += [s[i * 512:(i + 1) * 512].ljust(512, b"\0") for i in range(n)]
+        fat = [0xFFFFFFFD, 0xFFFFFFFE]          # sector 0 = FAT, sector 1 = directory
+        for s, st in zip(streams, starts):
+            n = max(1, -(-len(s) // 512))
+            fat += [st + i + 1 for i in range(n - 1)] + [0xFFFFFFFE]
+        fat += [0xFFFFFFFF] * (128 - len(fat))
+
+        def entry(name, typ, child=0xFFFFFFFF, right=0xFFFFFFFF, start=0xFFFFFFFE, size=0):
+            raw = name.encode("utf-16-le") + b"\0\0"
+            return (raw.ljust(64, b"\0") + struct.pack("<HBB", len(raw), typ, 1)
+                    + struct.pack("<III", 0xFFFFFFFF, right, child) + b"\0" * 36
+                    + struct.pack("<IQ", start, size))
+        dirs = (entry("Root Entry", 5, child=1) + entry("FileHeader", 2, right=2, start=starts[0], size=len(header))
+                + entry("BodyText", 1, child=3) + entry("Section0", 2, start=starts[1], size=len(body)))
+        hdr = (b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1" + b"\0" * 16 + struct.pack("<HHHH", 0x3E, 3, 0xFFFE, 9)
+               + struct.pack("<H", 6) + b"\0" * 10 + struct.pack("<II", 1, 1) + b"\0" * 4
+               + struct.pack("<IIIII", 0, 0xFFFFFFFE, 0, 0xFFFFFFFE, 0) + struct.pack("<109I", 0, *[0xFFFFFFFF] * 108))
+        return hdr + struct.pack("<128I", *fat) + dirs + b"".join(sectors)
+
+    def test_hwp(self):
+        p = self.tmp / "a.hwp"
+        p.write_bytes(self._hwp(["프로모션 기획서", "목표 매출 1억 원"]))
+        out = xt.hwp_text(p)
+        self.assertIn("프로모션 기획서", out)
+        self.assertIn("목표 매출 1억 원", out)
+        p.write_bytes(self._hwp(["압축 안 함"], flags=0))
+        self.assertIn("압축 안 함", xt.hwp_text(p))
+
+    def test_hwp_password_is_explained(self):
+        p = self.tmp / "locked.hwp"
+        p.write_bytes(self._hwp(["비밀"], flags=1 | 2))
+        out = subprocess.run([sys.executable, str(SCRIPTS / "extract_text.py"), str(p)],
+                             capture_output=True, text=True, encoding="utf-8", check=False)
+        self.assertEqual(out.returncode, 1)
+        self.assertIn("password", out.stdout)
+        self.assertIn("PDF", out.stdout)
+
+    def test_korean_output_survives_legacy_console(self):
+        p = self.tmp / "a.hwp"
+        p.write_bytes(self._hwp(["한글 문서 ✓"]))
+        env = {**__import__("os").environ, "PYTHONIOENCODING": "cp949"}
+        out = subprocess.run([sys.executable, str(SCRIPTS / "extract_text.py"), str(p)],
+                             capture_output=True, env=env, check=False)
+        self.assertEqual(out.returncode, 0)
+        self.assertIn("한글 문서", out.stdout.decode("utf-8"))
+
     def test_unsupported_format(self):
-        p = write(self.tmp / "a.hwp", "x")
+        p = write(self.tmp / "a.doc", "x")
         out = subprocess.run([sys.executable, str(SCRIPTS / "extract_text.py"), str(p)],
                              capture_output=True, text=True, check=False)
         self.assertEqual(out.returncode, 1)
         self.assertIn("PDF", out.stdout)
+
+
+class PackageSkill(TempDir):
+    """package_skill.py makes an upload ZIP for the Claude app."""
+
+    def setUp(self):
+        super().setUp()
+        self.pk = load("package_skill", SCRIPTS / "package_skill.py")
+        self.skill = self.tmp / "promo-plan-writer"
+        write(self.skill / "SKILL.md", '---\nname: promo-plan-writer\ndescription: "Writes promotion plans. '
+              'Use when someone says 프로모션 기획서 써 줘."\n---\n\n# Promo\n\n'
+              'Run `python3 "${CLAUDE_SKILL_DIR}/scripts/check.py"`.\n')
+        write(self.skill / "scripts" / "check.py", "print('ok')\n")
+        write(self.skill / "skillforge-trial" / "draft.md", "trial\n")
+
+    def test_zip_layout_and_rewrite(self):
+        out = self.pk.package(self.skill, self.tmp / "out.zip")
+        with zipfile.ZipFile(out) as z:
+            names = z.namelist()
+            body = z.read("promo-plan-writer/SKILL.md").decode("utf-8")
+        self.assertIn("promo-plan-writer/SKILL.md", names)
+        self.assertIn("promo-plan-writer/scripts/check.py", names)
+        self.assertFalse(any("skillforge-trial" in n for n in names))
+        self.assertNotIn("${CLAUDE_SKILL_DIR}", body)
+        self.assertIn("<skill-folder>/scripts/check.py", body)
+        self.assertTrue(body.startswith("---\nname: promo-plan-writer"))
+
+    def test_refuses_plugin_only_features(self):
+        write(self.skill / "SKILL.md", (self.skill / "SKILL.md").read_text(encoding="utf-8")
+              + 'Then run `python3 "${CLAUDE_PLUGIN_ROOT}/x.py"`.\n')
+        with self.assertRaises(SystemExit):
+            self.pk.package(self.skill, self.tmp / "out.zip")
 
 
 class RepoDocs(unittest.TestCase):
