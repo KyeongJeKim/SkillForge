@@ -20,11 +20,13 @@ DIMENSIONS = ["interview", "truth_capture", "format_fidelity", "usability", "out
 
 def claude_json(prompt: str, system: str, schema: dict, model: str, timeout: int = 600) -> tuple[dict | None, float]:
     """One stateless model call returning (structured output or None, cost in USD)."""
-    cmd = ["claude", "-p", prompt, "--model", model, "--tools", "", "--no-session-persistence",
+    # The prompt goes in on stdin: a judge prompt can pass the 128 KB limit on one argument.
+    cmd = ["claude", "-p", "--model", model, "--tools", "", "--no-session-persistence",
            "--system-prompt", system, "--output-format", "json", "--json-schema", json.dumps(schema)]
     with tempfile.TemporaryDirectory() as empty:  # no project files, no CLAUDE.md
         try:
-            out = subprocess.run(cmd, cwd=empty, capture_output=True, text=True, timeout=timeout).stdout
+            out = subprocess.run(cmd, cwd=empty, input=prompt, capture_output=True, text=True,
+                                 timeout=timeout).stdout
         except subprocess.TimeoutExpired:
             return None, 0.0
     try:
@@ -59,6 +61,9 @@ Rules:
 - Never say you are simulated, an AI or a tester.
 - done = true only when SkillForge has finished and handed over the result and is not asking you
   anything, or clearly cannot continue. Otherwise done = false and reply with your next message.
+- You cannot leave this chat to check or fetch something. If SkillForge has said it will wait for
+  something you would bring later and asks you nothing else, the person would leave and come back
+  another day: done = true. Don't keep saying you'll send it later.
 """
 
 PERSONA_SCHEMA = {"type": "object", "properties": {"reply": {"type": "string"}, "done": {"type": "boolean"}},

@@ -91,8 +91,13 @@ def main() -> None:
                 break
             reply, done, cost = sim.persona_reply(sc, history)
             log["persona_cost"] += cost
-            if done or not reply:
+            # A cheap persona model sometimes ends while SkillForge is still asking it something;
+            # a real person would answer, so keep going when it also wrote a reply.
+            asking = "?" in history[-1]["assistant"][-400:]
+            if not reply or (done and not asking):
                 break
+            if done:
+                log["persona_done_overruled"] = log.get("persona_done_overruled", 0) + 1
             msg = reply
         else:
             log["max_turns_hit"] = True

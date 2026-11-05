@@ -99,7 +99,8 @@ def judge(sc: dict, out: Path) -> list[str]:
     all_skills = skills + [s for t in fresh for s in t["skills"] if s]
     text = "\n".join(x for t in turns for x in t["text"])
     files = log.get("files", [])
-    if log.get("commits"):
+    asked_commit = any(re.search(r"커밋|commit", t["prompt"], re.I) for t in turns)
+    if log.get("commits") and not asked_commit:
         why.append(f"made {len(log['commits'])} git commit(s) nobody asked for")
     if "대표님" in text + "\n".join(x for t in fresh for x in t["text"]):
         why.append("used an odd honorific (대표님)")
