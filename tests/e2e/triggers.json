@@ -246,5 +246,23 @@
    "skillforge:forge-intake",
    "skillforge:forge-plugin"
   ]
+ },
+ {
+  "prompt": "새 테이블 받을 때마다 같은 검증 코드를 또 짜고 있어요. 이거 재사용할 수 있게 만들 수 있을까요?",
+  "expect": [
+   "skillforge:forge-intake"
+  ]
+ },
+ {
+  "prompt": "Every week I rewrite the same pandas cleanup for the vendor file. Can we make it reusable?",
+  "expect": [
+   "skillforge:forge-intake"
+  ]
+ },
+ {
+  "prompt": "이 CSV 결측치랑 중복 체크하는 파이썬 코드 짜 줘요.",
+  "expect": [
+   "none"
+  ]
  }
 ]

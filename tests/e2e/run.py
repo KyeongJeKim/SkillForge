@@ -101,8 +101,18 @@ def main() -> int:
                 trig[s] = {"passed": sum(r["pass"] for r in rows), "total": len(rows),
                            "cost": round(sum(r["cost"] for r in rows), 2)}
 
+    personal = [Path.home() / ".claude" / d for d in ("skills", "agents", "commands")]
+    before = {p for d in personal if d.is_dir() for p in d.iterdir()}
     with ThreadPoolExecutor(a.jobs) as ex:
         list(ex.map(lambda n: run_one(n, out, env), names))
+    # Anything a test session left in the real ~/.claude would load in every later session: move it
+    # into the run folder as evidence instead of leaving it there.
+    leaked = sorted(p for d in personal if d.is_dir() for p in d.iterdir() if p not in before)
+    for p in leaked:
+        dest = out / "leaked" / p.parent.name
+        dest.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(p), str(dest / p.name))
+        print(f"LEAK: a test session wrote {p}; moved to {dest / p.name}")
     rc = subprocess.run([sys.executable, str(HERE / "check.py"), str(out), *names], env=env).returncode
 
     results = json.loads((out / "results.json").read_text(encoding="utf-8"))
@@ -110,6 +120,7 @@ def main() -> int:
     summary = {"mode": a.mode, "date": time.strftime("%Y-%m-%d"), "models": {k: env.get(k, "CLI default") for k in
                ("SF_MODEL", "SF_PERSONA_MODEL", "SF_JUDGE_MODEL")}, "triggers": trig,
                "scenarios": results.get("summary", {}), "plugin_untouched": results["plugin_untouched"],
+               "leaked_into_home": [str(p) for p in leaked],
                "cost_usd": round(total, 2), "minutes": round((time.time() - t0) / 60, 1)}
     (out / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1), encoding="utf-8")
     for s, t in trig.items():

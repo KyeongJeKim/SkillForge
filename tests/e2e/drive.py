@@ -25,12 +25,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import sim  # noqa: E402
 
 ALLOWED = "Bash Read Write Edit Glob Grep Skill"
-BLOCKED = "Bash(git push:*)"
+# Tests must not push or write into the real ~/.claude (other sessions would load what lands there).
+BLOCKED = ["Bash(git push:*)", "Edit(~/.claude/**)", "Write(~/.claude/**)"]
 
 
 def run_turn(prompt: str, cwd: str, plugin_dir: str | None, session: str | None = None, timeout: int = 1200) -> dict:
     cmd = ["claude", "-p", prompt, "--output-format", "stream-json", "--verbose",
-           "--permission-mode", "acceptEdits", "--allowedTools", ALLOWED, "--disallowedTools", BLOCKED]
+           "--permission-mode", "acceptEdits", "--allowedTools", ALLOWED, "--disallowedTools", *BLOCKED]
     if plugin_dir:
         cmd += ["--plugin-dir", plugin_dir]
     if os.environ.get("SF_MODEL"):

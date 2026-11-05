@@ -23,7 +23,7 @@ def one(item: dict, plugin_dir: str) -> dict:
            "--disallowedTools", "Bash Write Edit", "--plugin-dir", plugin_dir, "--no-session-persistence"]
     if os.environ.get("SF_MODEL"):
         cmd += ["--model", os.environ["SF_MODEL"]]
-    skills, cost = [], 0.0
+    skills, tools, text, cost = [], [], [], 0.0
     with tempfile.TemporaryDirectory() as cwd:
         try:
             out = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=300).stdout
@@ -36,13 +36,17 @@ def one(item: dict, plugin_dir: str) -> dict:
             continue
         if ev.get("type") == "assistant":
             for c in ev["message"].get("content", []):
-                if c.get("type") == "tool_use" and c["name"] == "Skill":
-                    skills.append((c.get("input") or {}).get("skill"))
+                if c.get("type") == "tool_use":
+                    tools.append(c["name"])
+                    if c["name"] == "Skill":
+                        skills.append((c.get("input") or {}).get("skill"))
+                elif c.get("type") == "text":
+                    text.append(c["text"][:300])
         if ev.get("type") == "result":
             cost = float(ev.get("total_cost_usd") or 0)
     forge = [s for s in skills if s and s.startswith("skillforge:")]
     first = forge[0] if forge else "none"
-    return {"prompt": item["prompt"], "expect": item["expect"], "got": first, "skills": skills,
+    return {"prompt": item["prompt"], "expect": item["expect"], "got": first, "skills": skills, "tools": tools, "text": text,
             "pass": first in item["expect"], "cost": cost}
 
 
