@@ -205,7 +205,7 @@ GitHub는 README 속 SVG 글자를 보는 사람 컴퓨터의 글꼴로 그려�
 ```bash
 pip install -r scripts/requirements-readme-assets.txt
 python3 scripts/readme_assets.py build            # assets/src/*.svg -> assets/*.svg
-python3 scripts/readme_assets.py check            # 넘침·여백·겹침·가려진 화살촉·빌드 누락이 있으면 실패
+python3 scripts/readme_assets.py check            # 넘침·겹침·빌드 누락이면 실패
 python3 scripts/readme_assets.py render /tmp/prev # 밝은·어두운 배경 PNG 미리보기
 ```
 

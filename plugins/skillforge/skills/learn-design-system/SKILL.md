@@ -67,12 +67,31 @@ Produce:
 2. A **prototype** as one self-contained HTML file (no external fonts, scripts or images) sized for
    the target screen, using only the colors, type, spacing and components from `design-format.md`.
    Include the main flow and the key states (empty, error, approval), switchable for review.
+   Text must still fit on other people's machines, where Korean and number fonts are often wider:
+   - Font stack ends in common Korean system fonts:
+     `font-family: Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;`
+   - No fixed `width`/`height` on boxes that hold text; use padding, `min-width` and wrapping.
+     One-line labels (buttons, badges, tabs, table cells) keep room for text about 20% wider.
+   - Put this overflow check at the end of the HTML. Opening the file with `#check` at the end
+     of the address outlines in red any box whose text doesn't fit:
+     ```html
+     <script>
+     if (location.hash === "#check") document.querySelectorAll("body *").forEach((el) => {
+       const s = getComputedStyle(el);
+       if (s.display === "inline" || /auto|scroll/.test(s.overflow)) return;
+       if (el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1)
+         el.style.outline = "2px solid red";
+     });
+     </script>
+     ```
 3. A short note on how it compares to the leaders (table stakes met, improvements added).
 
 Before hand-over, check the prototype in every state against each rule in `design-format.md`
-(for example "one primary button per screen") and fix what breaks it.
+(for example "one primary button per screen") and against the text-fit rules above, and fix what
+breaks them.
 
-Tell the person how to look at it: open the HTML file in a browser (double-click it).
+Tell the person how to look at it: open the HTML file in a browser (double-click it). To check
+that nothing overflows, add `#check` to the end of the address; red outlines mark text that doesn't fit.
 
 Improvements are expressed inside the team's format: new behavior, not a new visual style.
 

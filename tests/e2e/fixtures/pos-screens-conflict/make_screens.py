@@ -121,7 +121,7 @@ def sale():
         x += w + 10
     items = [("아메리카노", 4500), ("카페라떼", 5000), ("바닐라라떼", 5500), ("콜드브루", 5300),
              ("바닐라 크림\n콜드브루", 6300), ("카푸치노", 5000), ("에스프레소", 3800), ("디카페인\n아메리카노", 4800),
-             ("헤이즐넛라떼", 5500), ("카라멜마키아토", 5900), ("아인슈페너", 6000), ("플랫화이트", 5500)]
+             ("헤이즐넛라떼", 5500), ("카라멜\n마키아토", 5900), ("아인슈페너", 6000), ("플랫화이트", 5500)]
     for i, (n, p) in enumerate(items):
         cx, cy = 132 + (i % 4) * 152, 216 + (i // 4) * 150
         sold_out = n == "아인슈페너"
@@ -129,8 +129,9 @@ def sale():
         d.multiline_text((cx + 14, cy + 16), n, font=f(18), fill=TXT if not sold_out else DISABLED_TX, spacing=4)
         d.text((cx + 14, cy + 100), won(p), font=f(18), fill=TEAL_DARK if not sold_out else DISABLED_TX)
         if sold_out:
-            d.rounded_rectangle([cx + 80, cy + 98, cx + 130, cy + 124], 8, fill=DISABLED_BG)
-            text_c(d, [cx + 80, cy + 98, cx + 130, cy + 124], "품절", 14, "#5C6573")
+            # badge on its own line above the price, so it never touches the price text
+            d.rounded_rectangle([cx + 14, cy + 66, cx + 64, cy + 92], 8, fill=DISABLED_BG)
+            text_c(d, [cx + 14, cy + 66, cx + 64, cy + 92], "품절", 14, "#5C6573")
     # right: cart
     card(d, [780, 84, 1260, 780])
     d.text((800, 100), "주문 내역", font=f(22), fill=TXT)
