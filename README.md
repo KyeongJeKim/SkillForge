@@ -26,6 +26,10 @@ something Claude can actually run.
 | **Claude Skill** | A packaged folder of instructions (and optional scripts or reference files) that Claude loads when a task matches it. |
 | **Claude Tool** | A function definition Claude can call to take an action or fetch data. |
 
+## Plan
+
+See [docs/PLAN.md](docs/PLAN.md) for the goals, first target teams and open questions (Korean).
+
 ## Status
 
 🚧 **Early development.** This repository currently holds only this README.
