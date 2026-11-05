@@ -40,7 +40,9 @@ purpose, triggers or procedure are missing, go back to `skillforge:forge-intake`
 
 10. **Try it yourself:** follow the new skill once on a realistic example (use the person's examples
     if there are any) and check the result against the style guide. Fix the skill if the result is
-    off. Save the trial output somewhere clearly named (e.g. `skillforge-trial/`) and say so.
+    off. Save the trial output somewhere clearly named (e.g. `skillforge-trial/`) and say so. Trial
+    files must not change how the skill behaves later: anything that scans existing documents (next
+    ID, latest report) skips `skillforge-trial/`.
     The person is waiting: one trial on one example, at most one fix and retry, no extra reviewer
     or tester subagents. If more testing would clearly help, offer it in the hand-over instead.
 
