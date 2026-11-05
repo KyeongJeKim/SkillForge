@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="530" viewBox="0 0 1200 530" role="img" aria-labelledby="t">
+  <title id="t">시작하기: 한 번 설치하고, 말로 시작합니다</title>
+  <defs><style>.f { font-family: Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", "Segoe UI", Helvetica, Arial, sans-serif; } .m { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }</style></defs>
+  <rect x="1" y="1" width="1198" height="528" rx="28" fill="#FFFBF7" stroke="#EBD5C3" stroke-width="2"/>
+  <text class="f" x="40" y="46" font-size="15" font-weight="700" fill="#B9806A" letter-spacing="2">GET STARTED</text>
+  <text class="f" x="40" y="84" font-size="30" font-weight="800" fill="#231A15">한 번 설치하고, 말로 시작하세요</text>
+  <rect x="40" y="120" width="610" height="370" rx="20" fill="#FFFFFF" stroke="#EBD5C3" stroke-width="2"/>
+  <circle cx="80" cy="160" r="18" fill="#D9622B"/>
+  <text class="f" x="80" y="167" font-size="18" font-weight="800" fill="#FFFFFF" text-anchor="middle">1</text>
+  <text class="f" x="110" y="167" font-size="22" font-weight="800" fill="#231A15">설치 (한 번만)</text>
+  <rect x="64" y="198" width="562" height="124" rx="14" fill="#F7F3EF" stroke="#E6DAD0"/>
+  <circle cx="86" cy="218" r="6" fill="#F28B82"/><circle cx="106" cy="218" r="6" fill="#FBD38D"/><circle cx="126" cy="218" r="6" fill="#9AE6B4"/>
+  <text class="f" x="150" y="223" font-size="14" fill="#9A8174">Claude Code</text>
+  <text class="m" x="84" y="260" font-size="16" fill="#3B2F2A"><tspan fill="#D9622B">&gt;</tspan> /plugin marketplace add kyeongjekim/skillforge</text>
+  <text class="m" x="84" y="296" font-size="16" fill="#3B2F2A"><tspan fill="#D9622B">&gt;</tspan> /plugin install skillforge@skillforge</text>
+  <text class="f" x="64" y="362" font-size="16" fill="#5E4B42">비공개 저장소라서 팀원마다 읽기 권한과</text>
+  <text class="f" x="64" y="386" font-size="16" fill="#5E4B42">GitHub 로그인(gh auth login)이 필요합니다.</text>
+  <rect x="64" y="412" width="562" height="52" rx="12" fill="#FBF3EC"/>
+  <text class="f" x="84" y="444" font-size="16" fill="#7A4A33">설치·업데이트 자세한 안내: docs/INSTALL.ko.md</text>
+  <rect x="674" y="120" width="486" height="370" rx="20" fill="#FFFFFF" stroke="#EBD5C3" stroke-width="2"/>
+  <circle cx="714" cy="160" r="18" fill="#D9622B"/>
+  <text class="f" x="714" y="167" font-size="18" font-weight="800" fill="#FFFFFF" text-anchor="middle">2</text>
+  <text class="f" x="744" y="167" font-size="22" font-weight="800" fill="#231A15">말로 시작 (명령어 없이)</text>
+  <rect x="762" y="196" width="374" height="66" rx="16" fill="#FBE3D3"/>
+  <text class="f" x="782" y="226" font-size="16" fill="#5A2A12">매달 프로모션 기획서 쓰는 데 너무 오래 걸려요.</text>
+  <text class="f" x="782" y="250" font-size="16" fill="#5A2A12">우리 양식대로 써 주는 걸 만들고 싶어요.</text>
+  <rect x="698" y="274" width="354" height="66" rx="16" fill="#F4F1EE" stroke="#E6DAD0"/>
+  <text class="f" x="718" y="304" font-size="16" fill="#3B2F2A">예전 기획서 3개로 팀 양식을 정리했어요.</text>
+  <text class="f" x="718" y="328" font-size="16" fill="#3B2F2A">행사 정보만 주시면 초안을 바로 써 드릴게요.</text>
+  <rect x="888" y="352" width="248" height="42" rx="16" fill="#FBE3D3"/>
+  <text class="f" x="908" y="382" font-size="16" fill="#5A2A12">좋아요, 그대로 만들어 주세요.</text>
+  <rect x="698" y="406" width="424" height="42" rx="16" fill="#F4F1EE" stroke="#E6DAD0"/>
+  <text class="f" x="718" y="436" font-size="16" fill="#3B2F2A">promo-plan-writer 스킬을 만들고 검증까지 마쳤어요.</text>
+</svg>

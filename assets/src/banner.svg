@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" role="img" aria-labelledby="t d">
+  <title id="t">SkillForge</title>
+  <desc id="d">말로 설명하면 Claude 스킬과 도구를 만들어 드립니다. Build Claude Skills, MCP servers, Plugins and Harnesses from plain language. 매일 스스로 측정하고 개선합니다 (RSI, Recursive Self-Improvement).</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFF8F0"/>
+      <stop offset="1" stop-color="#FCE7D6"/>
+    </linearGradient>
+    <linearGradient id="ember" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F59E0B"/>
+      <stop offset="1" stop-color="#D9622B"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FDBA74" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#FDBA74" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .f { font-family: Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", "Segoe UI", Helvetica, Arial, sans-serif; }
+    </style>
+  </defs>
+  <rect x="1" y="1" width="1198" height="338" rx="28" fill="url(#bg)" stroke="#EBD5C3" stroke-width="2"/>
+  <!-- decorative dots -->
+  <g fill="#E9C9B1" opacity="0.6">
+    <circle cx="1080" cy="52" r="5"/><circle cx="1120" cy="52" r="5"/><circle cx="1160" cy="52" r="5"/>
+    <circle cx="1080" cy="88" r="5"/><circle cx="1120" cy="88" r="5"/><circle cx="1160" cy="88" r="5"/>
+  </g>
+  <!-- emblem: anvil, hammer, sparks -->
+  <g transform="translate(70 50)">
+    <circle cx="120" cy="120" r="118" fill="url(#glow)"/>
+    <circle cx="120" cy="120" r="96" fill="#FFFFFF" stroke="#EBD5C3" stroke-width="2"/>
+    <!-- anvil -->
+    <path d="M58 118 h104 c0 14 -10 22 -26 24 l-6 18 h18 v14 h-76 v-14 h18 l-6 -18 c-14 -2 -22 -10 -26 -24 z" fill="#3B2F2A"/>
+    <rect x="58" y="110" width="118" height="12" rx="4" fill="#4A3B34"/>
+    <!-- hammer, striking -->
+    <g transform="rotate(28 136 92)">
+      <rect x="131" y="18" width="11" height="66" rx="4" fill="#B7794F"/>
+      <rect x="110" y="78" width="54" height="26" rx="6" fill="#5B4A42"/>
+    </g>
+    <!-- sparks -->
+    <g fill="url(#ember)">
+      <circle cx="88" cy="96" r="6"/>
+      <circle cx="70" cy="80" r="4"/>
+      <circle cx="96" cy="72" r="3.5"/>
+      <circle cx="60" cy="100" r="3"/>
+    </g>
+    <path d="M100 104 l-16 -14 M108 98 l-6 -18 M96 108 l-20 -2" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <!-- title -->
+  <text class="f" x="350" y="142" font-size="78" font-weight="800" fill="#231A15" letter-spacing="-1">Skill<tspan fill="#D9622B">Forge</tspan></text>
+  <text class="f" x="354" y="194" font-size="30" font-weight="700" fill="#3B2F2A">말로 설명하면, Claude 스킬과 도구를 만들어 드립니다</text>
+  <text class="f" x="354" y="230" font-size="20" fill="#7A6458">Build Claude Skills, MCP servers, Plugins and Harnesses from plain language</text>
+  <!-- chips -->
+  <g class="f" font-size="18" font-weight="700">
+    <rect x="354" y="258" width="96" height="38" rx="19" fill="#FBE3D3" stroke="#E7A27C"/>
+    <text x="402" y="283" text-anchor="middle" fill="#A4441A">Skill</text>
+    <rect x="462" y="258" width="96" height="38" rx="19" fill="#DCEBFB" stroke="#8DB8EA"/>
+    <text x="510" y="283" text-anchor="middle" fill="#1D5FA8">MCP</text>
+    <rect x="570" y="258" width="110" height="38" rx="19" fill="#DDF3E4" stroke="#8ACB9E"/>
+    <text x="625" y="283" text-anchor="middle" fill="#1E7B41">Plugin</text>
+    <rect x="692" y="258" width="118" height="38" rx="19" fill="#ECE3F7" stroke="#B9A0DB"/>
+    <text x="751" y="283" text-anchor="middle" fill="#6233A0">Harness</text>
+  </g>
+  <!-- self-improvement badge -->
+  <g class="f">
+    <rect x="830" y="258" width="262" height="38" rx="19" fill="#FFFFFF" stroke="#D9622B" stroke-width="2"/>
+    <path d="M858 270 a8 8 0 1 1 -7.5 10.5" fill="none" stroke="#D9622B" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M846.5 276.5 l4 5 l5 -4.5" fill="none" stroke="#D9622B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="874" y="283" font-size="17" font-weight="700" fill="#A4441A">매일 스스로 개선 · RSI</text>
+  </g>
+</svg>

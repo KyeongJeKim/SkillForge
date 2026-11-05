@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="470" viewBox="0 0 1200 470" role="img" aria-labelledby="t">
+  <title id="t">SkillForge 동작 흐름: 말하기, 인터뷰, 유형 정하기, 만들기, 검증·전달</title>
+  <defs>
+    <style>.f { font-family: Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", "Segoe UI", Helvetica, Arial, sans-serif; } .m { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }</style>
+    <linearGradient id="num" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F08A4B"/><stop offset="1" stop-color="#D9622B"/></linearGradient>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#D9622B"/></marker>
+    <marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8B6BBE"/></marker>
+  </defs>
+  <rect x="1" y="1" width="1198" height="468" rx="28" fill="#FFFBF7" stroke="#EBD5C3" stroke-width="2"/>
+  <text class="f" x="40" y="46" font-size="15" font-weight="700" fill="#B9806A" letter-spacing="2">HOW IT WORKS</text>
+  <text class="f" x="40" y="84" font-size="30" font-weight="800" fill="#231A15">어떻게 동작하나요?</text>
+  <g transform="translate(0 16)">
+  <g>
+    <rect x="28" y="104" width="196" height="214" rx="20" fill="#FFFFFF" stroke="#EBD5C3" stroke-width="2"/>
+    <circle cx="64" cy="144" r="20" fill="url(#num)"/>
+    <text class="f" x="64" y="151" font-size="20" font-weight="800" fill="#FFFFFF" text-anchor="middle">1</text>
+    <text class="f" x="94" y="151" font-size="14" font-weight="700" fill="#B9806A" letter-spacing="0.5">TALK</text>
+    <text class="f" x="48" y="202" font-size="24" font-weight="800" fill="#231A15">말하기</text>
+    <text class="f" x="48" y="234" font-size="16" fill="#5E4B42">“이런 거 만들어야</text>
+    <text class="f" x="48" y="257" font-size="16" fill="#5E4B42">될 것 같아”</text>
+    <rect x="44" y="274" width="164" height="28" rx="8" fill="#F6EFE9"/>
+    <text class="m" x="126.0" y="293" font-size="13" fill="#7A4A33" text-anchor="middle">자연어로 시작</text>
+  </g>
+  <line x1="230" y1="211.0" x2="259" y2="211.0" stroke="#D9622B" stroke-width="3" marker-end="url(#ar)"/>
+  <g>
+    <rect x="265" y="104" width="196" height="214" rx="20" fill="#FFFFFF" stroke="#EBD5C3" stroke-width="2"/>
+    <circle cx="301" cy="144" r="20" fill="url(#num)"/>
+    <text class="f" x="301" y="151" font-size="20" font-weight="800" fill="#FFFFFF" text-anchor="middle">2</text>
+    <text class="f" x="331" y="151" font-size="14" font-weight="700" fill="#B9806A" letter-spacing="0.5">INTAKE</text>
+    <text class="f" x="285" y="202" font-size="24" font-weight="800" fill="#231A15">인터뷰</text>
+    <text class="f" x="285" y="234" font-size="16" fill="#5E4B42">필요한 것과</text>
+    <text class="f" x="285" y="257" font-size="16" fill="#5E4B42">빠진 정보를 확인</text>
+    <rect x="281" y="274" width="164" height="28" rx="8" fill="#F6EFE9"/>
+    <text class="m" x="363.0" y="293" font-size="13" fill="#7A4A33" text-anchor="middle">forge-intake</text>
+  </g>
+  <line x1="467" y1="211.0" x2="496" y2="211.0" stroke="#D9622B" stroke-width="3" marker-end="url(#ar)"/>
+  <g>
+    <rect x="502" y="104" width="196" height="214" rx="20" fill="#FFFFFF" stroke="#EBD5C3" stroke-width="2"/>
+    <circle cx="538" cy="144" r="20" fill="url(#num)"/>
+    <text class="f" x="538" y="151" font-size="20" font-weight="800" fill="#FFFFFF" text-anchor="middle">3</text>
+    <text class="f" x="568" y="151" font-size="14" font-weight="700" fill="#B9806A" letter-spacing="0.5">CHOOSE</text>
+    <text class="f" x="522" y="202" font-size="24" font-weight="800" fill="#231A15">유형 정하기</text>
+    <text class="f" x="522" y="234" font-size="16" fill="#5E4B42">추천하거나,</text>
+    <text class="f" x="522" y="257" font-size="16" fill="#5E4B42">설명 후 직접 선택</text>
+    <rect x="518" y="274" width="164" height="28" rx="8" fill="#F6EFE9"/>
+    <text class="m" x="600.0" y="293" font-size="13" fill="#7A4A33" text-anchor="middle">forge-spec.md</text>
+  </g>
+  <line x1="704" y1="211.0" x2="733" y2="211.0" stroke="#D9622B" stroke-width="3" marker-end="url(#ar)"/>
+  <g>
+    <rect x="739" y="104" width="196" height="214" rx="20" fill="#FFFFFF" stroke="#EBD5C3" stroke-width="2"/>
+    <circle cx="775" cy="144" r="20" fill="url(#num)"/>
+    <text class="f" x="775" y="151" font-size="20" font-weight="800" fill="#FFFFFF" text-anchor="middle">4</text>
+    <text class="f" x="805" y="151" font-size="14" font-weight="700" fill="#B9806A" letter-spacing="0.5">GENERATE</text>
+    <text class="f" x="759" y="202" font-size="24" font-weight="800" fill="#231A15">만들기</text>
+    <text class="f" x="759" y="234" font-size="16" fill="#5E4B42">Skill · MCP ·</text>
+    <text class="f" x="759" y="257" font-size="16" fill="#5E4B42">Plugin · Harness</text>
+    <rect x="755" y="274" width="164" height="28" rx="8" fill="#F6EFE9"/>
+    <text class="m" x="837.0" y="293" font-size="13" fill="#7A4A33" text-anchor="middle">forge-skill …</text>
+  </g>
+  <line x1="941" y1="211.0" x2="970" y2="211.0" stroke="#D9622B" stroke-width="3" marker-end="url(#ar)"/>
+  <g>
+    <rect x="976" y="104" width="196" height="214" rx="20" fill="#FFFFFF" stroke="#8ACB9E" stroke-width="2"/>
+    <circle cx="1012" cy="144" r="20" fill="#2E9E5B"/>
+    <path d="M1002 145 l7 7 l13 -14" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text class="f" x="1042" y="151" font-size="14" font-weight="700" fill="#B9806A" letter-spacing="0.5">VALIDATE</text>
+    <text class="f" x="996" y="202" font-size="24" font-weight="800" fill="#231A15">검증·전달</text>
+    <text class="f" x="996" y="234" font-size="16" fill="#5E4B42">검증 통과 후</text>
+    <text class="f" x="996" y="257" font-size="16" fill="#5E4B42">사용법까지 안내</text>
+    <rect x="992" y="274" width="164" height="28" rx="8" fill="#F6EFE9"/>
+    <text class="m" x="1074.0" y="293" font-size="13" fill="#7A4A33" text-anchor="middle">forge_validate.py</text>
+  </g>
+  <rect x="265" y="352" width="670" height="72" rx="16" fill="#F4EEFB" stroke="#C9B6E6" stroke-dasharray="6 5" stroke-width="2"/>
+  <text class="f" x="289" y="383" font-size="18" font-weight="800" fill="#4B2C7A">팀 문서·화면 예시가 있으면 먼저 양식을 배웁니다</text>
+  <text class="m" x="289" y="408" font-size="14" fill="#6B4E99">learn-doc-conventions  ·  learn-design-system</text>
+  <line x1="875" y1="352" x2="875" y2="326" stroke="#8B6BBE" stroke-width="2.5" marker-end="url(#ar2)"/>
+  </g>
+</svg>

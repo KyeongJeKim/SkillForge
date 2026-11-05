@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="740" viewBox="0 0 1200 740" role="img" aria-labelledby="t">
+  <title id="t">SkillForge 재귀적 자기개선(RSI): 매일 측정, 약점 찾기, GitHub 조사·차용, 개선, 고정 시험지로 재측정, 나아졌을 때만 채택하고 기록. 만든 스킬도 사용자의 수정에서 배웁니다.</title>
+  <defs>
+    <style>.f { font-family: Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", "Segoe UI", Helvetica, Arial, sans-serif; } .m { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }</style>
+    <linearGradient id="num" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F08A4B"/><stop offset="1" stop-color="#D9622B"/></linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF1E6"/><stop offset="1" stop-color="#FFE3CF"/></linearGradient>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#D9622B"/></marker>
+    <marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8B6BBE"/></marker>
+  </defs>
+  <rect x="1" y="1" width="1198" height="738" rx="28" fill="#FFFBF7" stroke="#EBD5C3" stroke-width="2"/>
+  <text class="f" x="40" y="46" font-size="15" font-weight="700" fill="#B9806A" letter-spacing="2">RECURSIVE SELF-IMPROVEMENT</text>
+  <text class="f" x="40" y="84" font-size="30" font-weight="800" fill="#231A15">스스로 재고, 고치고, 나아진 것만 남깁니다</text>
+  <circle cx="340" cy="410" r="200" fill="none" stroke="#F3D9C6" stroke-width="16"/>
+  <path d="M411.7 223.3 A200 200 0 0 1 465.9 254.6" fill="none" stroke="#D9622B" stroke-width="3" marker-end="url(#ar)"/>
+  <path d="M537.5 378.7 A200 200 0 0 1 537.5 441.3" fill="none" stroke="#D9622B" stroke-width="3" marker-end="url(#ar)"/>
+  <path d="M496.5 534.5 A200 200 0 0 1 450.4 576.8" fill="none" stroke="#D9622B" stroke-width="3" marker-end="url(#ar)"/>
+  <path d="M268.3 596.7 A200 200 0 0 1 214.1 565.4" fill="none" stroke="#D9622B" stroke-width="3" marker-end="url(#ar)"/>
+  <path d="M142.5 441.3 A200 200 0 0 1 142.5 378.7" fill="none" stroke="#D9622B" stroke-width="3" marker-end="url(#ar)"/>
+  <path d="M183.5 285.5 A200 200 0 0 1 229.6 243.2" fill="none" stroke="#D9622B" stroke-width="3" marker-end="url(#ar)"/>
+  <circle cx="340" cy="410" r="96" fill="url(#core)" stroke="#EBC3A6" stroke-width="2"/>
+  <text class="f" x="340" y="388" font-size="15" font-weight="700" fill="#B9806A" text-anchor="middle" letter-spacing="1">EVERY DAY</text>
+  <text class="f" x="340" y="420" font-size="24" font-weight="800" fill="#231A15" text-anchor="middle">매일 새벽 6시</text>
+  <text class="f" x="340" y="446" font-size="15" fill="#5E4B42" text-anchor="middle">뉴욕 시간, 주말 포함</text>
+  <g>
+    <rect x="242.0" y="164.0" width="196" height="92" rx="18" fill="#FFFFFF" stroke="#EBD5C3" stroke-width="2"/>
+    <circle cx="272.0" cy="194.0" r="16" fill="url(#num)"/>
+    <text class="f" x="272.0" y="200.0" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">1</text>
+    <text class="f" x="298.0" y="192.0" font-size="12" font-weight="700" fill="#B9806A" letter-spacing="0.5">MEASURE</text>
+    <text class="f" x="298.0" y="214.0" font-size="21" font-weight="800" fill="#231A15">측정</text>
+    <text class="f" x="260.0" y="241.0" font-size="14" fill="#5E4B42">시나리오·시작 문구 채점</text>
+  </g>
+  <g>
+    <rect x="415.2" y="264.0" width="196" height="92" rx="18" fill="#FFFFFF" stroke="#EBD5C3" stroke-width="2"/>
+    <circle cx="445.2" cy="294.0" r="16" fill="url(#num)"/>
+    <text class="f" x="445.2" y="300.0" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">2</text>
+    <text class="f" x="471.2" y="292.0" font-size="12" font-weight="700" fill="#B9806A" letter-spacing="0.5">FIND</text>
+    <text class="f" x="471.2" y="314.0" font-size="21" font-weight="800" fill="#231A15">약점 찾기</text>
+    <text class="f" x="433.2" y="341.0" font-size="14" fill="#5E4B42">가장 낮은 채점 항목</text>
+  </g>
+  <g>
+    <rect x="415.2" y="464.0" width="196" height="92" rx="18" fill="#FFFFFF" stroke="#EBD5C3" stroke-width="2"/>
+    <circle cx="445.2" cy="494.0" r="16" fill="url(#num)"/>
+    <text class="f" x="445.2" y="500.0" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">3</text>
+    <text class="f" x="471.2" y="492.0" font-size="12" font-weight="700" fill="#B9806A" letter-spacing="0.5">BORROW</text>
+    <text class="f" x="471.2" y="514.0" font-size="21" font-weight="800" fill="#231A15">조사·차용</text>
+    <text class="f" x="433.2" y="541.0" font-size="14" fill="#5E4B42">GitHub 트렌딩, 공개 스킬</text>
+  </g>
+  <g>
+    <rect x="242.0" y="564.0" width="196" height="92" rx="18" fill="#FFFFFF" stroke="#EBD5C3" stroke-width="2"/>
+    <circle cx="272.0" cy="594.0" r="16" fill="url(#num)"/>
+    <text class="f" x="272.0" y="600.0" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">4</text>
+    <text class="f" x="298.0" y="592.0" font-size="12" font-weight="700" fill="#B9806A" letter-spacing="0.5">IMPROVE</text>
+    <text class="f" x="298.0" y="614.0" font-size="21" font-weight="800" fill="#231A15">개선</text>
+    <text class="f" x="260.0" y="641.0" font-size="14" fill="#5E4B42">한 번에 1~3가지</text>
+  </g>
+  <g>
+    <rect x="68.8" y="464.0" width="196" height="92" rx="18" fill="#FFFFFF" stroke="#EBD5C3" stroke-width="2"/>
+    <circle cx="98.8" cy="494.0" r="16" fill="url(#num)"/>
+    <text class="f" x="98.8" y="500.0" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">5</text>
+    <text class="f" x="124.8" y="492.0" font-size="12" font-weight="700" fill="#B9806A" letter-spacing="0.5">RE-MEASURE</text>
+    <text class="f" x="124.8" y="514.0" font-size="21" font-weight="800" fill="#231A15">재측정</text>
+    <text class="f" x="86.8" y="541.0" font-size="14" fill="#5E4B42">고정 시험지까지</text>
+  </g>
+  <g>
+    <rect x="68.8" y="264.0" width="196" height="92" rx="18" fill="#FFFFFF" stroke="#EBD5C3" stroke-width="2"/>
+    <circle cx="98.8" cy="294.0" r="16" fill="url(#num)"/>
+    <text class="f" x="98.8" y="300.0" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">6</text>
+    <text class="f" x="124.8" y="292.0" font-size="12" font-weight="700" fill="#B9806A" letter-spacing="0.5">KEEP</text>
+    <text class="f" x="124.8" y="314.0" font-size="21" font-weight="800" fill="#231A15">채택·기록</text>
+    <text class="f" x="86.8" y="341.0" font-size="14" fill="#5E4B42">나아졌을 때만 남김</text>
+  </g>
+  <rect x="666" y="112" width="504" height="364" rx="22" fill="#FFFFFF" stroke="#E2D4F0" stroke-width="2"/>
+  <text class="f" x="694" y="152" font-size="14" font-weight="700" fill="#8B6BBE" letter-spacing="1.5">AND THE SKILLS IT BUILDS</text>
+  <text class="f" x="694" y="186" font-size="24" font-weight="800" fill="#231A15">만든 스킬도 쓸수록 배웁니다</text>
+  <circle cx="710" cy="236" r="14" fill="#F1EAFA" stroke="#8B6BBE" stroke-width="2"/>
+  <text class="f" x="710" y="241" font-size="14" font-weight="800" fill="#6A4C9C" text-anchor="middle">1</text>
+  <text class="f" x="738" y="234" font-size="18" font-weight="700" fill="#231A15">사용자가 결과를 고침</text>
+  <text class="f" x="738" y="258" font-size="14.5" fill="#5E4B42">“다음부터는 요일까지 써 주세요”</text>
+  <line x1="710" y1="252" x2="710" y2="278" stroke="#8B6BBE" stroke-width="2.5" marker-end="url(#ar2)"/>
+  <circle cx="710" cy="302" r="14" fill="#F1EAFA" stroke="#8B6BBE" stroke-width="2"/>
+  <text class="f" x="710" y="307" font-size="14" font-weight="800" fill="#6A4C9C" text-anchor="middle">2</text>
+  <text class="f" x="738" y="300" font-size="18" font-weight="700" fill="#231A15">규칙을 기록</text>
+  <text class="f" x="738" y="324" font-size="14.5" fill="#5E4B42">스킬 폴더의 corrections.md 에 한 줄</text>
+  <line x1="710" y1="318" x2="710" y2="344" stroke="#8B6BBE" stroke-width="2.5" marker-end="url(#ar2)"/>
+  <circle cx="710" cy="368" r="14" fill="#F1EAFA" stroke="#8B6BBE" stroke-width="2"/>
+  <text class="f" x="710" y="373" font-size="14" font-weight="800" fill="#6A4C9C" text-anchor="middle">3</text>
+  <text class="f" x="738" y="366" font-size="18" font-weight="700" fill="#231A15">다음 결과부터 바로 반영</text>
+  <text class="f" x="738" y="390" font-size="14.5" fill="#5E4B42">고객 정보 없이 규칙만</text>
+  <line x1="710" y1="384" x2="710" y2="410" stroke="#8B6BBE" stroke-width="2.5" marker-end="url(#ar2)"/>
+  <circle cx="710" cy="434" r="14" fill="#F1EAFA" stroke="#8B6BBE" stroke-width="2"/>
+  <text class="f" x="710" y="439" font-size="14" font-weight="800" fill="#6A4C9C" text-anchor="middle">4</text>
+  <text class="f" x="738" y="432" font-size="18" font-weight="700" fill="#231A15">“이 스킬 개선해 줘”</text>
+  <text class="f" x="738" y="456" font-size="14.5" fill="#5E4B42">forge-improve 가 본문에 반영하고 재시험</text>
+  <text class="f" x="670" y="516" font-size="14" font-weight="700" fill="#B9806A" letter-spacing="1.5">GUARDRAILS · 지키는 규칙</text>
+  <rect x="666" y="532" width="504" height="40" rx="20" fill="#FFF3EA" stroke="#F0C9AD" stroke-width="1.5"/>
+  <path d="M684 552 l5 5 l10 -11" fill="none" stroke="#D9622B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text class="f" x="708" y="558" font-size="16" font-weight="600" fill="#5E3A28">고정 시험지(held-out)는 개선 루틴이 수정하지 않음</text>
+  <rect x="666" y="580" width="504" height="40" rx="20" fill="#FFF3EA" stroke="#F0C9AD" stroke-width="1.5"/>
+  <path d="M684 600 l5 5 l10 -11" fill="none" stroke="#D9622B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text class="f" x="708" y="606" font-size="16" font-weight="600" fill="#5E3A28">점수가 오르고 떨어진 곳이 없을 때만 채택</text>
+  <rect x="666" y="628" width="504" height="40" rx="20" fill="#FFF3EA" stroke="#F0C9AD" stroke-width="1.5"/>
+  <path d="M684 648 l5 5 l10 -11" fill="none" stroke="#D9622B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text class="f" x="708" y="654" font-size="16" font-weight="600" fill="#5E3A28">테스트·채점 기준을 느슨하게 바꾸지 않음</text>
+  <rect x="666" y="676" width="504" height="40" rx="20" fill="#FFF3EA" stroke="#F0C9AD" stroke-width="1.5"/>
+  <path d="M684 696 l5 5 l10 -11" fill="none" stroke="#D9622B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text class="f" x="708" y="702" font-size="16" font-weight="600" fill="#5E3A28">플러그인 복사본으로 격리 실행, push 차단</text>
+</svg>

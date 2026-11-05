@@ -140,7 +140,8 @@ Claude Code에서 아래 두 줄을 입력합니다.
 ```text
 skillforge/
 ├── .claude-plugin/marketplace.json     # 이 저장소를 설치 가능한 마켓플레이스로 만듭니다
-├── assets/                             # README 이미지 (SVG)
+├── assets/                             # README 이미지 (SVG, 글자를 윤곽선으로 굳힌 빌드 결과물)
+│   └── src/                            # 이미지 원본: 고칠 때는 여기를 고치고 build
 ├── docs/
 │   ├── INSTALL.ko.md                   # 팀원용 설치·사용 안내
 │   ├── PLAN.md                         # 목표, 심층 인터뷰, 자기개선(RSI) 규칙, 남은 질문
@@ -162,8 +163,10 @@ skillforge/
 │       ├── forge_validate.py           # 모든 생성 단계가 쓰는 검증기
 │       ├── extract_text.py             # .docx / .xlsx / .pptx / .hwpx / .hwp 텍스트 추출
 │       └── package_skill.py            # Claude 앱(웹·데스크톱 채팅) 업로드용 스킬 압축
+├── scripts/readme_assets.py            # README 이미지 빌드·넘침 검사
 └── tests/
     ├── test_forge_validate.py          # 단위 테스트
+    ├── test_readme_assets.py           # README 이미지 넘침·가림 검사
     └── e2e/                            # 채점 장치 (선택, Claude 사용량 발생)
         ├── scenarios/  heldout/        # 개발용 시나리오 / 고정 시험지 (수정 금지)
         ├── rubric.md                   # 채점 기준표 (6개 항목, 0~5점)
@@ -193,6 +196,17 @@ python3 plugins/skillforge/scripts/forge_validate.py mcp    path/to/server-dir
 python3 tests/e2e/run.py --mode sweep              # 저렴하게 넓게: 전체 시나리오 + 시작 문구
 python3 tests/e2e/run.py --mode full --set heldout # 실전 모델로 고정 시험지
 python3 tests/e2e/run.py ec-listing-lazy           # 시나리오 하나만
+```
+
+README 이미지를 고칠 때는 `assets/src/` 의 원본을 고친 뒤 다시 만듭니다.
+GitHub는 README 속 SVG 글자를 보는 사람 컴퓨터의 글꼴로 그려서, 글꼴에 따라 글자가 상자 밖으로 넘칠 수 있습니다.
+그래서 빌드할 때 글자를 고정 글꼴(Pretendard, JetBrains Mono)의 윤곽선으로 바꾸고, 검사는 넓은 대체 글꼴로도 넘치지 않는지 확인합니다.
+
+```bash
+pip install -r scripts/requirements-readme-assets.txt
+python3 scripts/readme_assets.py build            # assets/src/*.svg -> assets/*.svg
+python3 scripts/readme_assets.py check            # 넘침·여백·겹침·가려진 화살촉·빌드 누락이 있으면 실패
+python3 scripts/readme_assets.py render /tmp/prev # 밝은·어두운 배경 PNG 미리보기
 ```
 
 새 버전을 낼 때는 `plugin.json` 과 `marketplace.json` 의 `version` 을 함께 올립니다
