@@ -30,6 +30,9 @@ method (environment variable names only) and where it will run. Default to Pytho
      that says when to use it; Claude reads the docstring to choose tools.
    - Start **read-only**. Add write tools only if the spec asks; their docstring must say they change data.
    - Read secrets from environment variables and fail with a clear message if missing. Never hard-code one.
+   - Raise `ToolError` (`from mcp.server.mcpserver.exceptions import ToolError`) for every failure you
+     expect (missing env var, bad input, refused query, system not reachable). SDK 2.x hides the text of
+     any other exception, so Claude would only see `Error executing tool <name>`.
    - Return small, structured results.
 4. **Install and start it once** (you run these, don't hand them over):
 

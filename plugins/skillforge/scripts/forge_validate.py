@@ -467,6 +467,21 @@ def check_marketplace(repo_dir: Path, rep: Report) -> None:
             rep.error(mp, f"'{pname}' needs a 'source'")
 
 
+# Built-in exceptions whose text MCP SDK 2.x does not pass to the client (only ToolError's is shown).
+HIDDEN_ERRORS = {
+    "Exception", "RuntimeError", "ValueError", "KeyError", "LookupError", "TypeError",
+    "PermissionError", "FileNotFoundError", "OSError", "NotImplementedError", "ConnectionError",
+}
+
+
+def _raised_name(exc: ast.expr) -> str:
+    """Name of the exception class in `raise X(...)` or `raise X`."""
+    node = exc.func if isinstance(exc, ast.Call) else exc
+    if isinstance(node, ast.Attribute):
+        return node.attr
+    return node.id if isinstance(node, ast.Name) else ""
+
+
 def check_mcp_server(target: Path, rep: Report) -> None:
     server = target / "server.py" if target.is_dir() else target
     if not server.is_file():
@@ -500,6 +515,15 @@ def check_mcp_server(target: Path, rep: Report) -> None:
         rep.error(server, "never calls .run(); the server would exit immediately (add mcp.run() under __main__)")
     if SECRET_RE.search(text):
         rep.error(server, "looks like a hard-coded secret; read it from an environment variable")
+    if "MCPServer" in text:
+        hidden = sorted({
+            name for n in ast.walk(tree) if isinstance(n, ast.Raise) and n.exc is not None
+            for name in [_raised_name(n.exc)] if name in HIDDEN_ERRORS
+        })
+        if hidden:
+            rep.warn(server, f"raises {', '.join(hidden)}; MCP SDK 2.x hides that message from Claude "
+                             "(it sees only 'Error executing tool'). Raise ToolError from "
+                             "mcp.server.mcpserver.exceptions for expected failures")
     req = server.parent / "requirements.txt"
     if not req.is_file():
         rep.warn(server.parent, "no requirements.txt (expected 'mcp>=2,<3')")

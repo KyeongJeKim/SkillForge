@@ -12,6 +12,7 @@ from __future__ import annotations
 import os
 
 from mcp.server.mcpserver import MCPServer
+from mcp.server.mcpserver.exceptions import ToolError
 
 mcp = MCPServer("{{SF: server-name}}")
 
@@ -22,7 +23,9 @@ def _token() -> str:
     """Read the API token from the environment; never hard-code it."""
     token = os.environ.get(TOKEN_ENV)
     if not token:
-        raise RuntimeError(f"Set the {TOKEN_ENV} environment variable first.")
+        # ToolError: Claude sees this message. Any other exception reaches Claude only as
+        # "Error executing tool <name>", so it can't tell the person what to fix.
+        raise ToolError(f"Set the {TOKEN_ENV} environment variable first.")
     return token
 
 

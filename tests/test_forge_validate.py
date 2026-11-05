@@ -342,6 +342,12 @@ class McpChecks(TempDir):
         for secret in ('\nAPI_KEY = "sk-live-abcdefghijkl"\n', '\nHEADERS = {"Authorization": "Bearer abcdefghijklmnop"}\n'):
             self.assertFalse(run("mcp", self._server(self._filled() + secret)).ok, secret)
 
+    def test_hidden_error_message_warns(self):
+        text = self._filled().replace("raise ToolError(", "raise RuntimeError(")
+        rep = run("mcp", self._server(text))
+        self.assertTrue(rep.ok)
+        self.assertTrue(any("ToolError" in w for w in rep.warnings), rep.warnings)
+
     def test_no_tools_fails(self):
         self.assertFalse(run("mcp", self._server(
             "from mcp.server.mcpserver import MCPServer\nmcp = MCPServer('x')\nmcp.run()\n")).ok)
