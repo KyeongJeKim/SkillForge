@@ -1,0 +1,18 @@
+{
+  "name": "skillforge",
+  "description": "SkillForge marketplace: builds Claude skills and tools with natural language",
+  "owner": {
+    "name": "Kyeong Je Kim",
+    "url": "https://github.com/kyeongjekim"
+  },
+  "plugins": [
+    {
+      "name": "skillforge",
+      "source": "./plugins/skillforge",
+      "description": "Talk through what you need; SkillForge works out whether it should be a Skill, MCP server, Plugin or Harness, asks for what is missing, then builds and validates it.",
+      "version": "0.1.0",
+      "category": "productivity",
+      "tags": ["skills", "mcp", "plugins", "harness", "generator"]
+    }
+  ]
+}
