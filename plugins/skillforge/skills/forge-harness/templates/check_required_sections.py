@@ -53,9 +53,15 @@ def missing_sections(text: str, required: list[str]) -> list[str]:
 
 
 def main() -> int:
+    # Read bytes and decode as UTF-8 ourselves: on Windows the default console code page
+    # (e.g. cp949) would garble Korean file names in the event JSON.
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     try:
-        event = json.load(sys.stdin)
+        event = json.loads(sys.stdin.buffer.read().decode("utf-8", errors="replace"))
     except (json.JSONDecodeError, ValueError):
+        return 0
+    if not isinstance(event, dict):
         return 0
     path = (event.get("tool_input") or {}).get("file_path") or ""
     name = os.path.basename(path)

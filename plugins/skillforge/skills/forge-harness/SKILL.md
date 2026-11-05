@@ -37,6 +37,8 @@ person to confirm separate specs for them.
    message to Claude) rather than block, unless the spec says to block.
 5. **Orchestrating skill** (follow `skillforge:forge-skill` steps 2 to 9): list the stages, say which
    subagent handles each stage, and write every approval point as "stop and ask the person".
+   Give the reviewer subagent the spec's 품질 기준 and 금지·승인 as its checklist, and the
+   writer the 예외 처리 cases, so the checks are the team's real ones, not generic advice.
 6. **Validate** and fix until clean:
 
    ```bash

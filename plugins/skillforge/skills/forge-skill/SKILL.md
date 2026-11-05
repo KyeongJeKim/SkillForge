@@ -22,7 +22,11 @@ purpose, triggers or procedure are missing, go back to `skillforge:forge-intake`
      request should not trigger it.
    - Wrap the whole value in double quotes. Under 1024 characters. No `<` or `>`.
 4. **Name:** lowercase letters, digits and hyphens, at most 64 characters, same as the folder.
-5. **Body:** numbered procedure, output format, rules. Keep `SKILL.md` under 500 lines; put long
+5. **Body:** numbered procedure, output format, quality bar, edge cases, corrections and rules.
+   Copy the spec's 품질 기준, 예외 처리 and 금지·승인 into the skill's Quality bar, Edge cases and
+   Rules sections as concrete checks, not general advice: "목표 매출은 전년 대비 %와 금액을 함께 쓴다",
+   not "write a good target". Keep the "When the person corrects a result" section from the
+   template; it is how the skill keeps learning. Keep `SKILL.md` under 500 lines; put long
    material (style guide, examples, checklists) in sibling files linked with relative paths.
 6. **Draft first:** the generated skill must produce the full result right away, marking unknown
    values as `[확인 필요: ...]` and listing them at the end, instead of asking questions before it
@@ -32,6 +36,7 @@ purpose, triggers or procedure are missing, go back to `skillforge:forge-intake`
 8. **Scripts (optional):** put deterministic checks in `scripts/` and call them as
    `python3 "${CLAUDE_SKILL_DIR}/scripts/<name>.py"` so they work from any folder.
    Standard library only, unless the person agrees to a dependency.
+   If the person uses Windows, write `python` (or `py -3`) instead of `python3` in the skill.
 9. **Validate**, fix every error, re-run until it passes:
 
    ```bash
@@ -39,18 +44,29 @@ purpose, triggers or procedure are missing, go back to `skillforge:forge-intake`
    ```
 
 10. **Try it yourself:** follow the new skill once on a realistic example (use the person's examples
-    if there are any) and check the result against the style guide. Fix the skill if the result is
-    off. Save the trial output somewhere clearly named (e.g. `skillforge-trial/`) and say so. Trial
+    if there are any) and check the result against the style guide, the quality bar and one edge case
+    from the spec. Fix the skill if the result is off. Save the trial output somewhere clearly named (e.g. `skillforge-trial/`) and say so. Trial
     files must not change how the skill behaves later: anything that scans existing documents (next
     ID, latest report) skips `skillforge-trial/`.
     The person is waiting: one trial on one example, at most one fix and retry, no extra reviewer
     or tester subagents. If more testing would clearly help, offer it in the hand-over instead.
+
+11. **Claude app users:** if the spec says the users work in the Claude app (claude.ai or the Chat
+    tab of Claude Desktop) rather than Claude Code, also make an upload file and say where it is:
+
+    ```bash
+    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/package_skill.py" <location>
+    ```
+
+    They upload it in Settings > Capabilities > Skills (code execution must be on). The Code tab of
+    Claude Desktop uses the skill folder or plugin as is.
 
 ## Hand-over (in the person's language, short)
 
 1. Where the skill is, in one line.
 2. Two example sentences that start it, and one that should not.
 3. What you assumed, as a short list.
+4. One line: when they correct a result, the skill remembers it, and "이 스킬 개선해 줘" makes it permanent.
 
 Don't paste commands they don't need to run. Don't delete files unless they ask.
 

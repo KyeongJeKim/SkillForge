@@ -13,15 +13,18 @@ considered good examples, and whether any are outdated.
 
 If the person can share only one, continue but mark every rule as "seen once".
 
-**File formats:** Claude reads Markdown, text, PDF and images directly. For Word, Excel and
-PowerPoint files run the bundled extractor and read its output:
+**File formats:** Claude reads Markdown, text, PDF and images directly. For Word, Excel,
+PowerPoint and Hangul (한글) files run the bundled extractor and read its output (on Windows use
+`python` or `py -3` if `python3` is not found):
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/extract_text.py" <file.docx|file.xlsx|file.pptx> ...
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/extract_text.py" <file.docx|.xlsx|.pptx|.hwpx|.hwp> ...
 ```
 
-For `.hwp`, `.doc`, `.xls` or `.ppt`, ask for a PDF export ("다른 이름으로 저장 → PDF") or pasted
-text. Tell the person they can drag files into the terminal or give the folder path.
+The extractor gives text and tables but not fonts, colors or page layout. When the look matters
+(a form with boxes, a poster), also ask for a PDF or a screenshot of one page. If it says a `.hwp`
+is password-protected or 배포용, or the file is `.doc`, `.xls` or `.ppt`, ask for a PDF export
+("다른 이름으로 저장 → PDF") or pasted text. Tell the person they can drag files into the terminal or give the folder path.
 
 ## 2. Extract the conventions
 

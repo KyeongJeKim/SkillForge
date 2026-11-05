@@ -1,5 +1,5 @@
 {
-  "description": "Warn when a written Markdown document is missing required sections.",
+  "description": "Warn when a written Markdown document is missing required sections. Finds python3, python or py (Windows) and does nothing if none is installed.",
   "hooks": {
     "PostToolUse": [
       {
@@ -7,8 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/check_required_sections.py"],
+            "command": "for p in python3 python py; do if \"$p\" -c 'import sys; sys.exit(sys.version_info < (3, 8))' </dev/null >/dev/null 2>&1; then exec \"$p\" \"${CLAUDE_PLUGIN_ROOT}/scripts/check_required_sections.py\"; fi; done; exit 0",
             "timeout": 30
           }
         ]

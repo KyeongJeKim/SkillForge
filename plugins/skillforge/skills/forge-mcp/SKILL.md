@@ -15,6 +15,10 @@ method (environment variable names only) and where it will run. Default to Pytho
 - Python **3.10 or newer** (the official MCP SDK 2.x needs it). Check with `python3 --version`;
   if it is older, say so and stop before generating.
 - The `mcp` package is installed in a virtual environment next to the server, not globally.
+- **Windows:** the Python command may be `python` or `py -3` instead of `python3` (the Microsoft
+  Store `python3` alias only opens the Store), and the virtual environment's Python is
+  `.venv\Scripts\python.exe` (`.venv/Scripts/python.exe` in Git Bash) instead of `.venv/bin/python`.
+  Use whichever answers `--version` with 3.10+, and use the Windows paths in every command below.
 
 ## Steps
 
@@ -34,6 +38,9 @@ method (environment variable names only) and where it will run. Default to Pytho
      expect (missing env var, bad input, refused query, system not reachable). SDK 2.x hides the text of
      any other exception, so Claude would only see `Error executing tool <name>`.
    - Return small, structured results.
+   - Cover the spec's 예외 처리 cases (no result, too many rows, system down) with a clear `ToolError`
+     or an empty result that says why, and keep every 금지 item (e.g. no customer phone numbers) out
+     of what the tools return.
 4. **Install and start it once** (you run these, don't hand them over):
 
    ```bash
@@ -67,6 +74,10 @@ method (environment variable names only) and where it will run. Default to Pytho
    ```
 
    Tell teammates in the plugin README that the server needs Python 3.10+ and `pip install mcp`.
+   `.mcp.json` runs `python3` directly, so on Windows it works only if `python3 --version` works in a
+   terminal (python.org installer with "Add python.exe to PATH", Store alias turned off). Say this
+   in the README's Windows section, with `claude mcp add` and the `.venv\Scripts\python.exe` path as
+   the fallback.
 6. **README.md** in `<name>/`: what it connects to, the tools, the env vars, install and registration.
 7. **Validate** and fix until it passes:
 
