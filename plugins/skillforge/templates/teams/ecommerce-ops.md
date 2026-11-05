@@ -20,6 +20,14 @@ promotion planning and customer inquiries. Confirm each item with the person.
 - Are there words, claims or formats that are not allowed?
 - Which inquiry types come up most, and which need a person to answer?
 
+## Hard parts to ask about (deep interview)
+
+- 상품정보제공고시·표시광고 기준: 카테고리별 필수 항목, 금지 표현(최저가, 100%, 의약품 오인 표현 등)
+- 검수에서 가장 자주 돌아오는 부분 (예: 옵션명 규칙, 이미지 컷 수, 배송비 문구)
+- 채널마다 다른 점 (자사몰과 오픈마켓의 글자 수·필수 칸 차이)
+- 프로모션: 중복 할인 규칙, 정산(수수료·분담) 표기, 목표의 기준(전년 동기 대비 등)
+- 고객 답변: 보상·환불 일정을 확답해도 되는지, 파트장 승인이 필요한 경우
+
 ## Guardrails
 
 - Drafted customer replies are never sent automatically.

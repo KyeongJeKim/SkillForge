@@ -20,6 +20,14 @@ planning documents and function specifications. Confirm each item with the perso
 - Which flows matter most (checkout, refunds, discounts, inventory, shifts)?
 - Which states must every screen handle (offline, error, loading, permission denied)?
 
+## Hard parts to ask about (deep interview)
+
+- 기능 ID·화면 ID 규칙과 번호 매기는 방법 (기존 문서가 제각각이면 어느 쪽으로 통일할지)
+- 필수 섹션 (특히 예외 처리, 권한, 변경 이력)과 선택 섹션
+- 화면: 기기와 해상도(태블릿 가로 등), 비활성·오류·로딩 상태, 옛 스타일 화면 구분
+- 결제·환불처럼 돈이 오가는 기능의 예외 (부분 취소, 통신 오류, 이중 결제)
+- 매장 직원이 실수하기 쉬운 지점과 권한(점장 승인 등)
+
 ## Guardrails
 
 - Hide customer and transaction data in screenshots before sharing.
