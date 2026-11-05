@@ -1,6 +1,6 @@
 ---
 name: learn-doc-conventions
-description: Learns a team's document conventions from existing examples (function specifications, PRDs, planning docs, reports, listings) and writes a reusable style guide that new documents and generated skills follow. Use when someone wants new documents to match the team's existing format, e.g. "write it the way our specs are written", "learn our PRD style", "우리 팀 양식대로", "기존 문서 스타일 따라서", or when forge-intake needs conventions before building a document skill.
+description: "Learns a team's document conventions from 3 to 5 existing examples (function specifications, PRDs, planning docs, reports, promotion plans, listings) and writes a reusable style guide that new documents and generated skills follow. Use when there is no skill or style guide yet for that kind of document and someone wants new ones to match the existing format, e.g. 기존 문서 스타일 배워서 양식 정리해 줘, 우리 명세서 양식 뽑아 줘, learn our PRD style, or when forge-intake needs conventions before building a document skill. Do not use when a skill for that document type already exists; use that skill instead."
 ---
 
 # Learn document conventions
@@ -12,6 +12,16 @@ one). Accept files, pasted text or links the person can open for you. Ask which 
 considered good examples, and whether any are outdated.
 
 If the person can share only one, continue but mark every rule as "seen once".
+
+**File formats:** Claude reads Markdown, text, PDF and images directly. For Word, Excel and
+PowerPoint files run the bundled extractor and read its output:
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/extract_text.py" <file.docx|file.xlsx|file.pptx> ...
+```
+
+For `.hwp`, `.doc`, `.xls` or `.ppt`, ask for a PDF export ("다른 이름으로 저장 → PDF") or pasted
+text. Tell the person they can drag files into the terminal or give the folder path.
 
 ## 2. Extract the conventions
 
@@ -35,7 +45,8 @@ For each rule, note how many examples follow it (e.g. "5/5", "3/5"). Classify:
 
 ## 3. Write the style guide
 
-Write `style-guide.md` (where the person wants; default current directory) with:
+Write `style-guide.md` (where the person wants; default current folder), in the language of the
+examples, with:
 
 1. Scope: document type, team, examples used (titles only), date learned.
 2. A **skeleton**: the section headings in order, with one-line guidance for each.
@@ -47,9 +58,11 @@ or personal data from the examples into the guide.
 
 ## 4. Confirm and reuse
 
-Show the person the skeleton and the Required rules and ask them to correct anything wrong.
-Then offer to:
+Show the person a short summary (the skeleton and at most five Required rules, not the whole file)
+and ask them to correct anything wrong. Then offer to:
 
 - write the new document now, following the guide, or
 - package the guide as a Skill with `forge-skill` (the guide becomes
   `reference/style-guide.md`), so the whole team gets documents in this format automatically.
+
+Don't commit, push or delete files unless the person asks.

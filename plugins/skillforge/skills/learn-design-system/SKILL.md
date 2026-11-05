@@ -1,6 +1,6 @@
 ---
 name: learn-design-system
-description: Learns a team's UI/UX design format from screenshots of its existing screens (e-commerce pages, POS screens, admin tools) and designs new pages or features that stay within that format while matching or improving on market-leading products. Use when someone needs a new screen, page or feature design that must look like the rest of their product, e.g. "design a new page like our existing ones", "make a new POS screen", "기존 화면이랑 톤 맞춰서", "새 페이지 기획해 줘", or when forge-intake needs a design format before building a design skill.
+description: "Learns a team's UI design format from screenshots of its existing screens (e-commerce pages, POS screens, admin tools) and designs a new screen or page that stays within that format while matching or improving on market-leading products, with a page spec and an HTML prototype. Use when someone needs a new screen, page or UI flow that must look like the rest of their product, e.g. 기존 화면이랑 톤 맞춰서 새 화면 만들어 줘, 새 POS 화면 디자인해 줘, design a new page like our existing ones, or when forge-intake needs a design format. Do not use for planning documents without a screen (기획서 only); use learn-doc-conventions for those."
 ---
 
 # Learn a design system and design within it
@@ -12,7 +12,8 @@ one detail or form screen, and one screen with buttons and states (empty, error,
 they exist. Ask which platform they target (web, tablet POS, mobile) and the screen sizes.
 
 Ask the person to hide customer names, prices they consider confidential and other personal
-data before sharing.
+data before sharing. They can paste a screenshot into the terminal (Ctrl+V, or Cmd+V on Mac),
+drag image files in, or give a folder path. Look in the current folder first (e.g. `examples/`).
 
 ## 2. Extract the design format
 
@@ -50,9 +51,13 @@ List, briefly:
 Produce:
 
 1. A **page spec**: purpose, users, entry points, layout, components, states, copy, edge cases.
-2. A **prototype** as a single HTML file that uses only the colors, type, spacing and
-   components from `design-format.md`, so it looks like the team's existing screens.
+   If the team has a function-spec format (from `learn-doc-conventions`), write it in that format.
+2. A **prototype** as one self-contained HTML file (no external fonts, scripts or images) sized for
+   the target screen, using only the colors, type, spacing and components from `design-format.md`.
+   Include the main flow and the key states (empty, error, approval), switchable for review.
 3. A short note on how it compares to the leaders (table stakes met, improvements added).
+
+Tell the person how to look at it: open the HTML file in a browser (double-click it).
 
 Improvements are expressed inside the team's format: new behavior, not a new visual style.
 
@@ -60,3 +65,5 @@ Improvements are expressed inside the team's format: new behavior, not a new vis
 
 Ask the person to check the design format and the prototype. Then offer to package
 `design-format.md` as a Skill with `forge-skill`, so future pages follow it automatically.
+
+Write everything in the person's language. Don't commit, push or delete files unless the person asks.

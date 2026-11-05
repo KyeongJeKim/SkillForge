@@ -1,9 +1,9 @@
 {
-  "name": "{{plugin-name}}",
+  "name": "{{SF: plugin-name}}",
   "version": "0.1.0",
-  "description": "{{What the plugin gives the team, in one sentence.}}",
+  "description": "{{SF: What the plugin gives the team, in one sentence.}}",
   "author": {
-    "name": "{{Owner name}}"
+    "name": "{{SF: Owner or team name}}"
   },
-  "keywords": ["{{keyword}}"]
+  "keywords": ["{{SF: keyword}}"]
 }

@@ -1,60 +1,65 @@
 ---
 name: forge-harness
-description: Designs and generates a Claude harness, the working setup for a multi-step job (subagents with roles, hooks that run automatic checks, and an orchestrating skill with human approval points), shipped as a plugin and validated. Use when a confirmed SkillForge spec has type harness, or someone wants a whole process automated with roles and checks, e.g. "set up a workflow with a reviewer", "automate this process with checks", "하네스 만들어 줘", "여러 단계를 자동으로 돌리고 싶어".
+description: "Designs and generates a Claude harness: an orchestrating skill that runs a multi-step workflow, subagents with focused roles, and hooks that run automatic checks, with human approval points, shipped as a plugin and validated. Use after forge-intake has a confirmed spec of type harness, or when the person wants a whole process run in stages with roles and checks, e.g. 초안 쓰고 검토까지 자동으로 해 줘, 작성자랑 검토자 나눠서 돌리고 싶어, set up a workflow with a reviewer. If the need is still vague, start forge-intake instead."
 ---
 
 # Forge a Harness
 
-A harness is the workflow around the model: who does each step, what is checked
-automatically, and where a person approves. Build it from three pieces:
+A harness is the workflow around the model: who does each step, what is checked automatically,
+and where a person approves. Build it from three pieces, shipped as one plugin:
 
 | Piece | File | Purpose |
 | --- | --- | --- |
-| Orchestrating skill | `skills/<workflow>/SKILL.md` | Triggers from natural language and runs the stages in order |
+| Orchestrating skill | `skills/<workflow>/SKILL.md` | Starts from natural language and runs the stages in order |
 | Subagents | `agents/<role>.md` | Focused roles (drafter, reviewer, tester) with limited tools |
-| Hooks | `hooks/hooks.json` + `scripts/` | Deterministic checks that run on events (e.g. after a file is written) |
+| Hooks | `hooks/hooks.json` + `scripts/` | Deterministic checks on events (e.g. after a file is written) |
 
 ## Inputs
 
-A confirmed `forge-spec.md` with `Type: harness`: the stages, each role, the automatic checks,
-the approval points and the success criteria.
+A confirmed `forge-spec.md` with type harness: stages, roles, automatic checks, approval points,
+success criteria. This one spec covers the skill and the plugin you create below; don't ask the
+person to confirm separate specs for them.
 
 ## Steps
 
-1. **Draw the workflow** as a numbered list of stages. For each stage name the actor
-   (main session, a subagent, a hook, or the person) and its output. Show it to the person
-   and confirm before generating files.
-2. **Subagents:** for each role, copy [templates/agent.template.md](templates/agent.template.md)
-   to `agents/<role>.md`. Required frontmatter: `name` (no `:`) and `description` (when to
-   delegate). Give each agent only the `tools` it needs; a reviewer usually needs only
-   `Read, Grep, Glob`.
-3. **Hooks:** copy [templates/hooks.json](templates/hooks.json) to `hooks/hooks.json` and the
-   check script [templates/check_required_sections.py](templates/check_required_sections.py)
-   to `scripts/`. The file wraps events in a top-level `"hooks"` key; common events are
-   `PostToolUse` (matcher such as `Write|Edit`), `PreToolUse`, `UserPromptSubmit`, `Stop` and
-   `SessionStart`. Reference scripts with `${CLAUDE_PLUGIN_ROOT}`. Keep hooks fast and
-   deterministic, and make them warn rather than block unless the spec says to block.
-4. **Orchestrating skill:** write `skills/<workflow>/SKILL.md` (use `forge-skill`) that lists
-   the stages, says which subagent to delegate each stage to, and states every approval point
-   as "stop and ask the person".
-5. **Package as a plugin** with `forge-plugin` so the team installs it in one step.
-6. **Validate:**
+1. **Draw the workflow** as a numbered list of stages; for each, the actor (main session, a
+   subagent, a hook, or the person) and its output. Show it in five lines or fewer and confirm.
+2. **Plugin skeleton** as in `skillforge:forge-plugin` (layout, `plugin.json`, `marketplace.json`).
+3. **Subagents:** for each role copy [templates/agent.template.md](templates/agent.template.md) to
+   `agents/<role>.md` and fill every `{{SF: ...}}` blank. Required frontmatter: `name` (no `:`) and
+   `description`. Give each agent only the `tools` it needs; a reviewer needs `Read, Grep, Glob`.
+   Once installed, a plugin agent is addressed as `<plugin-name>:<role>`.
+4. **Hooks:** copy [templates/hooks.template.json](templates/hooks.template.json) to `hooks/hooks.json`
+   **and** [templates/check_required_sections.py](templates/check_required_sections.py) to
+   `scripts/check_required_sections.py` (the validator fails if a referenced script is missing).
+   Set `TARGET_GLOBS` and `REQUIRED_SECTIONS` from the team's style guide, in the team's language
+   (e.g. `["*명세*.md"]`, `["개요", "기능 상세", "예외 처리"]`). Hooks warn (exit code 2 shows the
+   message to Claude) rather than block, unless the spec says to block.
+5. **Orchestrating skill** (follow `skillforge:forge-skill` steps 2 to 9): list the stages, say which
+   subagent handles each stage, and write every approval point as "stop and ask the person".
+6. **Validate** and fix until clean:
 
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/forge_validate.py" plugin <plugin-dir>
-   claude plugin validate <plugin-dir>   # if the claude CLI is available
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/forge_validate.py" marketplace <repo>
+   claude plugin validate <repo>/plugins/<plugin-name>   # if the claude CLI is available
    ```
 
-   Also run each hook script once on a sample input and show the output.
+7. **Run each hook script once** on a passing and a failing sample file and show the result:
 
-## Hand-over
+   ```bash
+   echo '{"tool_input":{"file_path":"<sample.md>"}}' | python3 scripts/check_required_sections.py; echo "exit $?"
+   ```
 
-Tell the person: the stages and who does each, the automatic checks, the approval points,
-how to install it, and what was validated.
+8. **Test locally** as in `skillforge:forge-plugin` step 8.
+
+## Hand-over (in the person's language, short)
+
+The stages and who does each, the automatic checks, the approval points, that validation and the
+local install passed, and what's left for them.
 
 ## Rules
 
 - A person approves anything that sends, publishes, deletes or spends.
 - Hooks never print or store secrets.
-- Plugin subagents ignore `hooks`, `mcpServers` and `permissionMode` in their frontmatter, so
-  put those at the plugin level instead.
+- Plugin subagents ignore `hooks`, `mcpServers` and `permissionMode` in their frontmatter.
+- Don't commit, push or delete files unless the person asks.

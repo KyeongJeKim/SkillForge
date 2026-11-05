@@ -1,70 +1,83 @@
 ---
 name: forge-mcp
-description: Generates a minimal, working MCP (Model Context Protocol) server skeleton that connects Claude to an external system such as an API, database or internal tool, with a README and the registration command, validated before handing over. Use when a confirmed SkillForge spec has type mcp, or someone asks to connect Claude to a system, e.g. "connect Claude to our system", "make an MCP server", "MCP 만들어 줘", "우리 DB랑 연결하고 싶어".
+description: "Generates a minimal, working MCP (Model Context Protocol) server that connects Claude to an external system such as an API, database or internal tool: Python server, requirements, README and registration, validated and started once before hand-over. Use after forge-intake has a confirmed spec of type mcp, or when the person has already agreed which system and operations to connect and says to build it. If the need is still vague, start forge-intake instead."
 ---
 
 # Forge an MCP server
 
 ## Inputs
 
-A confirmed `forge-spec.md` with `Type: mcp`, covering: the system, the operations (read vs
-write), the auth method (environment variable names only) and the language. Default to
-Python unless the person asks for another language.
+A confirmed `forge-spec.md` with type mcp: the system, the operations (read vs write), the auth
+method (environment variable names only) and where it will run. Default to Python.
+
+## Requirements to state up front
+
+- Python **3.10 or newer** (the official MCP SDK 2.x needs it). Check with `python3 --version`;
+  if it is older, say so and stop before generating.
+- The `mcp` package is installed in a virtual environment next to the server, not globally.
 
 ## Steps
 
-1. **Create the folder** `<name>/` where the person wants it (default: current directory).
-2. **Copy the Python template** from [templates/python/](templates/python/):
-   - `server.py` → `<name>/server.py`
-   - `requirements.txt` → `<name>/requirements.txt`
-   Replace every `{{...}}` placeholder and the example tool with one tool per operation in the spec.
-   The template targets the official Python SDK 2.x (`from mcp.server.mcpserver import MCPServer`).
-   If the person must stay on `mcp<2`, use `from mcp.server.fastmcp import FastMCP` instead.
+1. **Folder** `<name>/` where the person wants it (default: current folder; inside a plugin:
+   `<plugin>/servers/<name>/`).
+2. **Copy the template** [templates/python/server.template.py](templates/python/server.template.py)
+   to `<name>/server.py` and [templates/python/requirements.txt](templates/python/requirements.txt)
+   to `<name>/requirements.txt`. Replace every `{{SF: ...}}` blank; use one env prefix everywhere
+   (e.g. `INVENTORY` → `INVENTORY_TOKEN`). Replace the example tool with one tool per operation.
+   The template uses SDK 2.x (`from mcp.server.mcpserver import MCPServer`); keep `mcp.run()`.
 3. **Design the tools:**
-   - One clear verb per tool (`get_order`, `search_products`), typed parameters, and a
-     docstring that says when to use it; Claude reads the docstring to choose tools.
-   - Start **read-only**. Add write tools only if the spec asks, and make each write tool's
-     docstring say it changes data.
-   - Read secrets from environment variables (`os.environ["..."]`) and fail with a clear message
-     if they are missing. Never hard-code a secret.
-   - Return small, structured results (dicts/lists of strings and numbers), not huge dumps.
-4. **Write `<name>/README.md`** with: what it connects to, the tools, the environment variables,
-   install (`python3 -m pip install -r requirements.txt`) and registration:
+   - One clear verb per tool (`get_order`, `search_products`), typed parameters, and a docstring
+     that says when to use it; Claude reads the docstring to choose tools.
+   - Start **read-only**. Add write tools only if the spec asks; their docstring must say they change data.
+   - Read secrets from environment variables and fail with a clear message if missing. Never hard-code one.
+   - Return small, structured results.
+4. **Install and start it once** (you run these, don't hand them over):
 
    ```bash
-   claude mcp add <name> -e API_TOKEN=... -- python3 /absolute/path/to/<name>/server.py
+   cd <name> && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+   .venv/bin/python -c "import runpy, asyncio; ns = runpy.run_path('server.py', run_name='check'); print([t.name for t in asyncio.run(ns['mcp'].list_tools())])"
    ```
 
-   If the server will ship inside a plugin, add it to that plugin's `.mcp.json` instead:
+   This lists the tools without touching the real system. If install fails (no network, old Python),
+   say exactly what failed.
+5. **Register it.** Standalone, for all of this person's projects:
 
-   ```json
-   {
-     "mcpServers": {
-       "<name>": {
-         "command": "python3",
-         "args": ["${CLAUDE_PLUGIN_ROOT}/servers/<name>/server.py"]
-       }
-     }
+   ```bash
+   claude mcp add <name> -s user -e <PREFIX>_TOKEN=<value> -- /abs/path/<name>/.venv/bin/python /abs/path/<name>/server.py
+   ```
+
+   Run this only with the person's go-ahead, and let them type the token value themselves.
+   Inside a plugin, use `.mcp.json` plus a sensitive `userConfig` entry so Claude Code asks each
+   teammate for the token when they enable the plugin and stores it securely:
+
+   ```jsonc
+   // .claude-plugin/plugin.json (excerpt)
+   "userConfig": {
+     "inventory_token": { "type": "string", "title": "Inventory API token",
+                          "description": "Read-only token", "sensitive": true, "required": true }
    }
+   // .mcp.json
+   { "mcpServers": { "inventory": {
+       "command": "python3",
+       "args": ["${CLAUDE_PLUGIN_ROOT}/servers/inventory/server.py"],
+       "env": { "INVENTORY_TOKEN": "${user_config.inventory_token}" } } } }
    ```
 
-5. **Validate:**
+   Tell teammates in the plugin README that the server needs Python 3.10+ and `pip install mcp`.
+6. **README.md** in `<name>/`: what it connects to, the tools, the env vars, install and registration.
+7. **Validate** and fix until it passes:
 
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/forge_validate.py" mcp <name>
    ```
 
-   This compiles the server and checks it defines an MCP server with at least one tool. If the
-   `mcp` package is installed, also start the server once with a quick import check
-   (`python3 -c "import runpy; runpy.run_path('<name>/server.py', run_name='check')"`).
-   Say plainly which checks ran and which did not.
+## Hand-over (in the person's language, short)
 
-## Hand-over
-
-Tell the person: the tools it exposes, the environment variables to set, the one command to
-register it, and what was validated. Remind them that write tools act on real data.
+The tools it exposes, the one thing they must do (set the token), whether it's registered, and what
+was checked. Remind them that write tools act on real data.
 
 ## Rules
 
 - No secrets, tokens or customer personal data in any generated file.
 - Don't call the real system during validation unless the person asks.
+- Don't commit, push or delete files unless the person asks.

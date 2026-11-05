@@ -1,56 +1,58 @@
 ---
 name: forge-skill
-description: Generates a working Claude Skill (a SKILL.md folder) from a confirmed SkillForge spec or a clear request such as "make this a skill", "turn our PRD format into a skill", "스킬로 만들어 줘". Writes the frontmatter so it triggers from natural language, adds supporting files, and validates it before handing over. Use forge-intake first if the need is still vague.
+description: "Generates a working Claude Skill (a SKILL.md folder with optional style guide and check script) from a confirmed SkillForge spec, makes its description trigger from natural language, tests it and validates it. Use after forge-intake has a confirmed spec of type skill, or when the person has already agreed what the skill should do and says to turn it into a skill (e.g. 이걸 스킬로 만들어 줘). If the need is still vague, start forge-intake instead."
 ---
 
 # Forge a Skill
 
 ## Inputs
 
-A confirmed `forge-spec.md` with `Type: skill`, or enough detail from the conversation to fill
-one. If the purpose, triggers or procedure are missing, go back to `forge-intake`.
+A confirmed `forge-spec.md` with type skill, or a clear agreement in the conversation. If the
+purpose, triggers or procedure are missing, go back to `skillforge:forge-intake`.
 
 ## Steps
 
-1. **Pick the location** from the spec (ask if not set):
-   - personal: `~/.claude/skills/<name>/`
-   - project: `.claude/skills/<name>/`
-   - plugin: `<plugin-root>/skills/<name>/`
-2. **Copy the template** [templates/SKILL.template.md](templates/SKILL.template.md) to
-   `<location>/SKILL.md` and fill every placeholder.
-3. **Write the description carefully.** It is the only thing Claude sees before deciding to
-   load the skill, so it decides whether natural-language triggering works:
-   - First sentence: what the skill does.
-   - Then "Use when ..." with the real phrases people will say, in their own language
-     (include Korean and English phrases if the team uses both).
-   - Keep it under 1024 characters. No angle brackets.
-4. **Name:** lowercase letters, digits and hyphens, at most 64 characters, matching the folder.
-5. **Body:** a numbered procedure, the output format, and rules. Keep `SKILL.md` under 500
-   lines; move long material (style guides, examples, checklists) into sibling files and link
-   them with relative paths.
-6. **Conventions:** if the spec points to a style guide or design format from
-   `learn-doc-conventions` or `learn-design-system`, copy it next to `SKILL.md` as
+1. **Location** from the spec (default: project `.claude/skills/<name>/`):
+   personal `~/.claude/skills/<name>/`, project `.claude/skills/<name>/`, or plugin `<plugin>/skills/<name>/`.
+2. **Copy** [templates/SKILL.template.md](templates/SKILL.template.md) to `<location>/SKILL.md`
+   and replace every `{{SF: ...}}` blank. Delete optional lines you don't need.
+3. **Description** (the only thing Claude sees before deciding to load the skill):
+   - First sentence: what it does. Then "Use when ..." with the real phrases people say, in their
+     language (Korean and English if the team uses both). Add "Do not use for ..." if a nearby
+     request should not trigger it.
+   - Wrap the whole value in double quotes. Under 1024 characters. No `<` or `>`.
+4. **Name:** lowercase letters, digits and hyphens, at most 64 characters, same as the folder.
+5. **Body:** numbered procedure, output format, rules. Keep `SKILL.md` under 500 lines; put long
+   material (style guide, examples, checklists) in sibling files linked with relative paths.
+6. **Draft first:** the generated skill must produce the full result right away, marking unknown
+   values as `[확인 필요: ...]` and listing them at the end, instead of asking questions before it
+   starts. It asks first only when the request is too vague to begin.
+7. **Conventions:** if a style guide or design format was learned, copy it to
    `reference/style-guide.md` (or `reference/design-format.md`) and tell the skill to follow it.
-7. **Scripts (optional):** put deterministic steps (formatting, checks, conversions) in
-   `scripts/` and call them from the body. Use only the standard library unless the person
-   agrees to a dependency.
-8. **Validate:**
+8. **Scripts (optional):** put deterministic checks in `scripts/` and call them as
+   `python3 "${CLAUDE_SKILL_DIR}/scripts/<name>.py"` so they work from any folder.
+   Standard library only, unless the person agrees to a dependency.
+9. **Validate**, fix every error, re-run until it passes:
 
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/forge_validate.py" skill <location>
    ```
 
-   Fix every error and re-run until it passes. Report warnings to the person.
-9. **Test the trigger:** suggest two or three sentences the person can type in a new session to
-   check that the skill loads, and one sentence that should *not* trigger it.
+10. **Try it yourself:** follow the new skill once on a realistic example (use the person's examples
+    if there are any) and check the result against the style guide. Fix the skill if the result is
+    off. Save the trial output somewhere clearly named (e.g. `skillforge-trial/`) and say so.
 
-## Hand-over
+## Hand-over (in the person's language, short)
 
-Tell the person, briefly: where the skill is, the phrases that trigger it, the validation
-result, and anything you assumed.
+1. Where the skill is, in one line.
+2. Two example sentences that start it, and one that should not.
+3. What you assumed, as a short list.
+
+Don't paste commands they don't need to run. Don't commit, push or delete files unless they ask;
+offer it in one line instead.
 
 ## Rules
 
 - No secrets, credentials or customer personal data in the skill files.
-- Don't copy confidential document content into templates; replace it with placeholders.
-- Don't add `allowed-tools` unless the person wants to restrict tools; explain the effect if you do.
+- Don't copy confidential document content into templates; use placeholders.
+- Don't add `allowed-tools` unless the person wants to restrict tools.

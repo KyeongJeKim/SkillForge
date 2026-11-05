@@ -1,72 +1,80 @@
 ---
 name: forge-plugin
-description: Generates an installable Claude Code plugin skeleton (plugin.json, skills, optional agents, hooks and MCP servers) plus a marketplace.json so a team can install it from a Git repo, validated before handing over. Use when a confirmed SkillForge spec has type plugin, or someone asks to package things for their team, e.g. "package these for my team", "make a plugin", "플러그인 만들어 줘", "팀원들이 설치해서 쓰게 해 줘".
+description: "Packages skills, subagents, hooks and MCP servers into an installable Claude Code plugin with a marketplace.json so a team installs it from a Git repo, tests it locally and validates it. Use after forge-intake has a confirmed spec of type plugin, or when existing SkillForge results should be shared with teammates, e.g. 이 스킬들 팀원들이 설치해서 쓰게 묶어 줘, package these for my team. If the need is still vague, start forge-intake instead."
 ---
 
 # Forge a Plugin
 
 ## Inputs
 
-A confirmed `forge-spec.md` with `Type: plugin`, listing the components, the plugin name and
-how it will be distributed. Components that don't exist yet are built first with
-`forge-skill`, `forge-mcp` or `forge-harness`.
+A confirmed `forge-spec.md` with type plugin (or a harness spec from `skillforge:forge-harness`,
+which counts as this spec). Components that don't exist yet are built first with
+`skillforge:forge-skill` or `skillforge:forge-mcp`.
 
 ## Layout
 
-Use this layout (a marketplace repo that holds one or more plugins):
+A marketplace repo that holds one or more plugins:
 
 ```text
 <repo>/
 ├── .claude-plugin/
 │   └── marketplace.json        # lists the plugins in this repo
+├── README.md                   # install steps for teammates
 └── plugins/
     └── <plugin-name>/
         ├── .claude-plugin/
-        │   └── plugin.json     # only plugin.json goes in here
+        │   └── plugin.json     # only plugin.json (and an optional icon.png) goes in here
         ├── skills/<skill>/SKILL.md
         ├── agents/<agent>.md   # optional
-        ├── hooks/hooks.json    # optional
-        └── .mcp.json           # optional
+        ├── hooks/hooks.json    # optional, scripts in scripts/
+        └── .mcp.json           # optional, servers in servers/
 ```
 
-Templates: [templates/plugin.json](templates/plugin.json) and
-[templates/marketplace.json](templates/marketplace.json).
+Templates: [templates/plugin.template.json](templates/plugin.template.json) and
+[templates/marketplace.template.json](templates/marketplace.template.json).
 
 ## Steps
 
-1. **Name:** kebab-case, no spaces. It must not start with `claude-`, `anthropic-`,
-   `anthropics-` or `cc-plugin-`, and must not be `claude`, `anthropic`, `claude-code` or
-   `claude-mods`. Use the same name in `plugin.json` and the marketplace entry.
-2. **Write `plugin.json`** from the template: `name`, `version` (start at `0.1.0`),
-   `description`, `author.name`. Add `homepage` only if it is a real URL.
-3. **Add components** at the plugin root (never inside `.claude-plugin/`). Prefer `skills/`
-   over `commands/` so things trigger from natural language. Put instructions in a skill;
-   a `CLAUDE.md` at the plugin root is not loaded.
-4. **Paths inside the plugin** use `${CLAUDE_PLUGIN_ROOT}` in hooks, MCP config and skill
-   bodies. Don't store state there (it changes on update); use `${CLAUDE_PLUGIN_DATA}`.
-5. **Write `marketplace.json`** at the repo root with `name`, `owner.name` and one entry per
-   plugin whose `source` is `./plugins/<plugin-name>`.
-6. **Validate** both levels:
+1. **Name:** kebab-case. It must not start with `claude-`, `anthropic-`, `anthropics-` or
+   `cc-plugin-`, and must not be `claude`, `anthropic`, `claude-code` or `claude-mods`. Use the
+   same name in `plugin.json` and the marketplace entry.
+2. **plugin.json** from the template: `name`, `version` (`0.1.0`), `description`, `author.name`.
+   Add `homepage` only if it is a real URL.
+3. **Components** at the plugin root, never inside `.claude-plugin/`. Move or copy skills from
+   `.claude/skills/` into `skills/`; if you copy, say which copy is the one to edit from now on.
+   Prefer `skills/` over `commands/`. A plugin-root `CLAUDE.md` is not loaded; put instructions in a skill.
+4. **Paths:** hooks, MCP config and skill bodies use `${CLAUDE_PLUGIN_ROOT}`. State goes in
+   `${CLAUDE_PLUGIN_DATA}`, never in the plugin folder (it is replaced on update).
+5. **Secrets:** anything a teammate must provide (tokens, URLs) goes in `userConfig` with
+   `"sensitive": true` for secrets; Claude Code asks for it when the plugin is enabled. Reference it as
+   `${user_config.<key>}` in `.mcp.json` env or in exec-form hook `args`.
+6. **marketplace.json** at the repo root: `name`, `owner.name`, `description`, and one entry per
+   plugin with `source` `./plugins/<plugin-name>`.
+7. **Validate** both levels and fix until clean:
 
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/forge_validate.py" plugin <repo>/plugins/<plugin-name>
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/forge_validate.py" marketplace <repo>
-   claude plugin validate <repo>/plugins/<plugin-name>   # if the claude CLI is available
-   claude plugin validate <repo>
+   claude plugin validate <repo>                       # if the claude CLI is available
+   claude plugin validate <repo>/plugins/<plugin-name>
    ```
 
-   Fix every error and re-run.
-7. **Write install steps** in the repo README:
+8. **Test locally** before sharing: `claude plugin marketplace add <repo>` then
+   `claude plugin install <plugin-name>@<marketplace-name>` and `claude plugin details <plugin-name>`
+   to see that every skill, agent, hook and server loads. Remove the test install afterwards if the
+   person doesn't want it (`claude plugin uninstall <plugin-name>@<marketplace-name>`).
+9. **README.md** at the repo root, in the team's language: what the plugin does, the two install lines,
+   what teammates need (repo read access and Git sign-in for a private repo; Python 3.10+ if there
+   is an MCP server), and how to update.
 
    ```text
    /plugin marketplace add <owner>/<repo>
    /plugin install <plugin-name>@<marketplace-name>
    ```
 
-   For a private repo, each teammate needs read access to it and Git credentials on their
-   machine (for example, signed in with `gh auth login`).
+10. **Sharing:** creating a GitHub repo, committing and pushing reach other people, so offer them in
+    one line and do them only after the person says yes.
 
-## Hand-over
+## Hand-over (in the person's language, short)
 
-Tell the person: the components included, the two install commands, the validation results,
-and how to release an update (bump `version`, push).
+What is in the plugin, that it passed validation and a local install, the two install lines, and
+what's left for them (e.g. "GitHub 저장소를 만들어 올릴까요?").

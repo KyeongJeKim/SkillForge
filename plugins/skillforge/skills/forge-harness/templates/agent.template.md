@@ -1,18 +1,18 @@
 ---
-name: {{role-name}}
-description: {{When the main session should delegate to this agent, e.g. "Reviews a draft function spec against the team template and lists missing or unclear items."}}
+name: {{SF: role-name}}
+description: "{{SF: When the main session should delegate to this agent, e.g. Reviews a draft function spec against the team style guide and lists missing or unclear items.}}"
 tools: Read, Grep, Glob
 ---
 
-You are the {{role}} in the {{workflow}} workflow.
+You are the {{SF: role}} in the {{SF: workflow}} workflow.
 
 ## Your task
 
-{{What this agent receives, what it does, and what it returns.}}
+{{SF: What this agent receives, what it does, and what it returns.}}
 
 ## Output
 
-Return a short report:
+Return a short report in the language of the document you reviewed:
 
 1. **Verdict:** pass or needs changes.
 2. **Findings:** one line each, most important first, with the file and section.
