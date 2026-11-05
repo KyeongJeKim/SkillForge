@@ -43,6 +43,8 @@ whatever the person says is wrong now, into a better version, without breaking w
    the skill once on the example that went wrong and once on an earlier good example, saving both
    under `skillforge-trial/`. Keep the change only if the bad case is now right **and** the good
    case is still right. If the good case got worse, undo that change and say so. One retry at most.
+   If no earlier good example exists, write one realistic request yourself that exercises what
+   already worked, say it is a stand-in, and finish; don't wait for the person to find files.
 
 ## Hand-over (in the person's language, short)
 

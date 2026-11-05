@@ -1,0 +1,28 @@
+{
+ "name": "pos-screen-spec-skill",
+ "about": "Skill that writes screen design specs (화면 설계서) following a design format learned from screenshots.",
+ "src": "pos-screens-conflict",
+ "persona": {
+  "first": "화면 설계서 쓸 때 우리 디자인 규칙을 매번 확인하는데, 이걸 자동으로 맞춰서 써 주는 걸 만들 수 있어요? 화면 캡처는 examples에 있어요.",
+  "who": "POS 기획자. 화면 설계서를 자주 씁니다.",
+  "style": "Cooperative.",
+  "truth": [
+   "화면 설계서는 화면 ID, 목적, 레이아웃 영역, 요소 목록 표, 상태(기본/비활성/오류), 예외를 포함한다",
+   "화면 ID는 SCR-영역-NN",
+   "디자인 규칙은 신규 스타일 화면 세 개에서 뽑는다",
+   "HTML 시안은 필요 없고 문서만 원한다"
+  ],
+  "max_turns": 18
+ },
+ "expect": {
+  "skills_any": [
+   "skillforge:forge-intake",
+   "skillforge:learn-design-system"
+  ],
+  "skill_dirs": 1
+ },
+ "judge": true,
+ "fresh_turns": [
+  "'포인트 사용' 화면 설계서 써 주세요."
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "name": "ec-inventory-naive",
+ "about": "Term-naive operator wants Claude connected to the inventory system; knows little about auth.",
+ "src": null,
+ "persona": {
+  "first": "우리 재고 시스템이랑 Claude를 연결하고 싶어요. 품절 임박 상품을 바로 보고 싶어서요.",
+  "who": "이커머스 운영팀 MD. 개발을 모르고 API가 뭔지 잘 모릅니다.",
+  "style": "Say '그건 개발팀에 물어봐야 알아요' for technical questions unless given options to pick from.",
+  "truth": [
+   "재고 관리 시스템은 사내 웹 시스템이고 개발팀이 API가 있다고 했다",
+   "알고 싶은 건 SKU별 현재 재고와 품절 임박(10개 이하) 상품 목록",
+   "재고 수량을 바꾸는 기능은 절대 안 된다",
+   "인증 방식은 모른다 (개발팀에 물어봐야 함)",
+   "본인과 MD 3명이 쓴다"
+  ],
+  "max_turns": 18
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake",
+   "skillforge:forge-mcp"
+  ],
+  "validate_mcp": true
+ },
+ "judge": true,
+ "judge_notes": [
+  "Unknown auth must become a clear placeholder and a question list for the dev team, not a guess presented as fact.",
+  "Read-only tools only."
+ ]
+}

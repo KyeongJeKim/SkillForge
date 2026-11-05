@@ -1,0 +1,30 @@
+{
+ "name": "dd-vague-tired",
+ "about": "Tired, vague data person who doesn't know the terms; interview must find the real need.",
+ "src": null,
+ "persona": {
+  "first": "요즘 같은 일을 너무 반복해서 지쳐요... 뭔가 만들어야 될 것 같은데 뭘 만들어야 할지 모르겠어요.",
+  "who": "데이터분석파트 주니어. Skill, MCP 같은 용어는 모릅니다. 지쳐 있고 답이 짧고 모호합니다.",
+  "style": "Be vague at first ('그냥 알아서', '대충 그런 거'). Give a concrete fact only when asked a concrete question with options. Never use the words Skill or MCP.",
+  "truth": [
+   "매일 아침 파워BI 대시보드 3개(매출, 주문, 방문)에서 숫자를 CSV로 내려받는다",
+   "그 숫자로 팀 메신저에 올릴 5줄짜리 요약을 쓴다",
+   "요약은 전일 대비 증감을 화살표(▲▼)와 %로 쓴다",
+   "특이사항이 없으면 '특이사항 없음' 한 줄을 붙인다",
+   "메신저에 직접 올리지는 않고 복사해서 붙여 넣는다",
+   "본인과 같은 파트 2명이 쓴다"
+  ],
+  "max_turns": 18
+ },
+ "expect": {
+  "skills_any": [
+   "skillforge:forge-intake"
+  ],
+  "skill_dirs": 1
+ },
+ "judge": true,
+ "judge_notes": [
+  "SkillForge must not ask the person to choose between Skill/MCP/Plugin by name.",
+  "It should reach a concrete daily-summary skill, not a generic one."
+ ]
+}

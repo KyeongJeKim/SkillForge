@@ -1,0 +1,30 @@
+{
+ "name": "pm-explain-choose",
+ "about": "Person asks what the four types are, then chooses after the explanation.",
+ "src": "pm",
+ "persona": {
+  "first": "Skill이랑 MCP랑 플러그인이랑 하네스가 뭐가 달라요? 저는 주간 보고서 쓰는 걸 편하게 하고 싶은데 뭘 만들어야 해요?",
+  "who": "PM팀 신입. 용어를 처음 듣습니다.",
+  "style": "Ask what Skill, MCP, Plugin and Harness are first. After the explanation, pick the one SkillForge recommends.",
+  "truth": [
+   "매주 금요일 주간 보고서를 쓴다 (examples의 W41~W43 형식)",
+   "입력은 이번 주 한 일 메모를 붙여 넣는 것",
+   "Jira 같은 시스템 연결은 필요 없다",
+   "다음 주 계획과 이슈/리스크 섹션이 꼭 있어야 한다"
+  ],
+  "max_turns": 18
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake",
+   "skillforge:forge-skill"
+  ],
+  "skill_dirs": 1,
+  "fresh_uses_generated": true,
+  "fresh_writes_file": true
+ },
+ "judge": true,
+ "fresh_turns": [
+  "이번 주 한 일: 간편재주문 QA 2차 완료, 리뷰포토필터 기획 리뷰, 신규 PM 온보딩. 주간 보고서 써 주세요."
+ ]
+}

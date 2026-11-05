@@ -3,8 +3,12 @@
 Usage: python3 drive.py <scenario.json> <workdir> <log.json> [plugin_dir]
 
 scenario.json keys:
-  turns        prompts sent in one resumed session (the conversation with SkillForge)
+  turns        fixed prompts sent in one resumed session (the conversation with SkillForge)
+  persona      instead of fixed turns: {"first": ..., "who": ..., "style": ..., "truth": [...],
+               "events": {"3": "change your mind about ..."}, "max_turns": 16}. A cheap model plays
+               this person and answers SkillForge until it hands over the result (see sim.py).
   fresh_turns  prompts each sent in a brand-new session in the same folder (uses what was built)
+SF_MODEL picks the model under test (default: the CLI default).
 The plugin under test is loaded with --plugin-dir from a throwaway copy, and `git push` is
 blocked, so a scenario can never change the real SkillForge repository.
 """
@@ -13,8 +17,12 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import os
 import time
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import sim  # noqa: E402
 
 ALLOWED = "Bash Read Write Edit Glob Grep Skill"
 BLOCKED = "Bash(git push:*)"
@@ -25,6 +33,8 @@ def run_turn(prompt: str, cwd: str, plugin_dir: str | None, session: str | None 
            "--permission-mode", "acceptEdits", "--allowedTools", ALLOWED, "--disallowedTools", BLOCKED]
     if plugin_dir:
         cmd += ["--plugin-dir", plugin_dir]
+    if os.environ.get("SF_MODEL"):
+        cmd += ["--model", os.environ["SF_MODEL"]]
     if session:
         cmd += ["--resume", session]
     t0 = time.time()
@@ -62,14 +72,33 @@ def main() -> None:
     plugin_dir = sys.argv[4] if len(sys.argv) > 4 else None
     log = {"name": sc["name"], "turns": [], "fresh": []}
     session = None
+    save = lambda: outp.write_text(json.dumps(log, ensure_ascii=False, indent=1), encoding="utf-8")  # noqa: E731
     for p in sc.get("turns", []):
         rec = run_turn(p, cwd, plugin_dir, session)
         session = rec["session"]
         log["turns"].append(rec)
-        outp.write_text(json.dumps(log, ensure_ascii=False, indent=1), encoding="utf-8")
+        save()
+    if sc.get("persona"):
+        msg, history, log["persona_cost"] = sc["persona"]["first"], [], 0.0
+        for _ in range(sc["persona"].get("max_turns", 16)):
+            rec = run_turn(msg, cwd, plugin_dir, session)
+            session = rec["session"]
+            log["turns"].append(rec)
+            history.append({"user": msg, "assistant": "\n".join(rec["text"])})
+            save()
+            if not rec.get("result") or rec["result"].get("is_error"):
+                break
+            reply, done, cost = sim.persona_reply(sc, history)
+            log["persona_cost"] += cost
+            if done or not reply:
+                break
+            msg = reply
+        else:
+            log["max_turns_hit"] = True
+        save()
     for p in sc.get("fresh_turns", []):
         log["fresh"].append(run_turn(p, cwd, plugin_dir))
-        outp.write_text(json.dumps(log, ensure_ascii=False, indent=1), encoding="utf-8")
+        save()
     skip = {"examples", ".git", ".venv", "venv", "node_modules", "__pycache__"}
     log["files"] = sorted(str(p.relative_to(cwd)) for p in Path(cwd).rglob("*")
                           if p.is_file() and not skip & set(p.relative_to(cwd).parts))

@@ -1,0 +1,31 @@
+{
+ "name": "h-ecom-promo-lazy",
+ "about": "Held-out: promotion plan skill with a lazy person who wants all defaults.",
+ "src": "ecommerce",
+ "persona": {
+  "first": "프로모션 기획서 쓰는 거 자동화해 주세요. 예전 거 examples에 있어요.",
+  "who": "이커머스 운영 담당. 아주 바쁩니다.",
+  "style": "After the first question, say '그냥 다 추천대로 만들어 주세요'. Accept the batch of defaults with one OK.",
+  "truth": [
+   "양식은 examples의 기획서 세 개를 따른다",
+   "이커머스 운영팀 사람들이 쓴다"
+  ],
+  "max_turns": 18
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake",
+   "skillforge:forge-skill"
+  ],
+  "skill_dirs": 1,
+  "fresh_uses_generated": true,
+  "fresh_writes_file": true
+ },
+ "judge": true,
+ "fresh_turns": [
+  "블랙프라이데이 기획서 초안 써 주세요. 11월 20일~30일, 최대 40% 할인, 목표 5억."
+ ],
+ "judge_notes": [
+  "After '추천대로', SkillForge must list defaults once and get one OK, not keep asking."
+ ]
+}

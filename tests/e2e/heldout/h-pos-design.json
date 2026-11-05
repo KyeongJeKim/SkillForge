@@ -1,0 +1,26 @@
+{
+ "name": "h-pos-design",
+ "about": "Held-out: new POS screen (point earning) in the style of POS screenshots.",
+ "src": "pos",
+ "persona": {
+  "first": "기존 POS 화면이랑 톤 맞춰서 포인트 적립 화면 새로 만들어 줘요. 캡처는 examples/screens 에 있어요.",
+  "who": "POS 디자이너.",
+  "style": "Concrete.",
+  "truth": [
+   "새 화면은 포인트 적립 화면",
+   "태블릿 가로",
+   "회원 조회는 휴대폰 뒷 4자리"
+  ],
+  "max_turns": 10
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:learn-design-system"
+  ],
+  "files_any": [
+   "design-format.md",
+   ".html"
+  ]
+ },
+ "judge": true
+}

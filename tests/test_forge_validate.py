@@ -555,6 +555,25 @@ class PackageSkill(TempDir):
             self.pk.package(self.skill, self.tmp / "out.zip")
 
 
+class FrozenEval(unittest.TestCase):
+    """The held-out scenarios and the rubric are frozen: the self-improvement loop must not edit them."""
+
+    def test_heldout_and_rubric_unchanged(self):
+        import hashlib
+        heldout = ROOT / "tests" / "e2e" / "heldout"
+        sums = (heldout / "SHA256SUMS").read_text(encoding="utf-8").split("\n")
+        listed = {}
+        for line in filter(None, sums):
+            digest, name = line.split(None, 1)
+            listed[(heldout / name).resolve()] = digest
+        for path, digest in listed.items():
+            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), digest,
+                             f"{path.name} changed; held-out files and rubric.md change only on the owner's request")
+        current = {p.resolve() for p in heldout.glob("*.json")}
+        self.assertEqual(current - set(listed), set(), "new held-out file not listed in SHA256SUMS")
+        self.assertIn((ROOT / "tests" / "e2e" / "rubric.md").resolve(), listed)
+
+
 class RepoDocs(unittest.TestCase):
     """Release hygiene: versions in sync, README images and links resolve, SVGs are light and offline."""
 

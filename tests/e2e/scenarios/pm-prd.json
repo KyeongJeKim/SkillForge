@@ -1,0 +1,31 @@
+{
+ "name": "pm-prd",
+ "about": "PRD skill matching the team's PRD format with REQ IDs and priorities.",
+ "src": "pm-prd",
+ "persona": {
+  "first": "PRD 쓸 때마다 같은 양식 채우느라 시간 다 가요. 우리 양식대로 초안 써 주는 걸 만들어 주세요. 예전 PRD는 examples에 있어요.",
+  "who": "PM팀 시니어 PM. 리뷰어가 자주 돌려보내는 부분을 압니다.",
+  "style": "Helpful; mention reviewer pain points when asked.",
+  "truth": [
+   "구조는 examples의 PRD 세 개와 같다 (1~8장)",
+   "요구사항은 REQ-01부터 번호, 우선순위 P0~P2",
+   "리뷰어가 가장 자주 돌려보내는 건 '비목표'가 비어 있는 것과 수용 기준이 측정 불가능한 것",
+   "지표 섹션에는 기준값과 목표값을 같이 쓴다",
+   "파일 이름은 PRD-YY-NNN_기능명.md, 번호는 기존 최대 다음"
+  ],
+  "max_turns": 18
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake",
+   "skillforge:forge-skill"
+  ],
+  "skill_dirs": 1,
+  "fresh_uses_generated": true,
+  "fresh_writes_file": true
+ },
+ "judge": true,
+ "fresh_turns": [
+  "장바구니 쿠폰 자동 적용 기능 PRD 초안 써 주세요. 결제 전환율을 올리는 게 목표예요."
+ ]
+}

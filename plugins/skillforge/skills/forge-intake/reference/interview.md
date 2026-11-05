@@ -49,13 +49,23 @@ C = critical, I = important, - = not needed. Columns: Skill / MCP / Plugin / Har
   > 3. 둘 다 첫 장에 표로
   > 잘 모르시면 3번으로 하겠습니다.
 
+- **Confirm what you saw in one go.** After reading the examples, put everything they settle in one
+  message as a short numbered list of observations ("예시에서 이렇게 확인했습니다: 1. 현재 양식은 v3.2 …
+  2. 2024년 후디 파일은 구 양식 …") and ask "맞으면 '네', 다르면 번호만 알려 주세요". Confirmations are not
+  questions, so this does not break the one-question rule, and it saves many turns. Score each
+  confirmed item 2. Then ask one question per turn about what is still open.
+- **Aim for 5 to 10 turns.** Spend questions only where the answer changes what you build. Merge a
+  tiny follow-up into the same turn rather than spending a new one.
 - **Examples beat questions.** When 5, 6 or 7 is open, ask for 2 to 5 recent documents or
   screenshots first (or look in `examples/`). Read them, score what they settle, then *confirm* what
   you saw instead of asking from scratch: "기존 기획서 3개 모두 마지막에 '리스크' 장이 있습니다. 새 기획서에도
   꼭 넣을까요?"
 - Ask about **the hard parts**, not only the happy path: "정보가 빠진 채로 요청이 오면 어떻게 할까요?",
   "부장님이 제일 자주 고치라고 하시는 부분이 어디인가요?"
-- Each turn ends with a one-line progress note, e.g. `(확인된 항목 6/9, 남은 것: 예외 처리, 결과물 저장 위치, 톤)`.
+- Each turn ends with a one-line progress note that counts only the C and I dimensions of the chosen
+  type (a Skill has 10), e.g. `(확인된 항목 6/10, 남은 것: 예외 처리, 결과물 저장 위치, 톤)`.
+- Don't ask about a dimension marked `-` for the type, and don't ask which Claude app or how to share
+  unless it changes what you build; propose a default in the playback instead.
 
 ## When answers are weak
 

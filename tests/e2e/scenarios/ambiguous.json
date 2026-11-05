@@ -9,6 +9,7 @@
    "skillforge:forge-intake"
   ],
   "no_files": true,
-  "max_questions": 3
- }
+  "max_questions": 5
+ },
+ "about": "Vague first message: SkillForge should start the interview with one focused question, not a questionnaire."
 }

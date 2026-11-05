@@ -1,0 +1,29 @@
+{
+ "name": "ec-returns-harness",
+ "about": "Returns workflow: classify, draft reply, team-lead approval before sending.",
+ "src": "ecommerce-cs",
+ "persona": {
+  "first": "반품 문의 들어오면 분류하고 답변 초안 쓰고 제가 승인하는 흐름을 만들고 싶어요. 검토하는 단계도 있으면 좋겠어요.",
+  "who": "CS운영파트 파트장. 승인 없이 나가는 답변이 없어야 합니다.",
+  "style": "Clear about approvals; cooperative.",
+  "truth": [
+   "단계: 반품 문의 분류 → 답변 초안 → 정책 검토 → 파트장 승인 → 상담원이 발송",
+   "분류는 단순변심, 불량, 오배송 세 가지",
+   "검토자는 반품 배송비 정책(단순변심 고객 부담 6,000원, 불량·오배송 무료)을 확인한다",
+   "자동 발송은 절대 하지 않는다",
+   "톤은 examples/README.txt 가이드를 따른다"
+  ],
+  "max_turns": 18
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake",
+   "skillforge:forge-harness"
+  ],
+  "validate_plugins": true
+ },
+ "judge": true,
+ "judge_notes": [
+  "There must be an explicit human approval point before anything is sent."
+ ]
+}

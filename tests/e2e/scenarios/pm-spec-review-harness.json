@@ -1,0 +1,26 @@
+{
+ "name": "pm-spec-review-harness",
+ "about": "Spec writing plus reviewer and required-section check, with approval.",
+ "src": "pm-prd",
+ "persona": {
+  "first": "PRD 쓰고 리뷰어가 검토해서 빠진 항목 알려 주는 흐름 만들어 줘요. 팀원들이 다 쓸 거예요.",
+  "who": "PM팀 리드. 품질 관리가 목표입니다.",
+  "style": "Cooperative.",
+  "truth": [
+   "단계: PM이 PRD 초안 작성 → 검토 에이전트가 양식·누락 검토 → 필수 섹션 자동 점검 → PM 리드 승인",
+   "필수 섹션: 배경/문제, 목표와 비목표, 요구사항, 수용 기준, 지표",
+   "검토자는 수정하지 않고 지적만 한다",
+   "필수 섹션이 빠지면 경고하고 막지는 않는다",
+   "팀원 5명이 설치해서 쓴다"
+  ],
+  "max_turns": 18
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake",
+   "skillforge:forge-harness"
+  ],
+  "validate_plugins": true
+ },
+ "judge": true
+}

@@ -1,0 +1,28 @@
+{
+ "name": "ec-admin-screen",
+ "about": "New admin screen (coupon registration) in the style of the admin screenshots.",
+ "src": "ecommerce-screens",
+ "persona": {
+  "first": "기존 관리자 화면이랑 톤 맞춰서 쿠폰 등록 화면 새로 기획해 주세요. 캡처는 examples에 있어요.",
+  "who": "이커머스 운영팀 기획자. 화면 기획을 자주 합니다.",
+  "style": "Cooperative; answers with specifics.",
+  "truth": [
+   "새 화면은 쿠폰 등록 화면이다",
+   "기존 관리자 화면(1440x900) 스타일을 따른다",
+   "필수 입력: 쿠폰명, 할인 방식(정액/정률), 금액, 기간, 발급 수량",
+   "기간 종료일이 시작일보다 빠르면 오류를 보여 준다",
+   "저장 전 미리보기가 있어야 한다"
+  ],
+  "max_turns": 10
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:learn-design-system"
+  ],
+  "files_any": [
+   "design-format.md",
+   ".html"
+  ]
+ },
+ "judge": true
+}

@@ -70,8 +70,9 @@ Follow [reference/interview.md](reference/interview.md):
 
 - Ask about the open *critical* dimensions first, then the *important* ones. Re-score after each answer.
 - **Examples beat questions.** When format or quality is open, ask for 2 to 5 recent examples
-  before anything else, then confirm what you saw ("기존 3개 모두 마지막에 '리스크' 장이 있습니다.
-  새 것에도 넣을까요?").
+  before anything else. After reading them, confirm everything they settle in **one** numbered list
+  ("예시에서 이렇게 확인했습니다: 1. … 2. … 맞으면 '네', 다르면 번호만 알려 주세요"), then ask one
+  question per turn about what is still open. Aim for 5 to 10 turns in total.
 - Always cover the hard parts: what is often missing in the input, what reviewers send back, what
   must never appear, and what a person must approve.
 - Vague answers ("알아서", "적당히") get one concrete default with a reason and need an OK.

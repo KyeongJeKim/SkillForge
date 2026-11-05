@@ -1,0 +1,31 @@
+{
+ "name": "pos-design-conflict",
+ "about": "New POS screen when one screenshot is an old style.",
+ "src": "pos-screens-conflict",
+ "persona": {
+  "first": "기존 POS 화면들이랑 톤 맞춰서 '교환 처리' 새 화면을 만들어 주세요. 캡처는 examples에 있어요.",
+  "who": "POS UI/UX 디자이너.",
+  "style": "Answer design questions concretely.",
+  "truth": [
+   "새 화면은 '교환 처리' 화면이다",
+   "태블릿 가로 1280x800",
+   "03-product-search 화면은 옛 스타일(v1)이라 따르지 않는다",
+   "영수증 바코드 스캔으로 원거래를 찾는다",
+   "교환 차액이 생기면 추가 결제 또는 환불 금액을 보여 준다"
+  ],
+  "max_turns": 10
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:learn-design-system"
+  ],
+  "files_any": [
+   "design-format.md",
+   ".html"
+  ]
+ },
+ "judge": true,
+ "judge_notes": [
+  "The design format should notice the old-style screen and not mix its style in."
+ ]
+}

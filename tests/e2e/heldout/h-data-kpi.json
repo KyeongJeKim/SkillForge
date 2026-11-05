@@ -1,0 +1,30 @@
+{
+ "name": "h-data-kpi",
+ "about": "Held-out: weekly sales report skill from SQL + CSV + sample report.",
+ "src": "data",
+ "persona": {
+  "first": "매주 같은 쿼리 돌려서 주간 매출 보고서를 써요. 이거 자동으로 되게 해 주세요. 쿼리랑 결과, 예전 보고서는 examples에 있어요.",
+  "who": "데이터분석가. 정확한 걸 좋아합니다.",
+  "style": "Precise.",
+  "truth": [
+   "보고서는 examples/analysis-report-sample.md 구조를 따른다",
+   "입력은 weekly_sales.sql 결과 CSV",
+   "전주 대비 증감을 %로, 소수점 첫째 자리",
+   "결론은 3줄 이내"
+  ],
+  "max_turns": 18
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake",
+   "skillforge:forge-skill"
+  ],
+  "skill_dirs": 1,
+  "fresh_uses_generated": true,
+  "fresh_writes_file": true
+ },
+ "judge": true,
+ "fresh_turns": [
+  "examples/weekly_sales_result.csv 로 이번 주 보고서 써 주세요."
+ ]
+}

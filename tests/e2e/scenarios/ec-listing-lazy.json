@@ -1,0 +1,33 @@
+{
+ "name": "ec-listing-lazy",
+ "about": "Listing copy skill; one example is an outdated form and one is a messy draft; lazy answers.",
+ "src": "ecommerce-listing",
+ "persona": {
+  "first": "상품 상세페이지 원고를 매번 같은 양식으로 쓰는데 이거 알아서 써 주는 걸 만들어 주세요. 예시는 examples에 있어요.",
+  "who": "이커머스 운영팀 상품등록 담당. 바쁘고 답을 귀찮아합니다.",
+  "style": "Lazy: answer '알아서 해 주세요' to open questions; answer concrete option questions with a number.",
+  "truth": [
+   "현재 양식은 LST-2026 파일 두 개의 v3.2 양식이다",
+   "LST-2024-0175 후디 파일은 구 양식이라 따르면 안 된다 (배송비도 옛날 것)",
+   "denim 초안은 미완성이라 참고만 한다",
+   "상품정보제공고시 섹션은 반드시 들어간다",
+   "'최저가', '100% 효과', '무조건' 같은 과장 표현은 쓰지 않는다",
+   "파일 이름은 LST-YYYY-NNNN_영문슬러그.md, 번호는 기존 최대 번호 다음",
+   "문체는 해요체로 친근하게"
+  ],
+  "max_turns": 18
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake",
+   "skillforge:forge-skill"
+  ],
+  "skill_dirs": 1,
+  "fresh_uses_generated": true,
+  "fresh_writes_file": true
+ },
+ "judge": true,
+ "fresh_turns": [
+  "새 상품 '데일리핏 코튼 와이드 슬랙스' 상세페이지 원고 써 주세요. 색상 블랙, 베이지, 차콜이고 S~XL, 가격 39,000원이에요."
+ ]
+}

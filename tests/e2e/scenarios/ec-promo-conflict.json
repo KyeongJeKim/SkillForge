@@ -1,0 +1,34 @@
+{
+ "name": "ec-promo-conflict",
+ "about": "Promotion plans whose structure changed between 2025 and 2026; the person contradicts themself.",
+ "src": "ecommerce-promo-conflict",
+ "persona": {
+  "first": "매달 프로모션 기획서 쓰는 게 오래 걸려요. 우리 양식대로 써 주는 걸 만들고 싶어요. 예전 기획서는 examples에 있어요.",
+  "who": "이커머스 기획 담당. 처음엔 기억이 헷갈려 틀린 말을 합니다.",
+  "style": "When first asked about format, say '예전 양식대로요'. When SkillForge shows that the 2025 and 2026 files differ, correct yourself: the 2026 one is current.",
+  "truth": [
+   "현재 양식은 2026년 파일 두 개의 구조(행사 개요 표가 먼저, 문서 ID/오너/리뷰어 표 머리)다",
+   "2025년 결재란 헤더는 더 이상 쓰지 않는다",
+   "목표/KPI에는 매출과 함께 신규 회원 수를 반드시 넣는다",
+   "정산 섹션은 채널별 수수료를 표로 쓴다",
+   "파일 이름은 YYYY-MM_행사명_프로모션.md"
+  ],
+  "max_turns": 18
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake",
+   "skillforge:forge-skill"
+  ],
+  "skill_dirs": 1,
+  "fresh_uses_generated": true,
+  "fresh_writes_file": true
+ },
+ "judge": true,
+ "fresh_turns": [
+  "12월 연말 감사제 프로모션 기획서 초안 써 주세요. 기간 12월 10일부터 24일, 전 품목 20% 쿠폰, 목표 매출 3억이에요."
+ ],
+ "judge_notes": [
+  "SkillForge should notice the two structures, count them, and ask which is current instead of guessing."
+ ]
+}

@@ -1,0 +1,32 @@
+{
+ "name": "h-pm-weekly-mindchange",
+ "about": "Held-out: PM weekly report skill; the person changes the save location midway.",
+ "src": "pm",
+ "persona": {
+  "first": "주간 보고서 우리 양식대로 쓰는 스킬 만들어 주세요. 예시는 examples에 있어요.",
+  "who": "PM. 바쁩니다.",
+  "style": "Cooperative.",
+  "truth": [
+   "주간 보고서는 examples W41~W43 형식",
+   "처음엔 현재 폴더에 저장, 나중에 reports/ 폴더에 저장하도록 바꾼다",
+   "다음 주 계획 섹션 필수"
+  ],
+  "max_turns": 18,
+  "events": {
+   "3": "Change your mind: save reports in a reports/ folder instead of the current folder."
+  }
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake",
+   "skillforge:forge-skill"
+  ],
+  "skill_dirs": 1,
+  "fresh_uses_generated": true,
+  "fresh_writes_file": true
+ },
+ "judge": true,
+ "fresh_turns": [
+  "이번 주 한 일: QA 일정 조율, 리뷰 기능 기획 확정. 주간 보고서 써 주세요."
+ ]
+}

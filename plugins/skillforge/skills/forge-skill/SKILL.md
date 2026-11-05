@@ -1,6 +1,6 @@
 ---
 name: forge-skill
-description: "Generates a working Claude Skill (a SKILL.md folder with optional style guide and check script) from a confirmed SkillForge spec, makes its description trigger from natural language, tests it and validates it. Use after forge-intake has a confirmed spec of type skill, or when the person has already agreed what the skill should do and says to turn it into a skill (e.g. 이걸 스킬로 만들어 줘). If the need is still vague, start forge-intake instead."
+description: "Generates a working Claude Skill (a SKILL.md folder with optional style guide and check script) from a confirmed SkillForge spec, makes its description trigger from natural language, tests it and validates it. Use after forge-intake has a confirmed spec of type skill, or when the person has already agreed what the skill should do and says to turn it into a skill (e.g. 이걸 스킬로 만들어 줘). Also use to package an existing skill as a ZIP for the Claude app (claude.ai or Claude Desktop chat), e.g. 이 스킬 Claude 앱에 올리게 zip으로 만들어 줘; then run only step 11. If the need is still vague, start forge-intake instead."
 ---
 
 # Forge a Skill

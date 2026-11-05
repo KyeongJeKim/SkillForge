@@ -1,0 +1,70 @@
+[
+ {
+  "prompt": "매번 주간 KPI 리포트를 같은 양식으로 써요. 이거 자동으로 되게 해 주세요.",
+  "expect": [
+   "skillforge:forge-intake"
+  ]
+ },
+ {
+  "prompt": "상품 등록할 때 옵션명 규칙 맞추는 걸 Claude가 알아서 하게 만들고 싶어요.",
+  "expect": [
+   "skillforge:forge-intake"
+  ]
+ },
+ {
+  "prompt": "이번 주 신상품 3개 상세페이지 문구 써 주세요.",
+  "expect": "none"
+ },
+ {
+  "prompt": "기능명세서 예시 4개 드릴 테니 양식 정리해서 앞으로 그대로 쓰게 해 주세요.",
+  "expect": [
+   "skillforge:forge-intake",
+   "skillforge:learn-doc-conventions"
+  ]
+ },
+ {
+  "prompt": "POS 매출 DB를 Claude가 바로 조회하게 하고 싶어요.",
+  "expect": [
+   "skillforge:forge-intake"
+  ]
+ },
+ {
+  "prompt": "기존 키오스크 화면 캡처 보고 같은 스타일로 주문 확인 화면 만들어 줘요.",
+  "expect": [
+   "skillforge:learn-design-system"
+  ]
+ },
+ {
+  "prompt": "테스트 결과 엑셀 이 파일 요약만 해 주세요.",
+  "expect": "none"
+ },
+ {
+  "prompt": "팀장님 검토 단계까지 포함해서 보고서 작성 과정을 자동화하고 싶어요.",
+  "expect": [
+   "skillforge:forge-intake",
+   "skillforge:forge-harness"
+  ]
+ },
+ {
+  "prompt": "MCP가 뭔지 쉽게 설명해 주세요. 우리 팀에 필요할까요?",
+  "expect": [
+   "skillforge:forge-intake"
+  ]
+ },
+ {
+  "prompt": "지난달에 만든 QA 체크리스트 스킬이 우리 팀 용어를 계속 틀려요.",
+  "expect": [
+   "skillforge:forge-improve"
+  ]
+ },
+ {
+  "prompt": "엑셀 피벗 테이블 만드는 법 알려 줘요.",
+  "expect": "none"
+ },
+ {
+  "prompt": "이거 매번 하는 거라 귀찮은데 Claude한테 맡길 수 있게 해 줄래요? 고객 리뷰 분류요.",
+  "expect": [
+   "skillforge:forge-intake"
+  ]
+ }
+]

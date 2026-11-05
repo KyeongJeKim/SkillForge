@@ -1,0 +1,26 @@
+{
+ "name": "improve-from-corrections",
+ "about": "forge-improve applies logged corrections to an existing skill and re-tests it.",
+ "src": null,
+ "persona": {
+  "first": "저번에 만든 프로모션 기획서 스킬이 자꾸 목표 매출 전년 대비를 빼먹어요. 고친 내용 반영해서 스킬 개선해 주세요.",
+  "who": "이커머스 운영팀 대리. 예전에 만든 기획서 스킬을 씁니다.",
+  "style": "Cooperative; approve sensible changes.",
+  "truth": [
+   "목표 매출은 전년 동기 대비 %와 금액을 같이 쓴다",
+   "혜택 표에 '중복 적용' 열을 넣는다",
+   "날짜는 요일까지 쓴다"
+  ],
+  "max_turns": 18
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-improve"
+  ]
+ },
+ "judge": true,
+ "root_src": "improve-promo",
+ "judge_notes": [
+  "SKILL.md must now contain all three rules in the right sections, and corrections.md lines must be kept (marked 반영됨), not deleted."
+ ]
+}

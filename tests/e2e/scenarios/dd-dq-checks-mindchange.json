@@ -1,0 +1,32 @@
+{
+ "name": "dd-dq-checks-mindchange",
+ "about": "Data quality checks; the person first wants Python, then changes to SQL.",
+ "src": "data-analysis",
+ "persona": {
+  "first": "I keep writing the same data quality checks for every new table. 이거 reusable 하게 만들 수 있을까요? 파이썬 스크립트로요.",
+  "who": "데이터 엔지니어. 한국어와 영어를 섞어 씁니다.",
+  "style": "Mix Korean and English terms naturally.",
+  "truth": [
+   "새 테이블이 들어올 때마다 null 비율, 중복 키, 날짜 범위, 음수 금액을 점검한다",
+   "결과는 점검 SQL 파일 한 개와 결과 요약 표다",
+   "SQL은 examples/sql-style-notes.md 규칙을 따른다",
+   "null 비율 5% 넘으면 경고로 표시한다",
+   "처음엔 파이썬 스크립트를 원했지만 결국 SQL로 하기로 했다"
+  ],
+  "max_turns": 18,
+  "events": {
+   "3": "Change your mind: say you now want it as SQL, not Python, because the team runs checks in Snowflake worksheets."
+  }
+ },
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake",
+   "skillforge:forge-skill"
+  ],
+  "skill_dirs": 1
+ },
+ "judge": true,
+ "judge_notes": [
+  "After the change of mind, the artifact must produce SQL, not Python, and SkillForge should say what changed."
+ ]
+}
