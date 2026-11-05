@@ -41,6 +41,8 @@ purpose, triggers or procedure are missing, go back to `skillforge:forge-intake`
 10. **Try it yourself:** follow the new skill once on a realistic example (use the person's examples
     if there are any) and check the result against the style guide. Fix the skill if the result is
     off. Save the trial output somewhere clearly named (e.g. `skillforge-trial/`) and say so.
+    The person is waiting: one trial on one example, at most one fix and retry, no extra reviewer
+    or tester subagents. If more testing would clearly help, offer it in the hand-over instead.
 
 ## Hand-over (in the person's language, short)
 
@@ -48,8 +50,9 @@ purpose, triggers or procedure are missing, go back to `skillforge:forge-intake`
 2. Two example sentences that start it, and one that should not.
 3. What you assumed, as a short list.
 
-Don't paste commands they don't need to run. Don't commit, push or delete files unless they ask;
-offer it in one line instead.
+Don't paste commands they don't need to run. Don't delete files unless they ask.
+
+Git and SkillForge files: run `git commit`, `git push` or create a repository only when the person's own words ask for it ("확인까지 해 주세요" or "마무리해 주세요" is not that). Never edit, commit or push SkillForge's own files (this plugin's folder or the SkillForge repository); if SkillForge itself has a problem, say so in the hand-over.
 
 ## Rules
 

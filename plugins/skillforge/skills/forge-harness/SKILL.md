@@ -62,4 +62,4 @@ local install passed, and what's left for them.
 - A person approves anything that sends, publishes, deletes or spends.
 - Hooks never print or store secrets.
 - Plugin subagents ignore `hooks`, `mcpServers` and `permissionMode` in their frontmatter.
-- Don't commit, push or delete files unless the person asks.
+- Don't delete files unless the person asks. Git and SkillForge files: run `git commit`, `git push` or create a repository only when the person's own words ask for it ("확인까지 해 주세요" or "마무리해 주세요" is not that). Never edit, commit or push SkillForge's own files (this plugin's folder or the SkillForge repository); if SkillForge itself has a problem, say so in the hand-over.

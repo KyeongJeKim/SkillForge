@@ -73,6 +73,7 @@ Templates: [templates/plugin.template.json](templates/plugin.template.json) and
 
 10. **Sharing:** creating a GitHub repo, committing and pushing reach other people, so offer them in
     one line and do them only after the person says yes.
+11. **Git:** run `git commit`, `git push` or create a repository only when the person's own words ask for it ("확인까지 해 주세요" or "마무리해 주세요" is not that). Never edit, commit or push SkillForge's own files (this plugin's folder or the SkillForge repository); if SkillForge itself has a problem, say so in the hand-over.
 
 ## Hand-over (in the person's language, short)
 

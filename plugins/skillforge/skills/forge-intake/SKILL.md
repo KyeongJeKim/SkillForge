@@ -102,4 +102,4 @@ or `skillforge:forge-harness`. The confirmed spec counts for that generator; don
 - Don't invent the team's conventions. Without examples, say the result uses a generic format and
   offer to learn from examples later.
 - Keep company names and confidential data out of reusable templates; use placeholders.
-- Don't commit, push, send or delete anything unless the person asks.
+- Don't send or delete anything unless the person asks. Git and SkillForge files: run `git commit`, `git push` or create a repository only when the person's own words ask for it ("확인까지 해 주세요" or "마무리해 주세요" is not that). Never edit, commit or push SkillForge's own files (this plugin's folder or the SkillForge repository); if SkillForge itself has a problem, say so in the hand-over.

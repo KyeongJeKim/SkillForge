@@ -83,4 +83,4 @@ was checked. Remind them that write tools act on real data.
 
 - No secrets, tokens or customer personal data in any generated file.
 - Don't call the real system during validation unless the person asks.
-- Don't commit, push or delete files unless the person asks.
+- Don't delete files unless the person asks. Git and SkillForge files: run `git commit`, `git push` or create a repository only when the person's own words ask for it ("확인까지 해 주세요" or "마무리해 주세요" is not that). Never edit, commit or push SkillForge's own files (this plugin's folder or the SkillForge repository); if SkillForge itself has a problem, say so in the hand-over.
