@@ -1,0 +1,10 @@
+{
+ "src": null,
+ "turns": [
+  "뉴욕이랑 서울 시차가 몇 시간이에요?"
+ ],
+ "name": "offtopic-time",
+ "expect": {
+  "no_skillforge": true
+ }
+}

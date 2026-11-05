@@ -1,0 +1,20 @@
+{
+ "src": null,
+ "turns": [
+  "Skill이랑 MCP, 플러그인, 하네스가 각각 뭔지 잘 모르겠어요. 설명해 주시면 제가 고를게요.",
+  "음, 고객 문의 답변을 우리 브랜드 말투로 쓰게 하고 싶으면 뭘 고르면 돼요?"
+ ],
+ "name": "explain-choose",
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake"
+  ],
+  "text_all": [
+   "Skill",
+   "MCP",
+   "플러그인",
+   "하네스"
+  ],
+  "no_files": true
+ }
+}

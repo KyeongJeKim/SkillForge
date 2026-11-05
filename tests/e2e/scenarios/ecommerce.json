@@ -1,0 +1,21 @@
+{
+ "src": "ecommerce",
+ "turns": [
+  "매달 프로모션 기획서를 새로 쓰는데 시간이 너무 오래 걸려요. 우리 팀 양식대로 기획서를 자동으로 써 주는 걸 만들고 싶어요. 예전 기획서는 examples 폴더에 있어요.",
+  "저랑 이커머스 운영팀 사람들이 쓸 거예요. 기획 배경이랑 행사 정보(이름, 기간, 혜택, 목표)만 주면 기획서 초안이 나오면 좋겠어요. 나머지는 알아서 기본값으로 정해 주시고, 이 프로젝트 폴더(.claude/skills)에 만들어 주세요.",
+  "네, 좋아요. 그대로 만들어 주세요. 다 만들고 확인까지 해 주세요."
+ ],
+ "fresh_turns": [
+  "다음 달 블랙프라이데이 기획전 기획서 초안 써 줘요. 기간은 11월 20일부터 30일, 혜택은 전 품목 최대 40% 할인이랑 무료배송, 목표 매출은 5억이에요. 파일로 저장해 주세요."
+ ],
+ "name": "ecommerce",
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake",
+   "skillforge:forge-skill"
+  ],
+  "skill_dirs": 1,
+  "fresh_uses_generated": true,
+  "fresh_writes_file": true
+ }
+}

@@ -1,0 +1,10 @@
+{
+ "name": "offtopic-dashboard",
+ "src": null,
+ "turns": [
+  "매출 대시보드 만들어야 될 것 같아요. 지역별 월 매출을 막대그래프로 보여 주는 HTML 하나만 만들어 주세요. 데이터는 예시로 넣어 주세요."
+ ],
+ "expect": {
+  "no_skillforge": true
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "src": "pos",
+ "turns": [
+  "examples/screens에 있는 기존 POS 화면들이랑 톤 맞춰서 '교환 처리' 새 화면을 기획해 주세요. 고객이 산 상품을 다른 상품으로 바꾸는 화면이에요.",
+  "태블릿 POS 가로 화면이에요. 나머지는 알아서 정해서 끝까지 만들어 주세요. 결과는 이 폴더에 파일로 저장해 주세요."
+ ],
+ "name": "pos-design",
+ "expect": {
+  "skills_all": [
+   "skillforge:learn-design-system"
+  ],
+  "files_any": [
+   "design-format.md",
+   ".html"
+  ]
+ }
+}

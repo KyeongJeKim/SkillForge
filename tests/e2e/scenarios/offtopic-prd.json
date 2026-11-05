@@ -1,0 +1,10 @@
+{
+ "name": "offtopic-prd",
+ "src": null,
+ "turns": [
+  "쿠폰 자동 발급 기능 PRD 한 개만 간단히 써 줘요. 파일로 저장해 주세요."
+ ],
+ "expect": {
+  "no_skillforge": true
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "src": null,
+ "turns": [
+  "업무를 좀 편하게 하고 싶은데 뭘 해야 할지 모르겠어요."
+ ],
+ "name": "ambiguous",
+ "expect": {
+  "skills_all": [
+   "skillforge:forge-intake"
+  ],
+  "no_files": true,
+  "max_questions": 3
+ }
+}

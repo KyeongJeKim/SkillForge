@@ -1,0 +1,10 @@
+{
+ "src": null,
+ "turns": [
+  "이 엑셀 수식이 왜 에러가 나요? =VLOOKUP(A2,Sheet2!A:B,3,FALSE)"
+ ],
+ "name": "offtopic-excel",
+ "expect": {
+  "no_skillforge": true
+ }
+}

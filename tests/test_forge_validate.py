@@ -97,6 +97,13 @@ class SelfCheck(unittest.TestCase):
                 continue
             self.assertRegex(f.read_text(encoding="utf-8"), SF, f"{f} has no {{{{SF: ...}}}} blanks")
 
+    def test_every_skill_forbids_unasked_git_and_self_edits(self):
+        for skill_md in SKILLS.glob("*/SKILL.md"):
+            text = skill_md.read_text(encoding="utf-8")
+            flat = " ".join(text.split())
+            self.assertIn("SkillForge's own files", flat, skill_md)
+            self.assertIn("own words ask for it", flat, skill_md)
+
     def test_descriptions_are_quoted_and_have_triggers(self):
         for skill_md in SKILLS.glob("*/SKILL.md"):
             line = next(l for l in skill_md.read_text(encoding="utf-8").splitlines() if l.startswith("description:"))
@@ -436,6 +443,42 @@ class ExtractText(TempDir):
                              capture_output=True, text=True, check=False)
         self.assertEqual(out.returncode, 1)
         self.assertIn("PDF", out.stdout)
+
+
+class RepoDocs(unittest.TestCase):
+    """Release hygiene: versions in sync, README images and links resolve, SVGs are light and offline."""
+
+    def test_versions_match(self):
+        plugin = json.loads((PLUGIN / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))
+        market = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8"))
+        entry = next(p for p in market["plugins"] if p["name"] == plugin["name"])
+        self.assertEqual(entry.get("version"), plugin["version"])
+
+    def test_readme_local_links_exist(self):
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+        targets = re.findall(r'(?:src|href)="([^"#:]+)"', text) + re.findall(r"\]\(([^)#:]+)\)", text)
+        self.assertTrue(targets)
+        for t in targets:
+            self.assertTrue((ROOT / t).exists(), f"README points to missing {t}")
+
+    def test_readme_has_no_external_images(self):
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+        for src in re.findall(r'<img[^>]+src="([^"]+)"', text) + re.findall(r"!\[[^\]]*\]\(([^)]+)\)", text):
+            self.assertFalse(src.startswith(("http://", "https://")), src)
+
+    def test_svgs_have_opaque_light_background(self):
+        import xml.etree.ElementTree as ET
+        for svg in (ROOT / "assets").glob("*.svg"):
+            root = ET.parse(svg).getroot()
+            self.assertNotIn("<script", svg.read_text(encoding="utf-8"), svg)
+            self.assertNotIn("href=\"http", svg.read_text(encoding="utf-8"), svg)
+            ns = "{http://www.w3.org/2000/svg}"
+            first = next(el for el in root if el.tag == ns + "rect")
+            self.assertEqual(first.get("width"), str(int(root.get("width")) - 2), svg)
+            fill = first.get("fill", "")
+            if fill.startswith("#"):
+                r, g, b = (int(fill[i:i + 2], 16) for i in (1, 3, 5))
+                self.assertGreater(0.299 * r + 0.587 * g + 0.114 * b, 230, f"{svg} background is not light")
 
 
 if __name__ == "__main__":
