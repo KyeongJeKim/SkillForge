@@ -1,0 +1,18 @@
+{
+  "description": "Warn when a written Markdown document is missing required sections.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/check_required_sections.py"],
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

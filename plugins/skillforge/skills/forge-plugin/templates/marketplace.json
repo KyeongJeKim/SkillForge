@@ -1,0 +1,14 @@
+{
+  "name": "{{marketplace-name}}",
+  "description": "{{What this marketplace holds.}}",
+  "owner": {
+    "name": "{{Owner name}}"
+  },
+  "plugins": [
+    {
+      "name": "{{plugin-name}}",
+      "source": "./plugins/{{plugin-name}}",
+      "description": "{{Same one-sentence description as plugin.json.}}"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "{{plugin-name}}",
+  "version": "0.1.0",
+  "description": "{{What the plugin gives the team, in one sentence.}}",
+  "author": {
+    "name": "{{Owner name}}"
+  },
+  "keywords": ["{{keyword}}"]
+}
