@@ -28,8 +28,7 @@ description: {{What this skill does, in one sentence.}} Use when {{the situation
 
 ## Conventions
 
-{{Point to reference/style-guide.md or reference/design-format.md if this skill must follow
-team conventions, or delete this section.}}
+{{Point to reference/style-guide.md or reference/design-format.md, or delete this section.}}
 
 ## Rules
 

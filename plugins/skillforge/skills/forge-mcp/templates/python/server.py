@@ -11,9 +11,9 @@ from __future__ import annotations
 
 import os
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 
-mcp = FastMCP("{{server-name}}")
+mcp = MCPServer("{{server-name}}")
 
 
 def _token() -> str:

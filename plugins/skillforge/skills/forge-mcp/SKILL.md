@@ -18,6 +18,8 @@ Python unless the person asks for another language.
    - `server.py` → `<name>/server.py`
    - `requirements.txt` → `<name>/requirements.txt`
    Replace every `{{...}}` placeholder and the example tool with one tool per operation in the spec.
+   The template targets the official Python SDK 2.x (`from mcp.server.mcpserver import MCPServer`).
+   If the person must stay on `mcp<2`, use `from mcp.server.fastmcp import FastMCP` instead.
 3. **Design the tools:**
    - One clear verb per tool (`get_order`, `search_products`), typed parameters, and a
      docstring that says when to use it; Claude reads the docstring to choose tools.
