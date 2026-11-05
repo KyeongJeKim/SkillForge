@@ -2,7 +2,11 @@
 
 Usage:
   python3 tests/e2e/run.py [--mode sweep|full] [--set dev|heldout|all] [--jobs N]
-                           [--out DIR] [--no-triggers] [scenario-name ...]
+                           [--out DIR] [--no-triggers] [--sample N] [scenario-name ...]
+
+--sample N runs N dev scenarios picked by today's date (same pick all day, a different one each
+day) plus every held-out scenario: the daily routine's cheaper measurement. A full dev sweep costs
+about $180, a sample of 8 with the held-out set about $70.
 
 Modes (models can still be overridden with SF_MODEL, SF_PERSONA_MODEL, SF_JUDGE_MODEL):
   sweep  cheap broad pass: SkillForge on sonnet, simulated users on haiku, judge on sonnet
@@ -18,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import random
 import shutil
 import subprocess
 import sys
@@ -71,6 +76,7 @@ def main() -> int:
     ap.add_argument("--jobs", type=int, default=6)
     ap.add_argument("--out")
     ap.add_argument("--no-triggers", action="store_true")
+    ap.add_argument("--sample", type=int, default=0)
     ap.add_argument("names", nargs="*")
     a = ap.parse_args()
 
@@ -86,6 +92,10 @@ def main() -> int:
                          capture_output=True, text=True, check=True).stdout.strip()
     (out / "plugin.sha").write_text(sha + "\n")
     names = a.names or scenario_names(a.set)
+    if a.sample and not a.names:
+        dev = scenario_names("dev")
+        rnd = random.Random(time.strftime("%Y-%m-%d"))
+        names = sorted(rnd.sample(dev, min(a.sample, len(dev)))) + scenario_names("heldout")
     print(f"mode={a.mode} models: SkillForge={env.get('SF_MODEL', 'CLI default')}, "
           f"user={env['SF_PERSONA_MODEL']}, judge={env['SF_JUDGE_MODEL']}; {len(names)} scenarios -> {out}")
     t0 = time.time()
