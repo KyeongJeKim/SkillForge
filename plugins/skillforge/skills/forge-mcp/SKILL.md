@@ -87,11 +87,6 @@ asks about the hard parts and plays back the summary before anything is built.
    terminal (python.org installer with "Add python.exe to PATH", Store alias turned off). Say this
    in the README's Windows section, with `claude mcp add` and the `.venv\Scripts\python.exe` path as
    the fallback.
-   **Claude Desktop chat users** (no Claude Code): the server is added in the app's own config
-   file instead (Settings > Developer > Edit Config, an entry under `mcpServers` with the absolute
-   `.venv` Python path, the server path and the env var names; then restart the app). claude.ai in
-   a browser can't start a server on their computer; say so plainly instead of offering workarounds.
-   Ask which app they use only if the spec doesn't say.
 6. **README.md** in `<name>/`: what it connects to, the tools, the env vars, install and registration.
 7. **Validate** and fix until it passes:
 
@@ -102,10 +97,7 @@ asks about the hard parts and plays back the summary before anything is built.
 ## Hand-over (in the person's language, short)
 
 The tools it exposes, the one thing they must do (set the token), whether it's registered, and what
-was checked. Give paths as they will be on the person's computer, never a temporary folder of
-this session, and no `...` placeholders in a command they will run. Build everything the
-played-back summary promised (a helper skill, a question list for another team) or say which
-part is left and why. Remind them that write tools act on real data.
+was checked. Remind them that write tools act on real data.
 
 ## Rules
 

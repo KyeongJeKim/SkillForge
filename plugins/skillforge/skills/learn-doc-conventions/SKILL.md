@@ -65,13 +65,7 @@ Show the person a short summary (the skeleton and at most five Required rules, n
 and ask them to correct anything wrong. Then offer to:
 
 - write the new document now, following the guide, or
-- turn the guide into a Skill so the whole team gets documents in this format automatically: start
-  `skillforge:forge-intake` (not `forge-skill` directly) so the interview confirms what the guide
-  can't show (inputs, what reviewers send back, what must never appear) before anything is built;
-  the guide becomes the skill's `reference/style-guide.md`.
-
-If the person's first request was already for something that writes these documents for them
-("양식대로 초안 써 주는 걸 만들어 주세요"), go straight to `skillforge:forge-intake` after the
-summary instead of offering.
+- package the guide as a Skill with `forge-skill` (the guide becomes
+  `reference/style-guide.md`), so the whole team gets documents in this format automatically.
 
 Don't delete files unless the person asks. Git and SkillForge files: run `git commit`, `git push` or create a repository only when the person's own words ask for it ("확인까지 해 주세요" or "마무리해 주세요" is not that). Never edit, commit or push SkillForge's own files (this plugin's folder or the SkillForge repository); if SkillForge itself has a problem, say so in the hand-over.
