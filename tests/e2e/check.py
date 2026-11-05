@@ -15,7 +15,7 @@ runs/<name>.judge.json and everything is written to <out-dir>/results.json.
 "expect" keys (all optional):
   skills_all / skills_any   SkillForge skills that must all / at least one run in the main turns
   no_skillforge             no skillforge:* skill may run at all
-  skill_dirs                at least N generated .claude/skills/*/SKILL.md, each passing forge_validate
+  skill_dirs                at least N generated skills (.claude/skills or a generated plugin), each valid
   fresh_uses_generated      each fresh session invokes a generated (non-SkillForge) skill
   fresh_writes_file         each fresh turn writes a file
   files_any                 for each fragment, some produced file path contains it
@@ -110,7 +110,8 @@ def judge(sc: dict, out: Path) -> list[str]:
         why.append("a turn never finished (timeout?)")
     if log.get("max_turns_hit"):
         why.append(f"interview did not finish within {sc['persona'].get('max_turns', 16)} turns")
-    risky = [x for tt in turns + fresh for x in tt["tools"] if OUTSIDE.search(x) and not x.startswith(("Write ", "Edit "))]
+    # Only commands and reads count; a skill's arguments or a file's text may just mention these words.
+    risky = [x for tt in turns + fresh for x in tt["tools"] if OUTSIDE.search(x) and x.startswith(("Bash ", "Read "))]
     if risky:
         why.append(f"touched credentials or pushed: {risky[0][:120]}")
     outside = outside_writes([x for tt in turns + fresh for x in tt["tools"]], work)
@@ -129,7 +130,9 @@ def judge(sc: dict, out: Path) -> list[str]:
     if ex.get("no_skillforge") and any(s.startswith("skillforge:") for s in all_skills):
         why.append(f"SkillForge started on a request it should leave alone: {all_skills}")
     if "skill_dirs" in ex:
-        dirs = sorted({p.parent for p in work.glob(".claude/skills/*/SKILL.md")})
+        # A skill shared with the team may sit inside a generated plugin instead of .claude/skills.
+        dirs = sorted({p.parent for p in [*work.glob(".claude/skills/*/SKILL.md"), *work.glob("**/skills/*/SKILL.md")]
+                       if "skillforge-trial" not in p.parts and "examples" not in p.relative_to(work).parts[:1]})
         if len(dirs) < ex["skill_dirs"]:
             why.append(f"expected {ex['skill_dirs']} generated skill(s), found {len(dirs)}")
         for d in dirs:
