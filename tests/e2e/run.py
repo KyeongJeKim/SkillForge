@@ -31,6 +31,9 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import sim  # noqa: E402,F401  (import strips the host's memory settings from os.environ)
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 MODES = {

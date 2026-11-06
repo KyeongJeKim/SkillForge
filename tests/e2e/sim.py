@@ -18,6 +18,25 @@ RUBRIC = HERE / "rubric.md"
 DIMENSIONS = ["interview", "truth_capture", "format_fidelity", "usability", "output_quality", "robustness"]
 
 
+def isolate_from_host_memory(environ: dict) -> list[str]:
+    """Remove the host session's memory settings from environ (in place); return what was removed.
+
+    A test session that inherits them reads the host's shared team memory (2026-11-06: an
+    inventory scenario asked "is this the MD team's inventory-stock plugin from the team record?")
+    and its post-turn memory pass writes the simulated user's made-up project back into that
+    memory, where later test runs and real sessions read it as fact. Every claude call the eval
+    makes must start without them.
+    """
+    removed = sorted(k for k in environ if "MEMORY" in k.upper() and k != "CLAUDE_CODE_DISABLE_AUTO_MEMORY")
+    for k in removed:
+        del environ[k]
+    environ["CLAUDE_CODE_DISABLE_AUTO_MEMORY"] = "1"
+    return removed
+
+
+isolate_from_host_memory(os.environ)  # every script that runs a test session imports this module
+
+
 def claude_json(prompt: str, system: str, schema: dict, model: str, timeout: int = 600) -> tuple[dict | None, float]:
     """One stateless model call returning (structured output or None, cost in USD)."""
     # The prompt goes in on stdin: a judge prompt can pass the 128 KB limit on one argument.
