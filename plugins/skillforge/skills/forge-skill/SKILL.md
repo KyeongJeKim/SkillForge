@@ -44,6 +44,16 @@ Packaging an existing skill as a ZIP (step 11 alone) needs no spec.
    leaves that part marked, never the whole draft. A check script reports problems next to the
    draft; it never stops the draft from being written. Use `[확인 필요]` only for values the
    input really lacks; write what the input states plainly, and a team default as a default.
+   **Fill rules from the examples:** when the spec came with 2 or more examples, use the comparison
+   from the interview, or run `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/compare_examples.py" <examples>`,
+   and write a `Fill rules` table into the skill's Output format, one row per header field:
+   same in every example → write that value as the default; counts up → the next number after the
+   newest such file in the save folder, or after the newest example when there is none (new files are
+   never saved into the examples folder; the examples only seed the number); date → the
+   request, else today; varies → the request, else `[확인 필요]`. A value is `[확인 필요]` only when
+   its row says so and the request doesn't give it. Copy sentences that every example shares only when
+   the person confirmed they are fixed wording, and never copy one period's content (last week's tasks,
+   last event's numbers) into a new document.
 7. **Conventions:** if a style guide or design format was learned, copy it to
    `reference/style-guide.md` (or `reference/design-format.md`) and tell the skill to follow it.
 8. **Scripts (optional):** put deterministic checks in `scripts/` and call them as

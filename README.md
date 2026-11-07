@@ -131,6 +131,8 @@ Claude Code에서 아래 두 줄을 입력합니다.
 
 - **검증기** `forge_validate.py`: 스킬 설명과 자동 실행 문구, 빈칸 남김, 깨진 링크, 훅·MCP가 부르는 파일이 실제로 있는지,
   하드코딩된 토큰, 팀원 설정(userConfig)까지 확인합니다. Claude Code 공식 검증(`claude plugin validate`)도 함께 돌립니다.
+- **예시 비교** `compare_examples.py`: 예시 문서 2개 이상을 글자 그대로 비교해 늘 같은 값(프로젝트, 담당자), 하나씩 늘어나는 번호(W41 → W44),
+  날짜, 매번 다른 값을 나눕니다. 만든 스킬은 이 표대로 칸을 채워서 `[확인 필요]` 는 정말 모르는 값에만 남깁니다.
 - **단위 테스트** (`tests/`): 검증기, 템플릿, 훅 스크립트, Office·한글 문서 읽기, Claude 앱용 압축, 고정 시험지 잠금을 확인합니다. 표준 라이브러리만 씁니다.
 - **채점 장치** [`tests/e2e`](tests/e2e): 위 [자기개선](#-스스로-더-좋아집니다-rsi)에서 쓰는 시나리오, 가상 사용자, 채점 기준표, 시작 문구 점검입니다.
   서브팀 4곳의 까다로운 사람(모호함, 귀찮음, 말 바꿈, 용어 모름)과 악성 지시가 숨은 예시, 비밀번호·다른 저장소 요청까지 들어 있습니다.
@@ -162,10 +164,12 @@ skillforge/
 │   └── scripts/
 │       ├── forge_validate.py           # 모든 생성 단계가 쓰는 검증기
 │       ├── extract_text.py             # .docx / .xlsx / .pptx / .hwpx / .hwp 텍스트 추출
+│       ├── compare_examples.py         # 예시 문서 비교: 늘 같은 값, 순번, 날짜, 매번 다른 값
 │       └── package_skill.py            # Claude 앱(웹·데스크톱 채팅) 업로드용 스킬 압축
 ├── scripts/readme_assets.py            # README 이미지 빌드·넘침 검사
 └── tests/
     ├── test_forge_validate.py          # 단위 테스트
+    ├── test_compare_examples.py        # 예시 비교 스크립트 단위 테스트
     ├── test_readme_assets.py           # README 이미지 넘침·가림 검사
     └── e2e/                            # 채점 장치 (선택, Claude 사용량 발생)
         ├── scenarios/  heldout/        # 개발용 시나리오 / 고정 시험지 (수정 금지)

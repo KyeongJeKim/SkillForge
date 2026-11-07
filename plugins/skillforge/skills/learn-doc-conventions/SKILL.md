@@ -28,7 +28,15 @@ is password-protected or 배포용, or the file is `.doc`, `.xls` or `.ppt`, ask
 
 ## 2. Extract the conventions
 
-Read every example and compare them. Capture:
+Run the comparison first, then read every example for what a text comparison can't see
+(tone, how a good content unit is written, quality rules):
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/compare_examples.py" <folder-or-files>
+```
+
+Use its counts for the table below, and copy its value table into the guide as `값 채우기 규칙`
+(which header values stay the same, which count up, which are dates). Capture:
 
 | Area | What to record |
 | --- | --- |

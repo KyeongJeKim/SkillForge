@@ -26,6 +26,13 @@ going until the ambiguity is really gone, not until you have asked "a few" quest
    every example before asking anything; `.docx`, `.xlsx`, `.pptx`, `.hwpx` and `.hwp` files can be
    read with `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/extract_text.py" <file>` (on Windows `python` or
    `py -3` instead of `python3`).
+   With 2 or more examples of the same kind, also run
+   `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/compare_examples.py" <folder-or-files>`. It lists which
+   sections every example has and which header values are the same in all of them (project, owner,
+   approver), count up (W41, W42, W43 → W44) or change every time. Put the same values and counters
+   into your one confirmation list as proposed defaults ("프로젝트와 PM은 예시 3개 모두 같아서 기본값으로
+   넣겠습니다"), so you only ask about what really varies. Values that look the same by coincidence
+   (last week's tasks) are not defaults.
 2. If the person's team matches a starter template, read it for better questions and defaults:
    - Data analysis / AI-assisted development: `${CLAUDE_PLUGIN_ROOT}/templates/teams/data-dev.md`
    - E-commerce operations: `${CLAUDE_PLUGIN_ROOT}/templates/teams/ecommerce-ops.md`

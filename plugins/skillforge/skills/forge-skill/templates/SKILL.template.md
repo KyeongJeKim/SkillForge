@@ -27,6 +27,8 @@ description: "{{SF: What this skill does, in one sentence.}} Use when {{SF: the 
 
 {{SF: Exact structure of the result: sections in order, fields, tables, naming. Point to reference/style-guide.md when it exists.}}
 
+{{SF: Fill rules table when examples were compared (| 항목 | 채우는 법 |, e.g. | PM | 이영희 (기본값) |, | 주차 | 가장 최근 보고서 다음 번호 |, | 보고일 | 요청한 날짜, 없으면 오늘 |), or delete this line.}}
+
 ## Quality bar
 
 - {{SF: What a great result always has, from the interview and the examples (one line each)}}
