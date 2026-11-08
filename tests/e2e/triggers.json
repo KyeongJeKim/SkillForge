@@ -264,5 +264,19 @@
   "expect": [
    "none"
   ]
+ },
+ {
+  "prompt": "매번 하는 엑셀 매출 정리 작업, 다음에도 그대로 쓸 수 있게 재사용 가능하게 만들어 줄 수 있어요?",
+  "expect": [
+   "skillforge:forge-intake"
+  ]
+ },
+ {
+  "prompt": "이 SQL 쿼리 하나만 Snowflake 문법으로 바꿔 주세요.",
+  "expect": "none"
+ },
+ {
+  "prompt": "Can you write a quick Python script that dedupes this one CSV?",
+  "expect": "none"
  }
 ]
