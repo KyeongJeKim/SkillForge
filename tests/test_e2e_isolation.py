@@ -20,5 +20,45 @@ class IsolationTest(unittest.TestCase):
         self.assertFalse([k for k in os.environ if "MEMORY" in k and k != "CLAUDE_CODE_DISABLE_AUTO_MEMORY"])
 
 
+class UserMcpLeakTest(unittest.TestCase):
+    """forge-mcp registers with `claude mcp add -s user`; the eval must take such servers back out."""
+
+    def _home(self, servers, extra=None):
+        import json
+        import tempfile
+        home = Path(tempfile.mkdtemp())
+        data = {"numStartups": 3, "mcpServers": servers, **(extra or {})}
+        (home / ".claude.json").write_text(json.dumps(data), encoding="utf-8")
+        os.chmod(home / ".claude.json", 0o600)
+        return home
+
+    def test_new_server_removed_rest_kept(self):
+        import json
+        home = self._home({"keep-me": {"command": "a"}, "pos-daily-sales": {"command": "b"}},
+                          {"projects": {"/x": {"mcpServers": {"local": {}}}}})
+        removed = sim.remove_user_mcp_servers({"keep-me"}, home)
+        self.assertEqual(removed, ["pos-daily-sales"])
+        data = json.loads((home / ".claude.json").read_text(encoding="utf-8"))
+        self.assertEqual(list(data["mcpServers"]), ["keep-me"])
+        self.assertEqual(data["numStartups"], 3)
+        self.assertEqual(data["projects"], {"/x": {"mcpServers": {"local": {}}}})
+        self.assertEqual((home / ".claude.json").stat().st_mode & 0o777, 0o600)
+        self.assertEqual(sim.user_mcp_servers(home), {"keep-me"})
+
+    def test_nothing_new_leaves_file_untouched(self):
+        home = self._home({"keep-me": {"command": "a"}})
+        before = (home / ".claude.json").read_bytes()
+        self.assertEqual(sim.remove_user_mcp_servers({"keep-me"}, home), [])
+        self.assertEqual((home / ".claude.json").read_bytes(), before)
+
+    def test_missing_or_broken_file_is_harmless(self):
+        import tempfile
+        home = Path(tempfile.mkdtemp())
+        self.assertEqual(sim.user_mcp_servers(home), set())
+        self.assertEqual(sim.remove_user_mcp_servers(set(), home), [])
+        (home / ".claude.json").write_text("{not json", encoding="utf-8")
+        self.assertEqual(sim.remove_user_mcp_servers(set(), home), [])
+
+
 if __name__ == "__main__":
     unittest.main()

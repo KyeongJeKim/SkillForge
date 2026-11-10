@@ -55,7 +55,7 @@ def load(name: str) -> dict:
     raise SystemExit(f"unknown scenario {name}")
 
 
-def run_one(name: str, out: Path, env: dict) -> None:
+def run_one(name: str, out: Path, env: dict, mcp_keep: set[str] | None = None) -> None:
     sc = load(name)
     work = out / "runs" / name
     shutil.rmtree(work, ignore_errors=True)
@@ -70,6 +70,12 @@ def run_one(name: str, out: Path, env: dict) -> None:
         subprocess.run([sys.executable, "-I", str(HERE / "drive.py"), str(HERE / ("heldout" if (HERE / "heldout" / f"{name}.json").exists() else "scenarios") / f"{name}.json"),
                         str(work), str(out / "runs" / f"{name}.log.json"), str(out / "plugin")],
                        env=env, stdout=err, stderr=err, check=False)
+    if mcp_keep is not None:
+        # Unregister at once what this scenario added at user scope, before other scenarios load it.
+        for s in sim.remove_user_mcp_servers(mcp_keep):
+            print(f"LEAK: {name} registered user-scope MCP server '{s}'; unregistered", flush=True)
+            with open(out / "runs" / "_leaked-mcp.txt", "a", encoding="utf-8") as f:
+                f.write(f"{name}\t{s}\n")
 
 
 def move_strays(out: Path, before: set[Path], names: list[str]) -> list[Path]:
@@ -130,12 +136,13 @@ def main() -> int:
 
     personal = [Path.home() / ".claude" / d for d in ("skills", "agents", "commands")]
     before = {p for d in personal if d.is_dir() for p in d.iterdir()}
+    mcp_before = sim.user_mcp_servers()
     # Write/Edit outside a scenario folder is caught per scenario in check.py, but a Bash command
     # can still write by absolute path (2026-11-05: a POS run wrote <out>/chk.js). Anything new at the
     # top of the run folder is such a stray write.
     out_before = set(out.iterdir())
     with ThreadPoolExecutor(a.jobs) as ex:
-        list(ex.map(lambda n: run_one(n, out, env), names))
+        list(ex.map(lambda n: run_one(n, out, env, mcp_before), names))
     # Anything a test session left in the real ~/.claude would load in every later session: move it
     # into the run folder as evidence instead of leaving it there.
     leaked = sorted(p for d in personal if d.is_dir() for p in d.iterdir() if p not in before)
@@ -144,6 +151,12 @@ def main() -> int:
         dest.mkdir(parents=True, exist_ok=True)
         shutil.move(str(p), str(dest / p.name))
         print(f"LEAK: a test session wrote {p}; moved to {dest / p.name}")
+    for s in sim.remove_user_mcp_servers(mcp_before):  # a late write by a still-running session
+        print(f"LEAK: user-scope MCP server '{s}' left after the run; unregistered")
+        with open(out / "runs" / "_leaked-mcp.txt", "a", encoding="utf-8") as f:
+            f.write(f"(end)\t{s}\n")
+    leaked_mcp = (out / "runs" / "_leaked-mcp.txt").read_text(encoding="utf-8").split("\n") if (out / "runs" / "_leaked-mcp.txt").exists() else []
+    leaked_mcp = [x for x in leaked_mcp if x]
     stray = move_strays(out, out_before, names)
     rc = subprocess.run([sys.executable, str(HERE / "check.py"), str(out), *names], env=env).returncode
 
@@ -153,6 +166,9 @@ def main() -> int:
                ("SF_MODEL", "SF_PERSONA_MODEL", "SF_JUDGE_MODEL")}, "triggers": trig,
                "scenarios": results.get("summary", {}), "plugin_untouched": results["plugin_untouched"],
                "leaked_into_home": [str(p) for p in leaked],
+               # Scenarios that started while one of these was registered may have seen it: compare such
+               # a run with care (each entry is "<scenario>\t<server>").
+               "leaked_user_mcp": leaked_mcp,
                "stray_writes": [str(p.name) for p in stray],
                "cost_usd": round(total, 2), "minutes": round((time.time() - t0) / 60, 1)}
     (out / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1), encoding="utf-8")

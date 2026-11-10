@@ -37,6 +37,42 @@ def isolate_from_host_memory(environ: dict) -> list[str]:
 isolate_from_host_memory(os.environ)  # every script that runs a test session imports this module
 
 
+def _claude_json(home: Path | None = None) -> Path:
+    return (home or Path.home()) / ".claude.json"
+
+
+def user_mcp_servers(home: Path | None = None) -> set[str]:
+    """Names of MCP servers registered for every session of this user (`claude mcp add -s user`)."""
+    try:
+        return set((json.loads(_claude_json(home).read_text(encoding="utf-8")).get("mcpServers") or {}))
+    except (OSError, ValueError):
+        return set()
+
+
+def remove_user_mcp_servers(keep: set[str], home: Path | None = None) -> list[str]:
+    """Unregister user-scope MCP servers that are not in `keep`; return the names removed.
+
+    forge-mcp registers servers with `claude mcp add -s user`, which is right for a real user but in
+    the eval it lands in the host's ~/.claude.json and loads in every later test session (2026-11-10:
+    a POS MCP from one held-out run made the next run answer "it already exists" and skip the
+    interview). The eval calls this after each scenario and at the end of a run.
+    """
+    path = _claude_json(home)
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    servers = data.get("mcpServers") or {}
+    extra = sorted(k for k in servers if k not in keep)
+    if extra:
+        data["mcpServers"] = {k: v for k, v in servers.items() if k in keep}
+        tmp = path.with_name(path.name + ".sf-tmp")
+        tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        os.chmod(tmp, path.stat().st_mode & 0o777)  # the file holds account settings: keep it private
+        os.replace(tmp, path)
+    return extra
+
+
 def claude_json(prompt: str, system: str, schema: dict, model: str, timeout: int = 600) -> tuple[dict | None, float]:
     """One stateless model call returning (structured output or None, cost in USD)."""
     # The prompt goes in on stdin: a judge prompt can pass the 128 KB limit on one argument.

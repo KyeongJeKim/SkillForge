@@ -94,7 +94,7 @@
 | 추천 방식 / 선택 방식 | `forge-intake` (유형 설명: `reference/artifact-types.md`) |
 | Skill · MCP · Plugin · Harness 자동 생성 | `forge-skill`, `forge-mcp`, `forge-plugin`, `forge-harness` + 템플릿 |
 | 생성 결과 검증 | `scripts/forge_validate.py` (모든 생성 skill이 사용) |
-| 문서 예시에서 convention 추출 | `learn-doc-conventions` (값 채우기 규칙: `scripts/compare_examples.py`, v0.3.1) |
+| 문서 예시에서 convention 추출 | `learn-doc-conventions` (값 채우기 규칙: `scripts/compare_examples.py`, v0.3.1; 재사용 요청이면 forge-intake 를 먼저, v0.3.2) |
 | 화면 screenshot에서 디자인 양식 추출, 선두 기업 비교 | `learn-design-system` |
 | 서브팀별 출발점 | `templates/teams/` (데이터·개발, 이커머스, PM·QA, POS) |
 | Plugin 형태로 설치, 자연어 트리거 | `.claude-plugin/marketplace.json` + 각 skill의 description |
