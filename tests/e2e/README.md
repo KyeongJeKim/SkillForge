@@ -33,4 +33,5 @@ python3 tests/e2e/check.py /tmp/sf-e2e    # 이미 돌린 결과만 다시 판�
 - 플러그인은 결과 폴더에 복사한 사본을 `--plugin-dir` 로 불러옵니다. 실제 저장소는 건드리지 않습니다.
 - 세션마다 `git push` 를 막습니다.
 - 시험 세션이 `claude mcp add -s user` 로 사용자 범위에 MCP 서버를 등록하면(forge-mcp 의 정상 안내), 그 시나리오가 끝나는 즉시와 실행 끝에 등록을 지우고 `summary.json` 의 `leaked_user_mcp` 에 남깁니다. 지우지 않으면 다음 세션들이 그 서버를 보고 "이미 있다"며 인터뷰를 건너뜁니다(2026-11-10 발견).
+- 판정 모델은 `claude-sonnet-4-6` 으로 고정합니다(`run.py` 의 `JUDGE`). 2026-11-11 에 `sonnet` 별칭이 새 모델로 바뀌면서 모든 판정 요청을 거부해(`stop_reason: refusal`) 점수가 비었고, 움직이는 별칭은 날마다 점수 눈금도 바꿉니다. 거부되면 `MODEL REFUSED` 를 출력합니다.
 - 예시 문서와 화면(`fixtures/`)은 모두 가상의 내용입니다. 화면 캡처는 `fixtures/make_screens.py` 로 다시 그릴 수 있습니다.

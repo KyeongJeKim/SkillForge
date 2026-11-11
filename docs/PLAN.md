@@ -93,8 +93,8 @@
 | 대화로 필요 파악, 부족한 정보 안내 | `forge-intake` skill |
 | 추천 방식 / 선택 방식 | `forge-intake` (유형 설명: `reference/artifact-types.md`) |
 | Skill · MCP · Plugin · Harness 자동 생성 | `forge-skill`, `forge-mcp`, `forge-plugin`, `forge-harness` + 템플릿 |
-| 생성 결과 검증 | `scripts/forge_validate.py` (모든 생성 skill이 사용) |
-| 문서 예시에서 convention 추출 | `learn-doc-conventions` (값 채우기 규칙: `scripts/compare_examples.py`, v0.3.1; 재사용 요청이면 forge-intake 를 먼저, v0.3.2) |
+| 생성 결과 검증 | `scripts/forge_validate.py` (모든 생성 skill이 사용; 스킬이 실행하는 스크립트가 스킬 안에 있는지, 따로 쓰는 스킬이 SkillForge 경로를 쓰지 않는지도 확인, v0.3.3) |
+| 문서 예시에서 convention 추출 | `learn-doc-conventions` (값 채우기 규칙: `scripts/compare_examples.py`, v0.3.1; 재사용 요청이면 forge-intake 를 먼저, v0.3.2); 예시가 Word·Excel·PowerPoint·한글 파일이면 만든 스킬에 `extract_text.py` 를 함께 넣음, v0.3.3) |
 | 화면 screenshot에서 디자인 양식 추출, 선두 기업 비교 | `learn-design-system` |
 | 서브팀별 출발점 | `templates/teams/` (데이터·개발, 이커머스, PM·QA, POS) |
 | Plugin 형태로 설치, 자연어 트리거 | `.claude-plugin/marketplace.json` + 각 skill의 description |

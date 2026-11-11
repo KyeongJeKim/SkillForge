@@ -40,10 +40,18 @@ Packaging an existing skill as a ZIP (step 11 alone) needs no spec.
    values as `[확인 필요: ...]` and listing them at the end, instead of asking questions before it
    starts. It asks first only when the request is too vague to begin.
    Even when the person wants missing numbers asked for, the skill writes the draft and then asks
-   for them in one numbered list. A missing optional input (last year's data, a reference file)
+   for them in one numbered list. "없으면 물어봐 주세요", "추측하지 말고 먼저 물어봐" for one input
+   means: don't guess that value, leave it as written or `[확인 필요]`, save the draft, and put that
+   question first in the reply. Write the skill's step that way, not as "stop and wait before
+   writing"; only when the person says no draft may exist until they answer does the skill wait. A missing optional input (last year's data, a reference file)
    leaves that part marked, never the whole draft. A check script reports problems next to the
    draft; it never stops the draft from being written. Use `[확인 필요]` only for values the
    input really lacks; write what the input states plainly, and a team default as a default.
+   **Save without asking:** when the result is a document or file, the skill writes it to the file in
+   the same turn ("정리해서 저장해 주세요" means write it now), then lists the `[확인 필요]` items.
+   It never asks "저장할까요?" first. The spec's 금지·승인 rules (승인 전 발송 금지, 리드 확인 후 확정)
+   cover sending, posting, finalising and overwriting an existing file, never writing the draft; say
+   so in the skill's Rules so the two don't get mixed up.
    **Fill rules from the examples:** when the spec came with 2 or more examples, use the comparison
    from the interview, or run `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/compare_examples.py" <examples>`,
    and write a `Fill rules` table into the skill's Output format, one row per header field:
@@ -59,6 +67,13 @@ Packaging an existing skill as a ZIP (step 11 alone) needs no spec.
 8. **Scripts (optional):** put deterministic checks in `scripts/` and call them as
    `python3 "${CLAUDE_SKILL_DIR}/scripts/<name>.py"` so they work from any folder.
    Standard library only, unless the person agrees to a dependency.
+   A generated skill never points at `${CLAUDE_PLUGIN_ROOT}` (SkillForge's folder): a teammate who
+   gets the skill doesn't have it. Copy what it needs into its own `scripts/` instead.
+   **Office files:** when the examples, or the files the skill will read, include .docx, .xlsx,
+   .pptx, .hwpx or .hwp, copy `${CLAUDE_PLUGIN_ROOT}/scripts/extract_text.py` into
+   `<location>/scripts/extract_text.py` (standard library only) and keep the template's Office-files
+   lines in Inputs; otherwise delete them. The skill then reads every example and input, not only
+   the .md ones. The validator fails a skill that runs a script it doesn't carry.
    If the person uses Windows, write `python` (or `py -3`) instead of `python3` in the skill.
 9. **Validate**, fix every error, re-run until it passes:
 
@@ -68,7 +83,9 @@ Packaging an existing skill as a ZIP (step 11 alone) needs no spec.
 
 10. **Try it yourself:** follow the new skill once on a realistic example (use the person's examples
     if there are any) and check the result against the style guide, the quality bar and one edge case
-    from the spec. Fix the skill if the result is off. Save the trial output somewhere clearly named (e.g. `skillforge-trial/`) and say so. Trial
+    from the spec. Phrase the trial the way the person would ("…정리해서 저장해 주세요"); it must end with the
+    file written and, when examples are Office files, with them read. If the skill stopped to ask
+    before writing, fix the skill. Fix the skill if the result is off. Save the trial output somewhere clearly named (e.g. `skillforge-trial/`) and say so. Trial
     files must not change how the skill behaves later: anything that scans existing documents (next
     ID, latest report) skips `skillforge-trial/`.
     The person is waiting: one trial on one example, at most one fix and retry, no extra reviewer

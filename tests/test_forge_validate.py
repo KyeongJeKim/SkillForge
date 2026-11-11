@@ -146,6 +146,27 @@ class SkillChecks(TempDir):
     def test_korean_placeholder(self):
         self.assertFalse(self.check(GOOD_SKILL + "\n{{SF: 단계 설명}}\n").ok)
 
+    def test_script_it_runs_must_be_in_the_skill(self):
+        run_line = '\n3. Read .docx with `python3 "${CLAUDE_SKILL_DIR}/scripts/extract_text.py" <file>`.\n'
+        rep = self.check(GOOD_SKILL + run_line)
+        self.assertTrue(any("scripts/extract_text.py" in e for e in rep.errors))
+        write(self.tmp / "prd-writer" / "scripts" / "extract_text.py", "print('ok')\n")
+        self.assertEqual(self.check(GOOD_SKILL + run_line).errors, [])
+
+    def test_pattern_reference_is_not_a_file(self):
+        rep = self.check(GOOD_SKILL + '\nRun `python3 "${CLAUDE_SKILL_DIR}/scripts/<name>.py"`.\n')
+        self.assertEqual(rep.errors, [])
+
+    def test_standalone_skill_cannot_use_plugin_root(self):
+        line = '\n3. Run `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/extract_text.py" <file>`.\n'
+        rep = self.check(GOOD_SKILL + line)
+        self.assertTrue(any("CLAUDE_PLUGIN_ROOT" in e for e in rep.errors))
+        # Inside <plugin>/skills/<name>/ the plugin root exists, so the same line is fine.
+        write(self.tmp / "team" / ".claude-plugin" / "plugin.json", '{"name": "team"}')
+        write(self.tmp / "team" / "skills" / "prd-writer" / "scripts" / "extract_text.py", "")
+        write(self.tmp / "team" / "skills" / "prd-writer" / "SKILL.md", GOOD_SKILL + line)
+        self.assertEqual(run("skill", self.tmp / "team" / "skills" / "prd-writer").errors, [])
+
     def test_merge_fields_are_allowed(self):
         self.assertTrue(self.check(GOOD_SKILL + "\n안녕하세요 {{customer_name}} 고객님\n").ok)
 
@@ -195,7 +216,11 @@ class SkillChecks(TempDir):
 
     def test_skill_template_fills_to_valid(self):
         tpl = (SKILLS / "forge-skill" / "templates" / "SKILL.template.md").read_text(encoding="utf-8")
-        rep = self.check(fill(tpl, **{"skill-name": "promo-plan"}), "promo-plan")
+        filled = fill(tpl, **{"skill-name": "promo-plan"})
+        # Keeping the Office-files lines without copying the script is the mistake the validator catches.
+        self.assertTrue(any("extract_text.py" in e for e in self.check(filled, "promo-plan").errors))
+        write(self.tmp / "promo-plan" / "scripts" / "extract_text.py", "")
+        rep = self.check(filled, "promo-plan")
         self.assertEqual(rep.errors, [])
         self.assertEqual(rep.warnings, [])
 

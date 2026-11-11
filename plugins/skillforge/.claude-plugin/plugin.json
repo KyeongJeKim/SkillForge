@@ -1,7 +1,7 @@
 {
   "name": "skillforge",
   "displayName": "SkillForge",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Builds Claude Skills, MCP servers, Plugins and Harnesses from a natural-language conversation, learning your team's conventions from examples.",
   "author": {
     "name": "Kyeong Je Kim",

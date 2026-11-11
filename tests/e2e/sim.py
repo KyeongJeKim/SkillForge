@@ -3,7 +3,7 @@
 Both call the claude CLI with no tools, no session persistence and a JSON schema, so each
 call is cheap, stateless and cannot touch files. Models come from environment variables:
   SF_PERSONA_MODEL  model playing the user           (default: haiku)
-  SF_JUDGE_MODEL    model scoring results with rubric (default: sonnet)
+  SF_JUDGE_MODEL    model scoring results with rubric (default: claude-sonnet-4-6, pinned)
 """
 from __future__ import annotations
 
@@ -88,6 +88,9 @@ def claude_json(prompt: str, system: str, schema: dict, model: str, timeout: int
         data = json.loads(out)
     except ValueError:
         return None, 0.0
+    if data.get("stop_reason") == "refusal":
+        # Say so instead of failing silently as "judge gave no score" (2026-11-11).
+        print(f"MODEL REFUSED: {model} returned stop_reason=refusal; no structured output", flush=True)
     return data.get("structured_output"), float(data.get("total_cost_usd") or 0)
 
 
@@ -238,4 +241,4 @@ def judge_run(sc: dict, log: dict, work: Path, model: str | None = None) -> tupl
         + "\n\n## Files in the work folder after the run\n" + _files_section(work, 90000)
     )
     system = JUDGE_SYSTEM.format(rubric=RUBRIC.read_text(encoding="utf-8"))
-    return claude_json(prompt, system, JUDGE_SCHEMA, model or os.environ.get("SF_JUDGE_MODEL", "sonnet"), timeout=900)
+    return claude_json(prompt, system, JUDGE_SCHEMA, model or os.environ.get("SF_JUDGE_MODEL", "claude-sonnet-4-6"), timeout=900)

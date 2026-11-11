@@ -189,7 +189,32 @@ def _check_links(md: str, base: Path, where: Path, rep: Report) -> None:
 
 # ---------------------------------------------------------------- checkers
 
-def check_skill(skill_dir: Path, rep: Report) -> None:
+SKILL_DIR_REF_RE = re.compile(r"\$\{CLAUDE_SKILL_DIR\}/([^\s\"'`)]+)")
+
+
+def _check_script_refs(text: str, skill_dir: Path, skill_md: Path, rep: Report, in_plugin: bool) -> None:
+    """Files the skill runs must travel with it (checked inside code blocks too, where commands live)."""
+    for rel in sorted(set(SKILL_DIR_REF_RE.findall(text))):
+        if "<" in rel or "{" in rel:
+            continue  # a pattern such as scripts/<name>.py, not a real file
+        if not (skill_dir / rel).exists():
+            rep.error(skill_md, f"runs ${{CLAUDE_SKILL_DIR}}/{rel}, but that file is not in the skill folder")
+    if not in_plugin and "${CLAUDE_PLUGIN_ROOT}" in text:
+        # A project or personal skill has no plugin root: the path would point nowhere for a teammate
+        # (2026-11-11: a generated spec skill could not read the team's .docx/.hwpx examples).
+        rep.error(skill_md, "uses ${CLAUDE_PLUGIN_ROOT}, which a standalone skill does not have; copy the "
+                            "script into this skill's scripts/ and run it as ${CLAUDE_SKILL_DIR}/scripts/<file>")
+
+
+def _inside_plugin(skill_dir: Path) -> bool:
+    """True when the skill sits in <plugin>/skills/<name>/, where ${CLAUDE_PLUGIN_ROOT} is set."""
+    parent = skill_dir.resolve().parent
+    return parent.name == "skills" and (parent.parent / ".claude-plugin" / "plugin.json").is_file()
+
+
+def check_skill(skill_dir: Path, rep: Report, in_plugin: bool | None = None) -> None:
+    if in_plugin is None:
+        in_plugin = _inside_plugin(skill_dir)
     skill_md = skill_dir / "SKILL.md"
     if not skill_md.is_file():
         rep.error(skill_dir, "missing SKILL.md")
@@ -232,6 +257,7 @@ def check_skill(skill_dir: Path, rep: Report) -> None:
     if not body.strip():
         rep.error(skill_md, "body is empty")
     _check_links(body, skill_dir, skill_md, rep)
+    _check_script_refs(body, skill_dir, skill_md, rep, in_plugin)
     for f in skill_dir.rglob("*"):
         # Files named *.template.* are SkillForge's own blanks and are expected to hold placeholders.
         if f.is_file() and f.suffix in {".md", ".py", ".json", ".txt", ".html"} and f != skill_md \
@@ -378,7 +404,7 @@ def check_plugin(plugin_dir: Path, rep: Report) -> None:
     skills_dir = plugin_dir / "skills"
     for sd in sorted(p for p in skills_dir.iterdir() if p.is_dir()) if skills_dir.is_dir() else []:
         if (sd / "SKILL.md").is_file():
-            check_skill(sd, rep)
+            check_skill(sd, rep, in_plugin=True)
         else:
             rep.warn(sd, "folder under skills/ has no SKILL.md and will be ignored")
     agents_dir = plugin_dir / "agents"

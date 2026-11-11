@@ -36,9 +36,13 @@ import sim  # noqa: E402,F401  (import strips the host's memory settings from os
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
+# The judge is pinned to one model version so scores stay comparable from day to day: on 2026-11-11 the
+# "sonnet" alias pointed at a newer model that refused every judge prompt (stop_reason "refusal",
+# no output), and a moving alias also moves the scale.
+JUDGE = "claude-sonnet-4-6"
 MODES = {
-    "sweep": {"SF_MODEL": "sonnet", "SF_PERSONA_MODEL": "haiku", "SF_JUDGE_MODEL": "sonnet"},
-    "full": {"SF_PERSONA_MODEL": "sonnet", "SF_JUDGE_MODEL": "sonnet"},
+    "sweep": {"SF_MODEL": "sonnet", "SF_PERSONA_MODEL": "haiku", "SF_JUDGE_MODEL": JUDGE},
+    "full": {"SF_PERSONA_MODEL": "sonnet", "SF_JUDGE_MODEL": JUDGE},
 }
 
 

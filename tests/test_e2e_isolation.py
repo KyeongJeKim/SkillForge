@@ -62,3 +62,15 @@ class UserMcpLeakTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class JudgeModelPinned(unittest.TestCase):
+    """Scores are compared across days, so the judge must not follow a moving alias (2026-11-11)."""
+
+    def test_judge_is_a_versioned_model(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("run_eval", Path(__file__).resolve().parent / "e2e" / "run.py")
+        run = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(run)
+        for mode in run.MODES.values():
+            self.assertRegex(mode["SF_JUDGE_MODEL"], r"^claude-[a-z]+-\d")
