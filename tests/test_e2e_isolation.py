@@ -60,9 +60,6 @@ class UserMcpLeakTest(unittest.TestCase):
         self.assertEqual(sim.remove_user_mcp_servers(set(), home), [])
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 
 class JudgeModelPinned(unittest.TestCase):
     """Scores are compared across days, so the judge must not follow a moving alias (2026-11-11)."""
@@ -74,3 +71,68 @@ class JudgeModelPinned(unittest.TestCase):
         spec.loader.exec_module(run)
         for mode in run.MODES.values():
             self.assertRegex(mode["SF_JUDGE_MODEL"], r"^claude-[a-z]+-\d")
+
+
+class HarnessChecksForJudge(unittest.TestCase):
+    """The judge gets what the harness verified (2026-11-12: it called a working MCP import wrong)."""
+
+    def test_reports_servers_without_venv_and_skips_examples(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp)
+            (work / "sales").mkdir()
+            (work / "sales" / "server.py").write_text("print('hi')\n", encoding="utf-8")
+            (work / "examples").mkdir()
+            (work / "examples" / "server.py").write_text("", encoding="utf-8")
+            out = sim._harness_checks(work)
+            self.assertIn("sales/server.py", out.replace("\\", "/"))
+            self.assertIn("no .venv", out)
+            self.assertNotIn("examples", out)
+
+    def test_no_server(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertIn("no MCP server", sim._harness_checks(Path(tmp)))
+
+
+class UserPluginLeakTest(unittest.TestCase):
+    """2026-11-12: a test session installed its generated plugin at user scope; the eval takes it out."""
+
+    def test_new_plugin_and_marketplace_removed_rest_kept(self):
+        import json
+        import tempfile
+        home = Path(tempfile.mkdtemp())
+        (home / ".claude" / "plugins" / "cache" / "ops-team-tools" / "promo").mkdir(parents=True)
+        (home / ".claude" / "plugins" / "cache" / "keep-market").mkdir(parents=True)
+        settings = home / ".claude" / "settings.json"
+        settings.write_text(json.dumps({"model": "x", "enabledPlugins": {"a@keep-market": True}}), encoding="utf-8")
+        inst = home / ".claude" / "plugins" / "installed_plugins.json"
+        inst.write_text(json.dumps({"version": 2, "plugins": {"a@keep-market": [{}]}}), encoding="utf-8")
+        markets = home / ".claude" / "plugins" / "known_marketplaces.json"
+        markets.write_text(json.dumps({"keep-market": {}}), encoding="utf-8")
+        keep = sim.user_plugins(home)
+        settings.write_text(json.dumps({"model": "x", "enabledPlugins": {"a@keep-market": True, "promo@ops-team-tools": True},
+                                        "extraKnownMarketplaces": {"ops-team-tools": {}}}), encoding="utf-8")
+        inst.write_text(json.dumps({"version": 2, "plugins": {"a@keep-market": [{}], "promo@ops-team-tools": [{}]}}),
+                        encoding="utf-8")
+        markets.write_text(json.dumps({"keep-market": {}, "ops-team-tools": {}}), encoding="utf-8")
+        removed = sim.remove_user_plugins(keep, home)
+        self.assertEqual(len(removed), 4)
+        self.assertEqual(json.loads(settings.read_text())["enabledPlugins"], {"a@keep-market": True})
+        self.assertEqual(json.loads(settings.read_text())["model"], "x")
+        self.assertEqual(json.loads(settings.read_text())["extraKnownMarketplaces"], {})
+        self.assertEqual(list(json.loads(inst.read_text())["plugins"]), ["a@keep-market"])
+        self.assertEqual(json.loads(inst.read_text())["version"], 2)
+        self.assertEqual(list(json.loads(markets.read_text())), ["keep-market"])
+        self.assertFalse((home / ".claude" / "plugins" / "cache" / "ops-team-tools").exists())
+        self.assertTrue((home / ".claude" / "plugins" / "cache" / "keep-market").exists())
+        self.assertEqual(sim.remove_user_plugins(keep, home), [])
+
+    def test_missing_files_are_harmless(self):
+        import tempfile
+        home = Path(tempfile.mkdtemp())
+        self.assertEqual(sim.remove_user_plugins(sim.user_plugins(home), home), [])
+
+
+if __name__ == "__main__":
+    unittest.main()

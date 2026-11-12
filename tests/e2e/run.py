@@ -59,7 +59,8 @@ def load(name: str) -> dict:
     raise SystemExit(f"unknown scenario {name}")
 
 
-def run_one(name: str, out: Path, env: dict, mcp_keep: set[str] | None = None) -> None:
+def run_one(name: str, out: Path, env: dict, mcp_keep: set[str] | None = None,
+            plugin_keep: dict | None = None) -> None:
     sc = load(name)
     work = out / "runs" / name
     shutil.rmtree(work, ignore_errors=True)
@@ -79,6 +80,11 @@ def run_one(name: str, out: Path, env: dict, mcp_keep: set[str] | None = None) -
         for s in sim.remove_user_mcp_servers(mcp_keep):
             print(f"LEAK: {name} registered user-scope MCP server '{s}'; unregistered", flush=True)
             with open(out / "runs" / "_leaked-mcp.txt", "a", encoding="utf-8") as f:
+                f.write(f"{name}\t{s}\n")
+    if plugin_keep is not None:
+        for s in sim.remove_user_plugins(plugin_keep):
+            print(f"LEAK: {name} installed user-scope plugin '{s}'; removed", flush=True)
+            with open(out / "runs" / "_leaked-plugins.txt", "a", encoding="utf-8") as f:
                 f.write(f"{name}\t{s}\n")
 
 
@@ -141,12 +147,13 @@ def main() -> int:
     personal = [Path.home() / ".claude" / d for d in ("skills", "agents", "commands")]
     before = {p for d in personal if d.is_dir() for p in d.iterdir()}
     mcp_before = sim.user_mcp_servers()
+    plugins_before = sim.user_plugins()
     # Write/Edit outside a scenario folder is caught per scenario in check.py, but a Bash command
     # can still write by absolute path (2026-11-05: a POS run wrote <out>/chk.js). Anything new at the
     # top of the run folder is such a stray write.
     out_before = set(out.iterdir())
     with ThreadPoolExecutor(a.jobs) as ex:
-        list(ex.map(lambda n: run_one(n, out, env, mcp_before), names))
+        list(ex.map(lambda n: run_one(n, out, env, mcp_before, plugins_before), names))
     # Anything a test session left in the real ~/.claude would load in every later session: move it
     # into the run folder as evidence instead of leaving it there.
     leaked = sorted(p for d in personal if d.is_dir() for p in d.iterdir() if p not in before)
@@ -161,6 +168,12 @@ def main() -> int:
             f.write(f"(end)\t{s}\n")
     leaked_mcp = (out / "runs" / "_leaked-mcp.txt").read_text(encoding="utf-8").split("\n") if (out / "runs" / "_leaked-mcp.txt").exists() else []
     leaked_mcp = [x for x in leaked_mcp if x]
+    for s in sim.remove_user_plugins(plugins_before):
+        print(f"LEAK: user-scope plugin '{s}' left after the run; removed")
+        with open(out / "runs" / "_leaked-plugins.txt", "a", encoding="utf-8") as f:
+            f.write(f"(end)\t{s}\n")
+    lp = out / "runs" / "_leaked-plugins.txt"
+    leaked_plugins = [x for x in (lp.read_text(encoding="utf-8").split("\n") if lp.exists() else []) if x]
     stray = move_strays(out, out_before, names)
     rc = subprocess.run([sys.executable, str(HERE / "check.py"), str(out), *names], env=env).returncode
 
@@ -173,6 +186,7 @@ def main() -> int:
                # Scenarios that started while one of these was registered may have seen it: compare such
                # a run with care (each entry is "<scenario>\t<server>").
                "leaked_user_mcp": leaked_mcp,
+               "leaked_user_plugins": leaked_plugins,
                "stray_writes": [str(p.name) for p in stray],
                "cost_usd": round(total, 2), "minutes": round((time.time() - t0) / 60, 1)}
     (out / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1), encoding="utf-8")

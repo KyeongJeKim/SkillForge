@@ -73,6 +73,71 @@ def remove_user_mcp_servers(keep: set[str], home: Path | None = None) -> list[st
     return extra
 
 
+def _write_json_like(path: Path, data: dict) -> None:
+    tmp = path.with_name(path.name + ".sf-tmp")
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    os.chmod(tmp, path.stat().st_mode & 0o777)
+    os.replace(tmp, path)
+
+
+def _plugin_files(home: Path | None = None) -> dict[str, tuple[Path, str]]:
+    """User-scope plugin registries: file and the key whose entries a test session can add."""
+    base = (home or Path.home()) / ".claude"
+    return {"enabled": (base / "settings.json", "enabledPlugins"),
+            "extra_markets": (base / "settings.json", "extraKnownMarketplaces"),
+            "installed": (base / "plugins" / "installed_plugins.json", "plugins"),
+            "markets": (base / "plugins" / "known_marketplaces.json", "")}
+
+
+def user_plugins(home: Path | None = None) -> dict[str, set[str]]:
+    """Plugins and marketplaces installed for every session of this user (`claude plugin install`)."""
+    out: dict[str, set[str]] = {}
+    for name, (path, key) in _plugin_files(home).items():
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            out[name] = set((data.get(key) if key else data) or {})
+        except (OSError, ValueError, AttributeError):
+            out[name] = set()
+    return out
+
+
+def remove_user_plugins(keep: dict[str, set[str]], home: Path | None = None) -> list[str]:
+    """Take out user-scope plugins and marketplaces that are not in `keep`; return what was removed.
+
+    2026-11-12: a held-out session built a plugin and ran `claude plugin marketplace add` + `claude plugin
+    install` (user scope), so every later session on this machine loaded its skill, and the next
+    h-ecom-promo-lazy run started from that "already installed" skill. Same leak as user-scope MCP.
+    """
+    removed: list[str] = []
+    gone_markets: set[str] = set()
+    for name, (path, key) in _plugin_files(home).items():
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        table = (data.get(key) if key else data) or {}
+        if not isinstance(table, dict):
+            continue
+        extra = sorted(k for k in table if k not in keep.get(name, set()))
+        if not extra:
+            continue
+        for k in extra:
+            table.pop(k)
+            removed.append(f"{name}:{k}")
+            if name in ("markets", "extra_markets"):
+                gone_markets.add(k)
+        if key:
+            data[key] = table
+        _write_json_like(path, data)
+    cache = (home or Path.home()) / ".claude" / "plugins" / "cache"
+    for m in gone_markets:
+        target = cache / m
+        if m and "/" not in m and m not in keep.get("markets", set()) and target.is_dir():
+            import shutil
+            shutil.rmtree(target, ignore_errors=True)
+    return removed
+
+
 def claude_json(prompt: str, system: str, schema: dict, model: str, timeout: int = 600) -> tuple[dict | None, float]:
     """One stateless model call returning (structured output or None, cost in USD)."""
     # The prompt goes in on stdin: a judge prompt can pass the 128 KB limit on one argument.
@@ -216,6 +281,37 @@ def _examples_section(work: Path, budget: int = 15000) -> str:
     return "Files: " + ", ".join(names) + ("\n\n" + "\n\n".join(shown) if shown else "")
 
 
+LIST_TOOLS = ("import asyncio, runpy, importlib.metadata as m; ns = runpy.run_path('server.py', run_name='check'); "
+              "print('mcp', m.version('mcp'), [t.name for t in asyncio.run(ns['mcp'].list_tools())])")
+
+
+def _harness_checks(work: Path) -> str:
+    """Facts the harness checked itself, so the judge doesn't grade code from its memory of an API.
+
+    2026-11-12: the judge (claude-sonnet-4-6) said `from mcp.server.mcpserver import MCPServer` does not
+    exist in MCP SDK 2.x, although the generated server imported and listed its tools with mcp 2.3.0.
+    """
+    lines = []
+    for server in sorted(work.rglob("server.py")):
+        rel = server.relative_to(work)
+        if SKIP & set(rel.parts) or rel.parts[0] == "examples":
+            continue
+        py = next((c for c in (server.parent / ".venv" / "bin" / "python",
+                               server.parent / ".venv" / "Scripts" / "python.exe") if c.exists()), None)
+        if py is None:
+            lines.append(f"- {rel}: no .venv next to it, so the harness did not start it")
+            continue
+        try:
+            r = subprocess.run([str(py), "-c", LIST_TOOLS], cwd=server.parent, capture_output=True, text=True,
+                               timeout=90, env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
+            out = (r.stdout.strip().splitlines() or [""])[-1] if r.returncode == 0 else \
+                "FAILED: " + (r.stderr.strip().splitlines() or ["(no output)"])[-1]
+        except subprocess.TimeoutExpired:
+            out = "FAILED: timed out after 90 s"
+        lines.append(f"- {rel}: imported with its own .venv and listed tools (no real system called): {out[:300]}")
+    return "\n".join(lines) or "(no MCP server in the work folder)"
+
+
 def judge_run(sc: dict, log: dict, work: Path, model: str | None = None) -> tuple[dict | None, float]:
     turns = []
     for t in log.get("turns", []):
@@ -238,6 +334,8 @@ def judge_run(sc: dict, log: dict, work: Path, model: str | None = None) -> tupl
         + "\n\n## Team examples given to SkillForge\n" + _examples_section(work)
         + "\n\n## Conversation\n" + "\n\n".join(turns)
         + "\n\n## Later use of the result (fresh sessions)\n" + ("\n\n".join(fresh) or "(none)")
+        + "\n\n## Checks the harness ran after the session (ground truth; trust these over your memory of "
+          "library APIs or versions)\n" + _harness_checks(work)
         + "\n\n## Files in the work folder after the run\n" + _files_section(work, 90000)
     )
     system = JUDGE_SYSTEM.format(rubric=RUBRIC.read_text(encoding="utf-8"))
