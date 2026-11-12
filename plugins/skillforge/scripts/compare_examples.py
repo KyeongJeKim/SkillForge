@@ -3,7 +3,13 @@
 
 Usage:
     python3 compare_examples.py <file-or-folder> [more ...] [--json]
+    python3 compare_examples.py <file-or-folder> [more ...] --check <new-document>
     (on Windows: python or py -3 instead of python3)
+
+--check reads a new document written in the examples' format and lists where it breaks it:
+a required section missing or out of order, unnumbered headings, a header field missing, an ID or
+file name left blank or not the next number, brackets or spaces in the file name. It exits 1 when
+it finds a problem, so a skill can fix the document and run it again.
 
 For each section heading, header field ("**PM:** 이영희", "작성자: 홍길동", a two-column
 "| 항목 | 내용 |" table row), title line and file name it reports whether the value is:
@@ -89,6 +95,7 @@ def parse(text: str) -> dict:
     """Headings, fields (section, key) -> value, title, sentences and IDs of one document."""
     lines = text.splitlines()
     headings: list[str] = []
+    levels: list[int] = []
     numbered = 0
     fields: "OrderedDict[tuple[str, str], str]" = OrderedDict()
     sentences: list[str] = []
@@ -123,6 +130,7 @@ def parse(text: str) -> dict:
                 numbered += 1
             if name:
                 headings.append(name)
+                levels.append(level)
                 if level <= 3:
                     section = name
             continue
@@ -154,7 +162,9 @@ def parse(text: str) -> dict:
         if prefix == "D":  # D-14, D-7: days before an event, not an ID
             continue
         ids.setdefault(prefix, set()).add(num)
+    top = min(levels, default=0)
     return {"title": title, "headings": headings, "numbered": numbered, "fields": fields,
+            "top_headings": [h for h, lv in zip(headings, levels) if lv == top],
             "sentences": sentences, "ids": ids}
 
 
@@ -162,6 +172,9 @@ def shape(value: str) -> str:
     return re.sub(r"\d+", "#", value)
 
 
+# A document's own revision (1.1, 1.2, 1.3 across three specs) is not a counter shared by the series:
+# a new document starts at its own first version.
+VERSION_KEY = re.compile(r"^(버전|개정|판|version|ver\.?|rev(ision)?\.?)$", re.I)
 COUNTER_KEY = re.compile(r"번호|ID|No\.?$|코드|차수|주차|제목|파일", re.I)
 AMOUNT = re.compile(r"[원%억만]|\$|KRW|USD")
 
@@ -170,6 +183,9 @@ def classify(values: list[str], key: str = "") -> tuple[str, str]:
     """Return (kind, what to do in a new document) for one field across the examples."""
     if len(set(values)) == 1:
         return "same", values[0]
+    if VERSION_KEY.match(key.strip()) and all(re.fullmatch(r"v?\d+(\.\d+)*", v.strip(), re.I) for v in values):
+        v = "v" if any(x.strip().lower().startswith("v") for x in values) else ""
+        return "version", f"{v}0.1 (초안) / {v}1.0 (확정본)"
     if all(DATE.match(v) for v in values):
         return "date", ""
     shapes = {shape(v) for v in values}
@@ -256,6 +272,56 @@ def compare(paths: list[Path]) -> dict:
     return out
 
 
+BLANK = re.compile(r"확인\s*필요|TBD|\?\?|XXX|\{\{", re.I)
+
+
+def check(paths: list[Path], new: Path) -> list[str]:
+    """Problems that keep `new` from following the examples' format (empty list = follows it)."""
+    r = compare(paths)
+    d = parse(read(new))
+    problems: list[str] = []
+    required = [s["heading"] for s in r["sections"] if s["label"] == "required"]
+    missing = [h for h in required if h not in d["headings"]]
+    if missing:
+        problems.append("빠진 필수 섹션: " + ", ".join(missing))
+    present = [h for h in d["headings"] if h in required]
+    if not missing and present != required:
+        problems.append("필수 섹션 순서가 예시와 다름. 예시 순서: " + " → ".join(required))
+    known = {x["heading"] for x in r["sections"]}
+    extra = [h for h in d["top_headings"] if h not in known]
+    if extra and required and len(r["documents"]) > 1:
+        problems.append("예시에 없는 섹션: " + ", ".join(extra) + " (예시의 섹션 안에 하위 내용으로 넣기. "
+                        "화면 구성·디자인은 design-format.md 와 시안에 있으니 명세에 따로 두지 않아도 됨)")
+    if r["numbered_headings"] == len(r["documents"]) and d["headings"] and not d["numbered"]:
+        problems.append("예시는 섹션 제목에 번호(1. 2. …)를 붙이는데 새 문서에는 없음")
+    for f in r["fields"]:
+        if f["section"] or f["kind"] not in ("same", "sequence") or f["in"] < len(r["documents"]):
+            continue
+        key = f["field"]
+        if key == "파일 이름":
+            value = new.stem
+        elif key == "제목 (# 첫 줄)":
+            value = d["title"]
+        else:
+            value = d["fields"].get(("", key))
+            if value is None:
+                problems.append(f"머리말 항목 없음: '{key}' (예시: {f['examples'][-1]})")
+                continue
+        if f["kind"] == "sequence" and (BLANK.search(value) or not re.search(r"\d", value)):
+            problems.append(f"'{key}' 값이 비어 있음: {value}. 예시가 순번이므로 다음 번호 {f['new']} 를 쓰고, "
+                            "번호를 따로 받는 팀이면 넘길 때 한 줄로 확인받기")
+    for i in r["ids"]:
+        if i.get("per_document") or not i["highest"]:
+            continue
+        nums = d["ids"].get(i["prefix"], set())
+        top = int(i["highest"].rsplit("-", 1)[1])
+        if nums and all(int(x) <= top for x in nums) and i["prefix"] + "-" in new.stem:
+            problems.append(f"{i['prefix']} 번호가 기존 문서와 겹치거나 작음: 새 문서는 {i['next']}")
+    if re.search(r"[\[\]{}<>?*\\:\"|]|\s", new.name):
+        problems.append(f"파일 이름에 괄호·공백 등 쓰기 어려운 글자가 있음: {new.name}")
+    return problems
+
+
 KIND_KO = {
     "same": ("모든 예시에서 같음", "기본값으로 그대로: {new}"),
     "sequence": ("순번 (하나씩 늘어남)", "가장 최근 문서 다음 값 (예시 기준: {new})"),
@@ -263,6 +329,7 @@ KIND_KO = {
     "shape": ("모양은 같고 숫자만 다름", "모양 유지: {new}"),
     "varies": ("매번 다름", "요청에서 받음. 없으면 [확인 필요]"),
     "once": ("한 예시에만 있음", "선택 항목. 사람에게 확인"),
+    "version": ("문서마다 따로 매기는 버전", "새 문서의 첫 버전: {new}. 다른 문서 버전을 잇지 않음"),
 }
 LABEL_KO = {"required": "필수", "common": "대부분", "varies": "가끔"}
 
@@ -305,13 +372,36 @@ def to_markdown(r: dict, skipped: list[str]) -> str:
 def main(argv: list[str]) -> int:
     as_json = "--json" in argv
     args = [a for a in argv if a != "--json"]
+    new = None
+    if "--check" in args:
+        k = args.index("--check")
+        if k + 1 >= len(args):
+            print("--check 다음에 새 문서 경로를 주세요.", file=sys.stderr)
+            return 2
+        new = Path(args[k + 1])
+        args = args[:k] + args[k + 2:]
     if not args or args[0] in ("-h", "--help"):
         print(__doc__)
         return 0 if args else 2
     files, skipped = collect(args)
+    if new is not None:
+        files = [f for f in files if f.resolve() != new.resolve()]
     if len(files) < 2:
         print(f"비교하려면 같은 종류의 문서가 2개 이상 필요합니다 (읽은 문서 {len(files)}개).", file=sys.stderr)
         return 2
+    if new is not None:
+        if not new.is_file():
+            print(f"새 문서가 없습니다: {new}", file=sys.stderr)
+            return 2
+        problems = check(files, new)
+        if as_json:
+            print(json.dumps({"document": new.name, "problems": problems}, ensure_ascii=False, indent=1))
+        elif problems:
+            print(f"# 양식 점검: {new.name} (예시 {len(files)}개 기준)\n")
+            print("\n".join(f"- {p}" for p in problems))
+        else:
+            print(f"양식 점검 통과: {new.name} (예시 {len(files)}개 기준)")
+        return 1 if problems else 0
     result = compare(files)
     if as_json:
         print(json.dumps({**result, "skipped": skipped}, ensure_ascii=False, indent=1))

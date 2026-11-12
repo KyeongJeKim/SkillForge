@@ -10,7 +10,7 @@
       "name": "skillforge",
       "source": "./plugins/skillforge",
       "description": "Talk through what you need; SkillForge works out whether it should be a Skill, MCP server, Plugin or Harness, asks for what is missing, then builds and validates it.",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "category": "productivity",
       "tags": ["skills", "mcp", "plugins", "harness", "generator"]
     }

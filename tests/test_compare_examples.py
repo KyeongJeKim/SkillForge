@@ -137,5 +137,86 @@ class Cli(unittest.TestCase):
             self.assertIn("앱 \\| 웹", rows[0])  # escaped again so the table keeps 6 columns
 
 
+class CheckNewDocument(unittest.TestCase):
+    """--check: a new document written in the examples' format (2026-11-12, h-pos-design left the
+    function ID as [확인 필요] and put brackets in the file name although FS-POS-022 was next)."""
+
+    SPECS = FIX / "pos" / "specs"
+
+    def good(self) -> str:
+        text = (self.SPECS / "FS-POS-021.md").read_text(encoding="utf-8")
+        return text.replace("FS-POS-021", "FS-POS-022").replace("부분 환불", "포인트 적립")
+
+    def run_check(self, name: str, text: str) -> tuple[int, str]:
+        with tempfile.TemporaryDirectory() as tmp:
+            new = Path(tmp) / name
+            new.write_text(text, encoding="utf-8")
+            res = subprocess.run([sys.executable, str(SCRIPT), str(self.SPECS), "--check", str(new)],
+                                 capture_output=True, text=True, encoding="utf-8")
+            return res.returncode, res.stdout + res.stderr
+
+    def test_next_number_in_format_passes(self):
+        code, out = self.run_check("FS-POS-022.md", self.good())
+        self.assertEqual(code, 0, out)
+        self.assertIn("통과", out)
+
+    def test_blank_id_and_bracket_file_name_fail_with_next_number(self):
+        text = self.good().replace("FS-POS-022", "FS-POS-[확인 필요]")
+        code, out = self.run_check("FS-POS-[확인필요]-포인트적립.md", text)
+        self.assertEqual(code, 1, out)
+        self.assertIn("기능 ID", out)
+        self.assertIn("FS-POS-022", out)
+        self.assertIn("괄호", out)
+
+    def test_missing_and_reordered_sections(self):
+        text = self.good()
+        no_offline = text.split("## 6. 오프라인 동작")[0] + "## 7." + text.split("## 7.")[1]
+        code, out = self.run_check("FS-POS-022.md", no_offline)
+        self.assertEqual(code, 1)
+        self.assertIn("오프라인 동작", out)
+        a, b = text.index("## 5. 예외 처리"), text.index("## 6. 오프라인 동작")
+        swapped = text[:a] + text[b:text.index("## 7.")] + text[a:b] + text[text.index("## 7."):]
+        code, out = self.run_check("FS-POS-022.md", swapped)
+        self.assertEqual(code, 1)
+        self.assertIn("순서", out)
+
+    def test_extra_top_level_section_is_flagged_but_subsection_is_fine(self):
+        text = self.good()
+        appendix = text + "\n## 부록: 화면 구성\n- 태블릿 가로\n"
+        code, out = self.run_check("FS-POS-022.md", appendix)
+        self.assertEqual(code, 1, out)
+        self.assertIn("부록", out)
+        sub = text.replace("## 5. 예외 처리", "### 4.1 화면 구성\n- 태블릿 가로\n\n## 5. 예외 처리")
+        self.assertEqual(self.run_check("FS-POS-022.md", sub)[0], 0)
+        wedged = text.replace("## 4. 기능 상세", "## 4. 화면 구성\n- 태블릿 가로\n\n## 5. 기능 상세")
+        code, out = self.run_check("FS-POS-022.md", wedged)
+        self.assertEqual(code, 1, out)
+        self.assertIn("화면 구성", out)
+
+    def test_version_is_not_continued_from_other_documents(self):
+        r = ce.compare(sorted(self.SPECS.glob("*.md")))
+        self.assertEqual(field(r, "버전")["kind"], "version")  # 1.1, 1.2, 1.3 are each spec's own revision
+        self.assertEqual(field(r, "기능 ID")["kind"], "sequence")
+        code, out = self.run_check("FS-POS-022.md", self.good().replace("| 버전 | 1.3 |", "| 버전 | 0.1 |"))
+        self.assertEqual(code, 0, out)
+
+    def test_reused_number_is_flagged(self):
+        text = self.good().replace("FS-POS-022", "FS-POS-015")
+        code, out = self.run_check("FS-POS-015-copy.md", text)
+        self.assertEqual(code, 1)
+        self.assertIn("FS-POS-022", out)
+
+    def test_new_document_inside_examples_folder_is_not_its_own_example(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for f in self.SPECS.glob("*.md"):
+                (Path(tmp) / f.name).write_text(f.read_text(encoding="utf-8"), encoding="utf-8")
+            new = Path(tmp) / "FS-POS-022.md"
+            new.write_text(self.good(), encoding="utf-8")
+            res = subprocess.run([sys.executable, str(SCRIPT), tmp, "--check", str(new)],
+                                 capture_output=True, text=True, encoding="utf-8")
+            self.assertEqual(res.returncode, 0, res.stdout)
+            self.assertIn("예시 3개", res.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()

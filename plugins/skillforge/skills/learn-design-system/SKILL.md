@@ -15,6 +15,11 @@ Ask the person to hide customer names, prices they consider confidential and oth
 data before sharing. They can paste a screenshot into the terminal (Ctrl+V, or Cmd+V on Mac),
 drag image files in, or give a folder path. Look in the current folder first (e.g. `examples/`).
 
+Also look next to the screenshots for the team's existing **screen or function specs**
+(기능명세서, 화면 정의서, e.g. `examples/specs/`, `FS-*.md`, `.docx`, `.hwpx`). If there are two or
+more, the new page spec is written in their format (step 5), so read them now, not after designing.
+What they settle shortens step 4 but does not replace it: still confirm, ask, and play back before designing.
+
 ## 2. Extract the design format
 
 From the screenshots, record what you can actually see. Mark estimates as estimates.
@@ -63,7 +68,22 @@ corrects a value or a rule, change it in every file that carries it.
 Produce:
 
 1. A **page spec**: purpose, users, entry points, layout, components, states, copy, edge cases.
-   If the team has a function-spec format (from `learn-doc-conventions`), write it in that format.
+   **If the team has existing specs** (found in step 1, or a format from `learn-doc-conventions`),
+   write the page spec as the next document of that series, not in a format of your own:
+   - First compare them (`python3` may be `python` or `py -3` on Windows):
+     `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/compare_examples.py" <spec folder or files>`
+   - Keep every section with the same names, numbering and order, and the same header table, and
+     add no sections of your own (no appendix). Put screen content inside the matching sections
+     (화면 흐름, 기능 상세, 예외 처리 …); the visual details already live in `design-format.md` and
+     the prototype. A document's own version (버전) starts fresh (0.1 for a draft), not after the
+     examples' versions.
+   - A field the comparison calls a sequence (기능 ID, file name) takes the **next number** it
+     reports (e.g. FS-POS-022), with requirement rows numbered the same way (FS-POS-022-01 …).
+     Never leave the ID as `[확인 필요]`; if the team assigns numbers elsewhere, use the next number
+     and say in the hand-over that it is provisional. Name the file like the examples
+     (`FS-POS-022.md`, or the examples' pattern), with no brackets or spaces.
+   - Check it, fix what it lists, and repeat until it passes:
+     `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/compare_examples.py" <spec folder or files> --check <new spec>`
 2. A **prototype** as one self-contained HTML file (no external fonts, scripts or images) sized for
    the target screen, using only the colors, type, spacing and components from `design-format.md`.
    Include the main flow and the key states (empty, error, approval), switchable for review.
@@ -85,6 +105,9 @@ Produce:
      </script>
      ```
 3. A short note on how it compares to the leaders (table stakes met, improvements added).
+
+In the hand-over, say in one line which format the spec follows (e.g. "기존 명세서 3개와 같은
+7개 섹션, 번호는 FS-POS-022").
 
 Before hand-over, check the prototype in every state against each rule in `design-format.md`
 (for example "one primary button per screen") and against the text-fit rules above, and fix what
