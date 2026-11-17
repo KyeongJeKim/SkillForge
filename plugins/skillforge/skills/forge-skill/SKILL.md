@@ -24,6 +24,9 @@ Packaging an existing skill as a ZIP (step 11 alone) needs no spec.
    and say so in the hand-over (personal skills load in every other project they open).
 2. **Copy** [templates/SKILL.template.md](templates/SKILL.template.md) to `<location>/SKILL.md`
    and replace every `{{SF: ...}}` blank. Delete optional lines you don't need.
+   Also copy [templates/corrections.md](templates/corrections.md) unchanged to
+   `<location>/corrections.md`: the skill reads it before every result and adds the person's
+   "다음부터는 ~" rules to it, so it exists from day one (the validator fails a skill without it).
 3. **Description** (the only thing Claude sees before deciding to load the skill):
    - First sentence: what it does. Then "Use when ..." with the real phrases people say, in their
      language (Korean and English if the team uses both). Add "Do not use for ..." if a nearby

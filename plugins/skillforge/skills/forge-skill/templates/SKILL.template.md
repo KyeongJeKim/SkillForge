@@ -16,7 +16,7 @@ description: "{{SF: What this skill does, in one sentence.}} Use when {{SF: the 
 
 ## Procedure
 
-1. If `corrections.md` exists in this skill's folder, read it first and follow every rule in it.
+1. Read `corrections.md` in this skill's folder first and follow every rule in it (if it is missing, go on).
 2. Read the request and collect the inputs above. If a required input is missing, still write the
    full draft: put `[확인 필요: ...]` where the value belongs, then list those items at the end.
    Ask questions after the draft, not before, unless the request is too vague to start. An input
@@ -50,8 +50,8 @@ description: "{{SF: What this skill does, in one sentence.}} Use when {{SF: the 
 
 1. Apply the correction to the current result right away.
 2. If it should hold next time too (they say 다음부터, 항상, 앞으로, or correct the same thing
-   twice), add one line to `corrections.md` in this skill's folder (create it if missing):
-   `- YYYY-MM-DD: <the rule in their words>`. Write the rule only, never customer data,
+   twice), add one line under `## 규칙` in `corrections.md` in this skill's folder (create it if
+   missing; replace `(아직 없음)`): `- YYYY-MM-DD: <the rule in their words>`. Write the rule only, never customer data,
    confidential numbers or the document's content.
 3. If that folder can't be written, skip the log and say in one line that SkillForge can make the
    change permanent ("이 스킬 개선해 줘").

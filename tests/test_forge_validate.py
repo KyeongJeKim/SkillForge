@@ -202,7 +202,9 @@ class SkillChecks(TempDir):
         self.assertTrue(self.check(text).ok)
 
     def test_korean_trigger_clause_accepted(self):
-        text = '---\nname: prd-writer\ndescription: "PRD를 팀 양식으로 씁니다. PRD 써 달라고 할 때 사용합니다."\n---\n\nbody\n'
+        text = ('---\nname: prd-writer\ndescription: "PRD를 팀 양식으로 씁니다. PRD 써 달라고 할 때 사용합니다."\n---\n\n'
+                'body; rules the person adds go to corrections.md\n')
+        write(self.tmp / "prd-writer" / "corrections.md", "## 규칙\n")
         self.assertEqual(self.check(text).warnings, [])
 
     def test_crlf_and_bom(self):
@@ -220,9 +222,30 @@ class SkillChecks(TempDir):
         # Keeping the Office-files lines without copying the script is the mistake the validator catches.
         self.assertTrue(any("extract_text.py" in e for e in self.check(filled, "promo-plan").errors))
         write(self.tmp / "promo-plan" / "scripts" / "extract_text.py", "")
+        # The template's correction steps need the corrections.md that forge-skill copies next to it.
+        self.assertTrue(any("corrections.md" in e for e in self.check(filled, "promo-plan").errors))
+        shutil.copy(SKILLS / "forge-skill" / "templates" / "corrections.md", self.tmp / "promo-plan")
         rep = self.check(filled, "promo-plan")
         self.assertEqual(rep.errors, [])
         self.assertEqual(rep.warnings, [])
+
+    def test_corrections_file_required_when_skill_uses_it(self):
+        text = GOOD_SKILL + "\n## When the person corrects a result\n\nAdd the rule to `corrections.md`.\n"
+        self.assertTrue(any("corrections.md" in e for e in self.check(text).errors))
+        write(self.tmp / "prd-writer" / "corrections.md", "# 수정 기록\n\n## 규칙\n\n(아직 없음)\n")
+        rep = self.check(text)
+        self.assertEqual(rep.errors, [])
+        self.assertFalse(any("corrections" in w for w in rep.warnings))
+
+    def test_skill_without_corrections_section_warns(self):
+        rep = self.check(GOOD_SKILL)
+        self.assertEqual(rep.errors, [])
+        self.assertTrue(any("corrections.md" in w for w in rep.warnings))
+
+    def test_corrections_template_has_no_blanks(self):
+        text = (SKILLS / "forge-skill" / "templates" / "corrections.md").read_text(encoding="utf-8")
+        self.assertNotRegex(text, SF)
+        self.assertIn("## 규칙", text)
 
     def test_unfilled_skill_template_fails(self):
         tpl = (SKILLS / "forge-skill" / "templates" / "SKILL.template.md").read_text(encoding="utf-8")

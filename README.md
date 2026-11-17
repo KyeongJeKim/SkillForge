@@ -155,7 +155,7 @@ skillforge/
 │   ├── .claude-plugin/plugin.json
 │   ├── skills/
 │   │   ├── forge-intake/               # 인터뷰, 빠진 정보, 유형 추천·설명
-│   │   ├── forge-skill/                # Skill 생성 + SKILL.template.md
+│   │   ├── forge-skill/                # Skill 생성 + SKILL.template.md, corrections.md
 │   │   ├── forge-mcp/                  # MCP 서버 생성 + Python 템플릿 (MCP SDK 2.x)
 │   │   ├── forge-plugin/               # Plugin 생성 + plugin/marketplace 템플릿
 │   │   ├── forge-harness/              # Harness 생성 + 에이전트·훅 템플릿, 필수 섹션 점검 스크립트

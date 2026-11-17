@@ -206,6 +206,24 @@ def _check_script_refs(text: str, skill_dir: Path, skill_md: Path, rep: Report, 
                             "script into this skill's scripts/ and run it as ${CLAUDE_SKILL_DIR}/scripts/<file>")
 
 
+def _check_corrections(body: str, skill_dir: Path, skill_md: Path, rep: Report, in_plugin: bool) -> None:
+    """A standalone skill that learns from corrections must ship its corrections.md.
+
+    2026-11-16: reviewers flagged 7 generated skills whose SKILL.md says to read and keep rules in
+    corrections.md while the folder had none, so the person could not see where corrections go.
+    Skills inside a plugin are not checked: their folder is usually a read-only install.
+    """
+    if in_plugin:
+        return
+    if "corrections.md" in body:
+        if not (skill_dir / "corrections.md").is_file():
+            rep.error(skill_md, "keeps the person's rules in corrections.md, but the file is missing; copy "
+                                "forge-skill's templates/corrections.md into this skill's folder")
+    else:
+        rep.warn(skill_md, "has no 'When the person corrects a result' section (corrections.md); "
+                           "the skill will not remember what the person corrects")
+
+
 def _inside_plugin(skill_dir: Path) -> bool:
     """True when the skill sits in <plugin>/skills/<name>/, where ${CLAUDE_PLUGIN_ROOT} is set."""
     parent = skill_dir.resolve().parent
@@ -258,6 +276,7 @@ def check_skill(skill_dir: Path, rep: Report, in_plugin: bool | None = None) -> 
         rep.error(skill_md, "body is empty")
     _check_links(body, skill_dir, skill_md, rep)
     _check_script_refs(body, skill_dir, skill_md, rep, in_plugin)
+    _check_corrections(body, skill_dir, skill_md, rep, in_plugin)
     for f in skill_dir.rglob("*"):
         # Files named *.template.* are SkillForge's own blanks and are expected to hold placeholders.
         if f.is_file() and f.suffix in {".md", ".py", ".json", ".txt", ".html"} and f != skill_md \
