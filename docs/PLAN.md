@@ -93,7 +93,7 @@
 | 대화로 필요 파악, 부족한 정보 안내 | `forge-intake` skill |
 | 추천 방식 / 선택 방식 | `forge-intake` (유형 설명: `reference/artifact-types.md`) |
 | Skill · MCP · Plugin · Harness 자동 생성 | `forge-skill`, `forge-mcp`, `forge-plugin`, `forge-harness` + 템플릿 |
-| 생성 결과 검증 | `scripts/forge_validate.py` (모든 생성 skill이 사용; 스킬이 실행하는 스크립트가 스킬 안에 있는지, 따로 쓰는 스킬이 SkillForge 경로를 쓰지 않는지도 확인, v0.3.3; 수정 기록을 쓰는 스킬에 `corrections.md` 가 있는지 확인, v0.3.5) |
+| 생성 결과 검증 | `scripts/forge_validate.py` (모든 생성 skill이 사용; 스킬이 실행하는 스크립트가 스킬 안에 있는지, 따로 쓰는 스킬이 SkillForge 경로를 쓰지 않는지도 확인, v0.3.3; 수정 기록을 쓰는 스킬·MCP 서버에 `corrections.md` 가 있는지 확인, v0.3.5·v0.3.6) |
 | 문서 예시에서 convention 추출 | `learn-doc-conventions` (값 채우기 규칙: `scripts/compare_examples.py`, v0.3.1; 재사용 요청이면 forge-intake 를 먼저, v0.3.2); 예시가 Word·Excel·PowerPoint·한글 파일이면 만든 스킬에 `extract_text.py` 를 함께 넣음, v0.3.3) |
 | 화면 screenshot에서 디자인 양식 추출, 선두 기업 비교 | `learn-design-system` (기존 명세서가 있으면 새 화면 명세를 그 다음 번호·같은 섹션으로 쓰고 `compare_examples.py --check` 로 점검, v0.3.4) |
 | 서브팀별 출발점 | `templates/teams/` (데이터·개발, 이커머스, PM·QA, POS) |
@@ -198,4 +198,5 @@ SkillForge는 **스스로를 재고, 가장 약한 곳을 고치고, 다시 재�
 ### 12-2. 만들어진 결과물: 사용자의 수정에서 배우기
 
 - SkillForge가 만든 스킬은 사용자가 결과를 고치면서 "다음부터는 ~" 처럼 말하면, 그 규칙을 스킬 폴더의 `corrections.md` 에 한 줄로 남기고 다음 결과부터 따릅니다. 이 파일은 스킬을 만들 때 빈 양식(`## 규칙`)으로 함께 만들어 두므로, 사람이 어디에 쌓이는지 처음부터 볼 수 있습니다(v0.3.5). 고객 정보나 문서 내용은 남기지 않고 규칙만 남깁니다.
+- MCP 서버도 같은 방식으로 배웁니다(v0.3.6). 서버 폴더에 `corrections.md` 를 함께 만들고, 서버가 켜질 때 그 규칙을 Claude Code에 서버 안내문(instructions)으로 함께 알려 줍니다. 그래서 "다음부터 금액은 만 원 단위로" 처럼 한 번 말한 규칙이 다음 대화에서도 지켜집니다. 화면 설계(`learn-design-system`)는 `design-format.md` 옆의 `corrections.md` 에 규칙을 남기고, 고친 내용이 `design-format.md` 와 어긋나면 그 파일도 함께 고칩니다.
 - "이 스킬 개선해 줘" 라고 하면 `forge-improve` 가 기록을 모아 고칠 내용을 보여 주고, 동의를 받아 스킬 본문에 반영합니다. 그 뒤 문제가 났던 예시와 예전에 잘 되던 예시를 둘 다 다시 돌려, **고친 곳은 나아지고 잘 되던 곳은 그대로일 때만** 남깁니다. 반영한 기록은 지우지 않고 `반영됨` 으로 옮깁니다.

@@ -14,6 +14,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 from pathlib import Path
 
@@ -383,8 +384,53 @@ class McpChecks(TempDir):
         d = self.tmp / "inventory"
         write(d / "server.py", text)
         shutil.copy(self.TPL / "requirements.txt", d / "requirements.txt")
+        shutil.copy(self.TPL / "corrections.md", d / "corrections.md")
         write(d / "README.md", "# inventory\n")
         return d
+
+    def test_missing_corrections_file_fails(self):
+        d = self._server(self._filled())
+        (d / "corrections.md").unlink()
+        rep = run("mcp", d)
+        self.assertTrue(any("corrections.md" in e for e in rep.errors), rep.errors)
+
+    def test_no_corrections_rules_warns(self):
+        text = "\n".join(line for line in self._filled().splitlines() if "corrections.md" not in line)
+        rep = run("mcp", self._server(text))
+        self.assertTrue(rep.ok, rep.errors)
+        self.assertTrue(any("corrections.md" in w for w in rep.warnings), rep.warnings)
+
+    def test_instructions_carry_saved_rules(self):
+        # Load the filled server with a stand-in MCP SDK and read what Claude Code would be told.
+        import types
+        seen = {}
+
+        class FakeServer:
+            def __init__(self, name, instructions=None):
+                seen["instructions"] = instructions
+
+            def tool(self):
+                return lambda fn: fn
+
+            def run(self):
+                pass
+
+        mods = {"mcp": types.ModuleType("mcp"), "mcp.server": types.ModuleType("mcp.server"),
+                "mcp.server.mcpserver": types.ModuleType("mcp.server.mcpserver"),
+                "mcp.server.mcpserver.exceptions": types.ModuleType("mcp.server.mcpserver.exceptions")}
+        mods["mcp.server.mcpserver"].MCPServer = FakeServer
+        mods["mcp.server.mcpserver.exceptions"].ToolError = RuntimeError
+        d = self._server(self._filled())
+        import runpy
+        with mock.patch.dict(sys.modules, mods):
+            runpy.run_path(str(d / "server.py"), run_name="check")
+            self.assertIn(str(d.resolve() / "corrections.md"), seen["instructions"])
+            self.assertNotIn("Rules the person gave earlier", seen["instructions"])
+            corr = d / "corrections.md"
+            corr.write_text(corr.read_text(encoding="utf-8").replace(
+                "(아직 없음)", "- 2026-11-18: 금액은 천 원 단위로"), encoding="utf-8")
+            runpy.run_path(str(d / "server.py"), run_name="check")
+            self.assertIn("- 2026-11-18: 금액은 천 원 단위로", seen["instructions"])
 
     def test_filled_template_passes(self):
         rep = run("mcp", self._server(self._filled()))

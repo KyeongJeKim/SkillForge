@@ -569,6 +569,14 @@ def check_mcp_server(target: Path, rep: Report) -> None:
             rep.warn(server, f"raises {', '.join(hidden)}; MCP SDK 2.x hides that message from Claude "
                              "(it sees only 'Error executing tool'). Raise ToolError from "
                              "mcp.server.mcpserver.exceptions for expected failures")
+    if "corrections.md" in text:
+        if not (server.parent / "corrections.md").is_file():
+            rep.error(server, "keeps the person's rules in corrections.md, but the file is missing; copy "
+                              "forge-mcp's templates/python/corrections.md next to server.py")
+    else:
+        # 2026-11-17: reviewers flagged MCP folders with no place for the person's corrections.
+        rep.warn(server, "has no corrections.md rules in its instructions; the server will not remember "
+                         "what the person corrects (see forge-mcp's server template _instructions())")
     req = server.parent / "requirements.txt"
     if not req.is_file():
         rep.warn(server.parent, "no requirements.txt (expected 'mcp>=2,<3')")

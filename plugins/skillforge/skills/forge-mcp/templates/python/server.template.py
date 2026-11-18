@@ -10,11 +10,36 @@ Register with Claude Code (all projects for this user):
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 
-mcp = MCPServer("{{SF: server-name}}")
+# The person's standing rules for this server ("다음부터 ~"). Claude Code reads the server's
+# instructions when the server starts, so a rule saved here applies in every later session.
+CORRECTIONS = Path(__file__).resolve().parent / "corrections.md"
+
+
+def _instructions() -> str:
+    """How Claude should use this server, plus every rule the person added to corrections.md."""
+    text = (
+        "{{SF: one or two sentences: what this server is for and which tool to call for which question}}\n"
+        "When the person corrects how results from this server are shown and says it should hold next "
+        "time (다음부터, 항상, 앞으로), apply it now and add one line '- YYYY-MM-DD: <the rule in their "
+        f"words>' under '## 규칙' in {CORRECTIONS} (replace '(아직 없음)'). Write the rule only, never "
+        "tokens, passwords or customer data. If that file can't be written, say in one line that "
+        "SkillForge can make the rule permanent (이 MCP 개선해 줘)."
+    )
+    try:
+        rules = CORRECTIONS.read_text(encoding="utf-8").split("## 규칙", 1)[1].strip()
+    except (OSError, IndexError):
+        rules = ""
+    if rules and rules != "(아직 없음)":
+        text += "\nRules the person gave earlier (follow every one):\n" + rules
+    return text
+
+
+mcp = MCPServer("{{SF: server-name}}", instructions=_instructions())
 
 TOKEN_ENV = "{{SF: ENV_PREFIX}}_TOKEN"
 

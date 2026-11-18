@@ -38,6 +38,10 @@ From the screenshots, record what you can actually see. Mark estimates as estima
 Write `design-format.md` with these sections plus a short "Do / Don't" list. This is the
 **constraint**: new work must not break it.
 
+Next to it, copy [templates/corrections.md](templates/corrections.md) unchanged as `corrections.md`
+(if one is already there, keep it). It holds the person's "다음부터 ~" rules about the format; read
+it together with `design-format.md` before every new design and follow every rule in it.
+
 ## 3. Benchmark against market leaders
 
 For the page or feature requested, find how leading products in the same space handle it
@@ -123,5 +127,13 @@ Improvements are expressed inside the team's format: new behavior, not a new vis
 Ask the person to check the design format and the prototype, and end the turn there; if they
 say they'll look later, that's the end of this step, not something to wait on. Then offer to package
 `design-format.md` as a Skill with `forge-skill`, so future pages follow it automatically.
+
+When the person corrects the design, fix every file that carries it right away. Then add one line
+under `## 규칙` in `corrections.md` (replace `(아직 없음)`), `- YYYY-MM-DD: <the rule in their words>`,
+whenever the correction should hold for later screens too: they say 다음부터, 항상 or 앞으로, they make
+the same kind of fix twice (for example removing items they didn't ask for), or the correction goes
+against a rule in `design-format.md`. In that last case also change that rule in `design-format.md`,
+so the two files never disagree. In the hand-over, say in one line which rules were kept there. When
+packaging as a Skill, copy the rules into the new skill's `corrections.md`.
 
 Write everything in the person's language. Don't delete files unless the person asks. Git and SkillForge files: run `git commit`, `git push` or create a repository only when the person's own words ask for it ("확인까지 해 주세요" or "마무리해 주세요" is not that). Never edit, commit or push SkillForge's own files (this plugin's folder or the SkillForge repository); if SkillForge itself has a problem, say so in the hand-over.

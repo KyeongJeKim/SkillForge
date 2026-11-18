@@ -34,6 +34,13 @@ asks about the hard parts and plays back the summary before anything is built.
    to `<name>/requirements.txt`. Replace every `{{SF: ...}}` blank; use one env prefix everywhere
    (e.g. `INVENTORY` → `INVENTORY_TOKEN`). Replace the example tool with one tool per operation.
    The template uses SDK 2.x (`from mcp.server.mcpserver import MCPServer`); keep `mcp.run()`.
+   Also copy [templates/python/corrections.md](templates/python/corrections.md) unchanged to
+   `<name>/corrections.md`, and keep `_instructions()`: Claude Code reads the server's instructions
+   at start, so the person's "다음부터 ~" rules saved there hold in every later session (the
+   validator fails a server that uses corrections.md without the file). Fill its first sentence with
+   what the server is for and which tool answers which question.
+   If you also make a skill that uses this server (a how-to-ask or report skill), build it with
+   `skillforge:forge-skill` so it gets its own `corrections.md` and correction step.
 3. **Design the tools:**
    - One clear verb per tool (`get_order`, `search_products`), typed parameters, and a docstring
      that says when to use it; Claude reads the docstring to choose tools.
@@ -87,7 +94,9 @@ asks about the hard parts and plays back the summary before anything is built.
    terminal (python.org installer with "Add python.exe to PATH", Store alias turned off). Say this
    in the README's Windows section, with `claude mcp add` and the `.venv\Scripts\python.exe` path as
    the fallback.
-6. **README.md** in `<name>/`: what it connects to, the tools, the env vars, install and registration.
+6. **README.md** in `<name>/`: what it connects to, the tools, the env vars, install and registration,
+   and one line that corrections said with 다음부터/항상 are kept in `corrections.md` and apply from the
+   next session.
 7. **Validate** and fix until it passes:
 
    ```bash
@@ -97,7 +106,8 @@ asks about the hard parts and plays back the summary before anything is built.
 ## Hand-over (in the person's language, short)
 
 The tools it exposes, the one thing they must do (set the token), whether it's registered, and what
-was checked. Remind them that write tools act on real data.
+was checked. Remind them that write tools act on real data. Add one line that if they say
+"다음부터는 ~" about how results are shown, the server remembers it (`corrections.md`).
 
 ## Rules
 
