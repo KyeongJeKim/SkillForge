@@ -136,3 +136,27 @@ class UserPluginLeakTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FreshWriteCheck(unittest.TestCase):
+    """2026-11-19: `cmd 2>&1` counted as writing a file, so a fresh turn that wrote nothing passed."""
+
+    def _check(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("check_eval", Path(__file__).resolve().parent / "e2e" / "check.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def test_stderr_merge_and_dev_null_are_not_writes(self):
+        wf = self._check().wrote_file
+        self.assertFalse(wf(['Bash {"command": "python3 calc.py data.csv 2>&1"}']))
+        self.assertFalse(wf(['Bash {"command": "ls reports 2>/dev/null; cat a.csv >/dev/null"}']))
+        self.assertFalse(wf(['Read {"file_path": "a.md"}']))
+
+    def test_real_writes_count(self):
+        wf = self._check().wrote_file
+        self.assertTrue(wf(['Write {"file_path": "reports/a.md"}']))
+        self.assertTrue(wf(['Bash {"command": "python3 make.py > reports/a.md 2>&1"}']))
+        self.assertTrue(wf(['Bash {"command": "echo x >> log.md"}']))
+        self.assertTrue(wf(['Bash {"command": "cat a | tee out.md"}']))

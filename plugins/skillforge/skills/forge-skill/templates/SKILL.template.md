@@ -21,6 +21,11 @@ description: "{{SF: What this skill does, in one sentence.}} Use when {{SF: the 
    full draft: put `[확인 필요: ...]` where the value belongs, then list those items at the end.
    Ask questions after the draft, not before, unless the request is too vague to start. An input
    the person wants asked for ("없으면 물어봐") is also asked right after the saved draft, first in the reply.
+   Input that looks off is not a reason to stop either: dates that don't match the request ("이번 주"
+   but last month's data), the same period as an earlier document, numbers that don't add up, or a
+   missing comparison period. Write the draft from the input as given, put one line at the top of the
+   file (`> 확인 필요: <what looks off>`), save it, and say it first in the reply. Never swap in other
+   data or invent numbers to make it fit.
 3. {{SF: Step}}
 4. {{SF: Step}}
 5. Save the result as a file named {{SF: file naming rule}} in {{SF: folder, default: current folder}}.
@@ -44,6 +49,7 @@ description: "{{SF: What this skill does, in one sentence.}} Use when {{SF: the 
 ## Edge cases
 
 - {{SF: Case, e.g. 정보가 빠진 요청}} → {{SF: what to do}}
+- 입력이 이상함 (요청한 기간과 날짜가 다름, 지난 문서와 같은 기간, 비교 기간 없음) → 받은 입력 그대로 초안을 저장하고, 맨 위 `> 확인 필요:` 한 줄과 답장 첫 줄에 알린다. 저장 전에 묻지 않는다.
 - {{SF: Case}} → {{SF: what to do}}
 
 ## When the person corrects a result

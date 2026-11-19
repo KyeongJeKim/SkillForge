@@ -47,7 +47,10 @@ Packaging an existing skill as a ZIP (step 11 alone) needs no spec.
    means: don't guess that value, leave it as written or `[확인 필요]`, save the draft, and put that
    question first in the reply. Write the skill's step that way, not as "stop and wait before
    writing"; only when the person says no draft may exist until they answer does the skill wait. A missing optional input (last year's data, a reference file)
-   leaves that part marked, never the whole draft. A check script reports problems next to the
+   leaves that part marked, never the whole draft. Odd input (dates that don't match the request,
+   the same period as the last document, a missing comparison period) is flagged in one
+   `> 확인 필요:` line at the top of the saved draft, never a stop; keep the template's line for this
+   in Procedure step 2 and Edge cases. A check script reports problems next to the
    draft; it never stops the draft from being written. Use `[확인 필요]` only for values the
    input really lacks; write what the input states plainly, and a team default as a default.
    **Save without asking:** when the result is a document or file, the skill writes it to the file in
@@ -86,7 +89,10 @@ Packaging an existing skill as a ZIP (step 11 alone) needs no spec.
 
 10. **Try it yourself:** follow the new skill once on a realistic example (use the person's examples
     if there are any) and check the result against the style guide, the quality bar and one edge case
-    from the spec. Phrase the trial the way the person would ("…정리해서 저장해 주세요"); it must end with the
+    from the spec. When the person gave a real input file (a query result, a CSV in `examples/`), the
+    trial runs on that file, never on made-up data in its place: if the skill refuses or stops on the
+    team's own input, that is a skill bug; fix it to save the draft with the problem flagged at the
+    top. Phrase the trial the way the person would ("…정리해서 저장해 주세요"); it must end with the
     file written and, when examples are Office files, with them read. If the skill stopped to ask
     before writing, fix the skill. Fix the skill if the result is off. Save the trial output somewhere clearly named (e.g. `skillforge-trial/`) and say so. Trial
     files must not change how the skill behaves later: anything that scans existing documents (next

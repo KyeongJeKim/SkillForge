@@ -54,6 +54,12 @@ C = critical, I = important, - = not needed. Columns: Skill / MCP / Plugin / Har
   2. 2024년 후디 파일은 구 양식 …") and ask "맞으면 '네', 다르면 번호만 알려 주세요". Confirmations are not
   questions, so this does not break the one-question rule, and it saves many turns. Score each
   confirmed item 2. Then ask one question per turn about what is still open.
+- **Edge-case options keep the draft.** When you ask what to do with odd or missing input (wrong
+  week, empty column, no comparison period), every option you offer still writes the draft and flags
+  the problem at the top (`> 확인 필요: ...`) and first in the reply. Never offer "보고서를 쓰지 않고
+  먼저 알림" as an option: a skill that refuses the team's usual input fails on day one. If the
+  person asks for no draft themselves, keep it, and tell them in one line that the skill will then
+  write nothing for that input.
 - **Aim for 5 to 10 turns.** Spend questions only where the answer changes what you build. Merge a
   tiny follow-up into the same turn rather than spending a new one.
 - **Examples beat questions.** When 5, 6 or 7 is open, ask for 2 to 5 recent documents or

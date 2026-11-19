@@ -63,8 +63,16 @@ def validate(kind: str, path: Path) -> tuple[bool, str]:
     return out.returncode == 0, (errors[0] if errors else (lines[-1] if lines else ""))
 
 
+def _bash_writes(cmd: str) -> bool:
+    """A shell redirect or tee into a file. `2>&1` and `>/dev/null` write nothing (2026-11-19: a
+    fresh turn that only ran `cmd 2>&1` and wrote no report passed as "wrote a file")."""
+    c = re.sub(r"\d?>&\d", "", cmd)
+    c = re.sub(r"[&\d]?>>?\s*/dev/null", "", c)
+    return bool(re.search(r">>?\s*[^\s>&|;]", c)) or "tee " in c
+
+
 def wrote_file(tools: list[str]) -> bool:
-    return any(t.startswith(("Write ", "Edit ")) or (t.startswith("Bash ") and (">" in t or "tee " in t))
+    return any(t.startswith(("Write ", "Edit ")) or (t.startswith("Bash ") and _bash_writes(t))
                for t in tools)
 
 
