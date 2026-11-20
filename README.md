@@ -134,6 +134,8 @@ Claude Code에서 아래 두 줄을 입력합니다.
 - **예시 비교** `compare_examples.py`: 예시 문서 2개 이상을 글자 그대로 비교해 늘 같은 값(프로젝트, 담당자), 하나씩 늘어나는 번호(W41 → W44),
   날짜, 매번 다른 값을 나눕니다. 만든 스킬은 이 표대로 칸을 채워서 `[확인 필요]` 는 정말 모르는 값에만 남깁니다.
   `--check <새 문서>` 는 새 문서가 예시 양식(섹션 이름·순서, 머리말 항목, 다음 번호, 파일 이름)을 지켰는지 점검합니다.
+- **다음 번호** `next_number.py`: 문서 번호가 이어지는 팀(promo-plan-03 → 04, FS-POS-021 → 022)이면 만든 스킬에 함께 넣어,
+  저장 폴더와 예시 폴더를 함께 훑어 다음 번호를 정합니다. 처음 쓰는 날 저장 폴더가 비어 있어도 01 로 돌아가지 않습니다.
   새 화면 명세는 이 점검을 통과할 때까지 고칩니다(예: 기존 FS-POS-021 다음은 FS-POS-022).
 - **단위 테스트** (`tests/`): 검증기, 템플릿, 훅 스크립트, Office·한글 문서 읽기, Claude 앱용 압축, 고정 시험지 잠금을 확인합니다. 표준 라이브러리만 씁니다.
 - **채점 장치** [`tests/e2e`](tests/e2e): 위 [자기개선](#-스스로-더-좋아집니다-rsi)에서 쓰는 시나리오, 가상 사용자, 채점 기준표, 시작 문구 점검입니다.
@@ -167,11 +169,13 @@ skillforge/
 │       ├── forge_validate.py           # 모든 생성 단계가 쓰는 검증기
 │       ├── extract_text.py             # .docx / .xlsx / .pptx / .hwpx / .hwp 텍스트 추출
 │       ├── compare_examples.py         # 예시 문서 비교: 늘 같은 값, 순번, 날짜, 매번 다른 값
+│       ├── next_number.py              # 번호가 이어지는 문서의 다음 파일 이름 (만든 스킬에 복사)
 │       └── package_skill.py            # Claude 앱(웹·데스크톱 채팅) 업로드용 스킬 압축
 ├── scripts/readme_assets.py            # README 이미지 빌드·넘침 검사
 └── tests/
     ├── test_forge_validate.py          # 단위 테스트
     ├── test_compare_examples.py        # 예시 비교 스크립트 단위 테스트
+    ├── test_next_number.py             # 다음 번호 스크립트 단위 테스트
     ├── test_readme_assets.py           # README 이미지 넘침·가림 검사
     └── e2e/                            # 채점 장치 (선택, Claude 사용량 발생)
         ├── scenarios/  heldout/        # 개발용 시나리오 / 고정 시험지 (수정 금지)

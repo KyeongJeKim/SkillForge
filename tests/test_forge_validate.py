@@ -223,6 +223,9 @@ class SkillChecks(TempDir):
         # Keeping the Office-files lines without copying the script is the mistake the validator catches.
         self.assertTrue(any("extract_text.py" in e for e in self.check(filled, "promo-plan").errors))
         write(self.tmp / "promo-plan" / "scripts" / "extract_text.py", "")
+        # Same for the numbering line: kept without next_number.py, the validator catches it.
+        self.assertTrue(any("next_number.py" in e for e in self.check(filled, "promo-plan").errors))
+        write(self.tmp / "promo-plan" / "scripts" / "next_number.py", "")
         # The template's correction steps need the corrections.md that forge-skill copies next to it.
         self.assertTrue(any("corrections.md" in e for e in self.check(filled, "promo-plan").errors))
         shutil.copy(SKILLS / "forge-skill" / "templates" / "corrections.md", self.tmp / "promo-plan")

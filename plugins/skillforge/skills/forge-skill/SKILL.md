@@ -63,7 +63,13 @@ Packaging an existing skill as a ZIP (step 11 alone) needs no spec.
    and write a `Fill rules` table into the skill's Output format, one row per header field:
    same in every example → write that value as the default; counts up → the next number after the
    newest such file in the save folder, or after the newest example when there is none (new files are
-   never saved into the examples folder; the examples only seed the number); date → the
+   never saved into the examples folder; the examples only seed the number). When the file name or
+   document ID is a counter (a week number or date comes from the request date instead), copy `${CLAUDE_PLUGIN_ROOT}/scripts/next_number.py` into
+   `<location>/scripts/` and write step 5 to run it before saving, with the pattern and every folder
+   that holds earlier documents (the save folder and the examples folder, by their real paths;
+   the template has the line): with "promo-plan-{N}", the save folder and `examples` it prints
+   `next: promo-plan-04`. A fresh session's save folder is often empty; without this the
+   series restarts at 01. Its Fill rules row says the same ("다음 번호: next_number.py 결과"). date → the
    request, else today; varies → the request, else `[확인 필요]`. A value is `[확인 필요]` only when
    its row says so and the request doesn't give it. Copy sentences that every example shares only when
    the person confirmed they are fixed wording, and never copy one period's content (last week's tasks,

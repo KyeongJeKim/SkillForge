@@ -32,6 +32,9 @@ description: "{{SF: What this skill does, in one sentence.}} Use when {{SF: the 
    Write the file now, in this turn, before asking anything: the person reviews the file itself.
    Never wait for a yes to save a new draft. Only replacing a file that already exists needs a yes;
    save under a new name instead (add `_v2`).
+   {{SF: Keep the next two lines only when the file name or document ID is a counter (not a week number or date) and copy next_number.py into scripts/; otherwise delete them and this note.}}
+   Get the number first: `python3 "${CLAUDE_SKILL_DIR}/scripts/next_number.py" "{{SF: name before the number, e.g. promo-plan-}}{N}" {{SF: save folder}} {{SF: examples folder}}`
+   and use its `next:` value in the file name and the document's ID field. Never start at 01 because the save folder is empty: the series goes on from the examples.
 6. Check the result against the quality bar below and fix what fails before handing it over.
 7. {{SF: Check step that runs a script from this skill's scripts folder on the saved file, or delete this step}}
 
@@ -39,7 +42,7 @@ description: "{{SF: What this skill does, in one sentence.}} Use when {{SF: the 
 
 {{SF: Exact structure of the result: sections in order, fields, tables, naming. Point to reference/style-guide.md when it exists.}}
 
-{{SF: Fill rules table when examples were compared (| 항목 | 채우는 법 |, e.g. | PM | 이영희 (기본값) |, | 주차 | 가장 최근 보고서 다음 번호 |, | 보고일 | 요청한 날짜, 없으면 오늘 |), or delete this line.}}
+{{SF: Fill rules table when examples were compared (| 항목 | 채우는 법 |, e.g. | PM | 이영희 (기본값) |, | 주차 | 가장 최근 보고서 다음 번호 |, | 파일 이름 | promo-plan-NN, NN 은 next_number.py 결과 |, | 보고일 | 요청한 날짜, 없으면 오늘 |), or delete this line.}}
 
 ## Quality bar
 
