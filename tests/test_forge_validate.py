@@ -391,6 +391,28 @@ class McpChecks(TempDir):
         write(d / "README.md", "# inventory\n")
         return d
 
+    def test_readme_stand_in_paths_fail(self):
+        # 2026-11-21: hand-over READMEs left /abs/path and /절대경로/ for a non-developer to fill.
+        for bad in ("claude mcp add inventory -- /abs/path/inventory/.venv/bin/python /abs/path/inventory/server.py",
+                    "cd /절대경로/inventory",
+                    "claude mcp add inventory -- <이 폴더 경로>/.venv/bin/python <이 폴더 경로>/server.py",
+                    "python C:\\path\\to\\inventory\\server.py"):
+            d = self._server(self._filled())
+            write(d / "README.md", f"# inventory\n\n```bash\n{bad}\n```\n")
+            rep = run("mcp", d)
+            self.assertTrue(any("stand-in" in e for e in rep.errors), (bad, rep.errors))
+
+    def test_readme_real_path_and_announced_blank_pass(self):
+        d = self._server(self._filled())
+        write(d / "README.md", "# inventory\n\n```bash\nclaude mcp add inventory -s user -- "
+              "/Users/kj/work/inventory/.venv/bin/python /Users/kj/work/inventory/server.py\n```\n\n"
+              "- 주소: [확인 필요: 재고 시스템 API 주소 <경로> - 개발팀]\n"
+              "- 절대 경로는 이미 이 컴퓨터 기준으로 채워 두었습니다.\n"
+              "- 다른 컴퓨터: `cd inventory` 후 `claude mcp add inventory -s user -- \"$(pwd)/.venv/bin/python\" "
+              "\"$(pwd)/server.py\"`\n")
+        rep = run("mcp", d)
+        self.assertTrue(rep.ok, rep.errors)
+
     def test_missing_corrections_file_fails(self):
         d = self._server(self._filled())
         (d / "corrections.md").unlink()

@@ -72,6 +72,10 @@ asks about the hard parts and plays back the summary before anything is built.
    claude mcp add <name> -s user -e <PREFIX>_TOKEN=<value> -- /abs/path/<name>/.venv/bin/python /abs/path/<name>/server.py
    ```
 
+   In the README, write it so it works wherever the folder sits: `cd` into `<name>/` first, then
+   `-- "$(pwd)/.venv/bin/python" "$(pwd)/server.py"` (PowerShell: `"$PWD\.venv\Scripts\python.exe"`).
+   Don't paste the build session's absolute path (it may be a temporary folder, and the person may
+   move the folder), and never `/abs/path`.
    Run this only with the person's go-ahead, and let them type the token value themselves.
    Inside a plugin, use `.mcp.json` plus a sensitive `userConfig` entry so Claude Code asks each
    teammate for the token when they enable the plugin and stores it securely:
@@ -94,9 +98,22 @@ asks about the hard parts and plays back the summary before anything is built.
    terminal (python.org installer with "Add python.exe to PATH", Store alias turned off). Say this
    in the README's Windows section, with `claude mcp add` and the `.venv\Scripts\python.exe` path as
    the fallback.
-6. **README.md** in `<name>/`: what it connects to, the tools, the env vars, install and registration,
-   and one line that corrections said with 다음부터/항상 are kept in `corrections.md` and apply from the
-   next session.
+6. **README.md** in `<name>/`, in the person's language, written for the person first and the
+   developer second (the person may not know what a terminal is):
+   - **바로 쓰기** at the top: one line on what it connects to; what you already did (installed in
+     this folder, registered or not, checked with sample data or not); the **one** thing left and who
+     does it in plain words (e.g. "개발팀에서 API 주소와 토큰을 받아 오시면 됩니다"), with no command
+     unless the person runs it themselves; and two or three example questions to ask Claude
+     ("품절 임박 상품 보여 줘").
+   - **개발 담당용** below it: the tools, the env vars (names only), the values marked `# [확인 필요]`
+     in `server.py` and what to check, install and registration commands, and the Windows notes.
+   - Commands must run as written: `cd` into the folder, then `"$(pwd)/..."` paths. Never leave
+     `/abs/path`, `/절대경로/`, `<이 폴더 경로>` or `<owner>/<repo>` for the reader to fill; the
+     validator fails them. A secret the person types themselves is the env var name in words
+     ("`INVENTORY_TOKEN` 에 개발팀에서 받은 키"), not a value in the command. A value nobody knows yet is one
+     `[확인 필요: 무엇 - 누가 가진 값]` line.
+   - One line that corrections said with 다음부터/항상 are kept in `corrections.md` and apply from the
+     next session.
 7. **Validate** and fix until it passes:
 
    ```bash
@@ -105,8 +122,9 @@ asks about the hard parts and plays back the summary before anything is built.
 
 ## Hand-over (in the person's language, short)
 
-The tools it exposes, the one thing they must do (set the token), whether it's registered, and what
-was checked. Remind them that write tools act on real data. Add one line that if they say
+What they can ask Claude now, the one thing left and who does it (e.g. the dev team sends the
+address and token), whether it's registered, and what was checked, in the same plain words as the
+README's 바로 쓰기 part; no commands for a person who doesn't use a terminal. Remind them that write tools act on real data. Add one line that if they say
 "다음부터는 ~" about how results are shown, the server remembers it (`corrections.md`).
 
 ## Rules

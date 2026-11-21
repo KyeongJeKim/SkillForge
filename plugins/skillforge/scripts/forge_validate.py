@@ -51,6 +51,17 @@ SECRET_RE = re.compile(
     re.I,
 )
 PLUGIN_ROOT_RE = re.compile(r"\$\{CLAUDE_PLUGIN_ROOT\}/([^\s\"'`]+)")
+# Path and repository stand-ins that a generated README must not hand to a teammate (2026-11-21:
+# reviewers kept flagging `/abs/path`, `/절대경로/` and `<owner>/<repo>` in hand-over READMEs; a
+# non-developer cannot fill them). A line that says [확인 필요 ...] is an announced blank and is allowed.
+README_STANDIN_RE = re.compile(
+    r"/abs(?:olute)?/path|[/\\]path[/\\]to[/\\]|[/\\]절대\s*경로|절대경로[/\\]|"
+    r"<\s*(?:owner|org|organization|user(?:name)?|repo(?:sitory)?|path|folder|dir(?:ectory)?|"
+    r"소유자|조직|사용자|저장소|절대\s*경로|경로|폴더)(?:\s*(?:이름|주소|경로|위치))?\s*>|"
+    r"<[^<>\n]{0,20}(?:경로|폴더|저장소|절대)[^<>\n]{0,10}>|"
+    r"\byour[-_](?:org|user(?:name)?|repo|name|folder|path)\b",
+    re.I,
+)
 
 
 class Report:
@@ -583,9 +594,27 @@ def check_mcp_server(target: Path, rep: Report) -> None:
     readme = server.parent / "README.md"
     if not readme.is_file():
         rep.warn(server.parent, "no README.md with tools, env vars and the registration command")
+    _check_readme_standins(readme, rep)
 
 
 # ---------------------------------------------------------------- helpers
+
+def _check_readme_standins(readme: Path, rep: Report) -> None:
+    """Fail an MCP server README that still says /abs/path, /절대경로/ or <이 폴더 경로>."""
+    seen = rep.__dict__.setdefault("_readmes", set())
+    if not readme.is_file() or readme.resolve() in seen:
+        return
+    seen.add(readme.resolve())
+    for no, line in enumerate(readme.read_text(encoding="utf-8").splitlines(), 1):
+        if "확인 필요" in line:
+            continue
+        m = README_STANDIN_RE.search(line)
+        if m:
+            rep.error(f"{readme}:{no}", f"stand-in '{m.group(0)}' left for the reader to fill. Write a command that "
+                      "works as is: 'cd' into the server's folder, then \"$(pwd)/.venv/bin/python\" "
+                      "\"$(pwd)/server.py\". If a value truly is not known yet, say so on that line with "
+                      "[확인 필요: what - who has it]")
+
 
 def _check_plugin_name(name: str, where: Path, rep: Report) -> None:
     if not NAME_RE.match(name):
