@@ -57,7 +57,11 @@ def run_turn(prompt: str, cwd: str, plugin_dir: str | None, session: str | None 
                     inp = c.get("input") or {}
                     if c["name"] == "Skill":
                         rec["skills"].append(inp.get("skill"))
-                    rec["tools"].append(c["name"] + " " + json.dumps(inp, ensure_ascii=False)[:300])
+                    # Bash keeps more: a redirect late in a long command is how a file was written
+                    # (2026-11-22: a fresh turn wrote its minutes with a heredoc after ~600 chars and
+                    # was scored "wrote no file" because only the first 300 were kept).
+                    cap = 4000 if c["name"] == "Bash" else 300
+                    rec["tools"].append(c["name"] + " " + json.dumps(inp, ensure_ascii=False)[:cap])
                 elif c.get("type") == "text":
                     rec["text"].append(c["text"])
         if ev.get("type") == "result":

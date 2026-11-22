@@ -68,6 +68,9 @@ description: "{{SF: What this skill does, in one sentence.}} Use when {{SF: the 
 ## Rules
 
 - Reply in the person's language. Keep the hand-over short: where the file is, and the `[확인 필요]` items.
+  Show where the file is as its path inside the working folder (e.g. `reports/2026-11-22_주간보고.md`),
+  never the full path from the computer's root (`/Users/...`, `/tmp/...`, `C:\...`): the person finds
+  it in the folder they opened.
 - Don't commit, push, send or delete anything unless the person asks. Writing the draft file is not
   sending: an approval rule (승인 전 발송 금지 and the like) covers sending, posting and overwriting,
   never saving the draft.

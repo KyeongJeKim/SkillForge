@@ -19,6 +19,53 @@ SkillForge의 재귀적 자기개선(RSI) 기록입니다. 규칙은 [PLAN.md 12
 - 커밋: <링크>
 ```
 
+## 2026-11-22 (매일 루틴 16회차, 일요일 주간 전체 측정): 결과 파일 위치를 작업 폴더 안 경로로 안내, DB 서버는 연결부터 읽기 전용, 채점 장치의 파일 쓰기 오판 수리, 채택 (v0.3.10)
+
+- 모드: sweep 전체 34개 (sonnet / haiku / claude-sonnet-4-6 고정), 플러그인 v0.3.9 (`main` `766ef46`) 기준. 단위 테스트 134개(2개 건너뜀), `forge_validate.py` plugin·marketplace, `claude plugin validate`, 고정 시험지 해시 모두 통과로 시작.
+- 기준판 전체 측정 (v0.3.9)
+  - 시작 문구 개발 50/50, 고정 12/12.
+  - 개발 28/29. 실패 1개(pm-meeting-mindchange "새 세션이 파일을 쓰지 않음")는 **채점 장치 오판**: 회의록 파일은 실제로 저장돼 있었고, 새 세션이 긴 Bash 명령의 뒤쪽(약 600자 지점) heredoc 으로 썼는데 `drive.py` 가 도구 호출을 300자까지만 남겨 쓰기를 못 봤습니다. 실제로는 29/29.
+  - 개발 항목: 인터뷰 4.0 / 숨은 정답 4.86 / 팀 양식 4.41 / **바로 쓸 수 있는지 4.0** / 결과 문서 4.09 / 예외·안전 4.18.
+  - 고정 시험지 2회: 3/5 (h-pm-weekly-mindchange 평균 3.83, h-pos-design 10턴 한도), 5/5. 항목 평균(2회): 인터뷰 4.0 / 숨은 정답 5.0 / 팀 양식 4.2 / 바로 쓸 수 있는지 4.0 / 결과 문서 3.9 / 예외·안전 4.6.
+- 가장 약했던 곳: **만든 스킬이 결과 파일 위치를 컴퓨터 전체 경로(`/tmp/claude-0/...`, 실제 사용에선 `/Users/...`)로 알려 줌.** 결정적으로 센 값(점검 스크립트 프로젝트 폴더 `skillforge-routine/abspath-2026-11-22.py`): 새 세션(만든 스킬을 처음 쓰는 팀원) 답장 **17개 중 13개**(고정 3개 중 2개 포함), SkillForge 빌드 답장 234개 중 15개(SkillForge 밖 offtopic 2개 제외). 판정 지적도 pm-prd, pos-design-conflict, pos-screen-spec-skill, pos-spec-messy, ec-listing-lazy, h-pm-weekly-mindchange 에서 같은 내용. 11월 16일 배운 점 1(7건)·다음 할 일 2번이었는데 그동안 손대지 않았습니다.
+- 조사한 곳과 차용한 것
+  - 경로 안내: 11월 21일 배운 점(경로를 박지 않는 쪽이 맞음)과 Claude Code 가 작업 폴더 기준으로 파일을 보여 주는 방식. 코드 복사 없음.
+  - DB 읽기 전용(어제 다음 할 일 3번): [lukleh/mcp-read-only-sql](https://github.com/lukleh/mcp-read-only-sql) (MIT): PostgreSQL 연결에 `default_transaction_read_only=on`, 문장 시간 제한, "키워드 검사는 거름망일 뿐, 진짜 경계는 조회 전용 DB 계정". [shibbirweb/mcp-mysql-read-only](https://raw.githubusercontent.com/shibbirweb/mcp-mysql-read-only/HEAD/README.md) (MIT): 연결마다 `SET SESSION TRANSACTION READ ONLY` + 자동 커밋, 한 번에 한 문장, 돌려주는 행 수 제한. 아이디어만, 코드 복사 없음.
+- 바꾼 것 (3가지)
+  1. **결과 파일 위치 안내**: 만든 스킬 양식(`SKILL.template.md`) Rules 에 "파일 위치는 작업 폴더 안 경로(`reports/2026-11-22_주간보고.md`)로, 컴퓨터 전체 경로는 쓰지 않는다" 한 줄. `forge-skill` 전달 1번, `forge-intake` 규칙, `learn-design-system`, `forge-harness` 전달에도 같은 한 줄.
+  2. **DB 에 붙는 MCP 서버는 연결부터 읽기 전용**: 새 템플릿 `forge-mcp/templates/python/db_readonly.py` (`connect_postgres`: `default_transaction_read_only` + 문장 시간 제한 + 자동 커밋, `connect_mysql`: `SET SESSION TRANSACTION READ ONLY` + 자동 커밋, `connect_sqlite`: `mode=ro` + `query_only`, `check_sql()`: 읽기 문장 하나만, `fetch()`: 값은 params 로, 200행 제한, 날짜·소수는 글자로, 실패한 트랜잭션 정리). `forge-mcp` 3단계에 DB 항목. `forge_validate.py mcp`: DB 드라이버를 쓰는데 연결이 읽기 전용이 아니면 오류(`SET TRANSACTION READ ONLY` 처럼 SESSION 없는 것은 다음 트랜잭션 하나만 막으므로 불인정), 독스트링이 "데이터를 바꾼다"고 밝힌 쓰기 도구가 있으면 면제, 세션 스위치가 없는 DB(SQL Server, Snowflake 등)는 `check_sql` 이 없으면 경고. 이 컨테이너의 PostgreSQL 16 으로 직접 확인: DELETE·CREATE TABLE·`WITH ... DELETE`·`FOR UPDATE` 모두 DB 가 거부, 실패 뒤 다음 조회 정상(처음 판은 실패한 트랜잭션이 남아 다음 조회까지 막혀서 고침). **MySQL 은 서버가 없어 실행 확인 못 함**(문서 기준). 단위 테스트 5개.
+  3. **채점 장치 수리**: `drive.py` 가 Bash 명령을 4000자까지 남김(다른 도구는 300자 그대로). `check.py` 의 비밀 파일·push 검사는 예전처럼 앞 300자만 봐서, README 를 쓰는 heredoc 안의 "git push" 같은 글자를 push 로 오인하지 않음. 단위 테스트 1개(옛 `drive.py` 에선 실패, 새 것에선 통과).
+- 점수 전후
+  | 항목 | 기준 v0.3.9 | **변경 (채택, v0.3.10)** |
+  | --- | --- | --- |
+  | **새 세션 답장의 전체 경로** | **13/17** | **0/16** (재실행 포함) |
+  | SkillForge 빌드 답장의 전체 경로 (offtopic 제외) | 15/234 | 2/279 |
+  | 시작 문구 | 50/50, 12/12 | 50/50, 12/12 |
+  | 개발 통과 | 28/29 (오판 1, 실제 29/29) | 24/29 → 실패 4개 재실행 후 26/29 |
+  | 개발: 인터뷰 / 숨은 정답 / 팀 양식 | 4.0 / 4.86 / 4.41 | 4.0 / 4.95 / 4.41 |
+  | 개발: **바로 쓸 수 있는지** / 결과 문서 / 예외·안전 | 4.0 / 4.09 / 4.18 | 3.91 / 4.0 / 4.05 |
+  | 고정 통과 | 3/5, 5/5 | 4/5 (실패 h-data-kpi 재실행 통과) |
+  | 고정: 바로 쓸 수 있는지 / 결과 문서 / 팀 양식 | 4.0 / 3.9 / 4.2 (2회 평균) | 4.0 / 4.0 / 4.4 |
+  | 단위 테스트 | 134 | 140 |
+
+  개발 실패 5개와 고정 1개는 바뀐 내용과 닿지 않았습니다. dd-sql-review(18턴, 가상 사용자가 "실제 실행 기록을 원문 그대로" 를 반복; 11월 16일에도 같은 시나리오가 같은 식으로 18턴), pm-spec-review-harness(18턴, 사용자가 문구 확인을 9번 반복, $24), dd-vague-tired·dd-weekly-report·h-data-kpi 는 재실행에서 통과(dd-weekly-report 바로 쓸 수 있는지 5). ec-returns-harness 는 두 번 모두 3.83: 예시에 심긴 주입 문구를 사람에게 알리지 않음(기준판에도 같은 지적, 예외·안전 3), 만든 훅이 그 세션에선 다시 불러와야 켜짐. 바로 쓸 수 있는지 하락 4건(dd-sql-review, dd-vague-tired, ec-returns-harness, pm-spec-review-harness)도 이 시나리오들이고, 오른 4건(dd-catalog-mcp, ec-admin-screen, pos-screen-spec-skill, pos-spec-to-plugin) 중 pos-screen-spec-skill 은 경로 안내가 닿는 곳입니다. 판정 점수는 경로 지적이 사라진 시나리오에서도 대개 4 그대로였습니다(11월 16일 배운 점: 판정은 한 가지 소음 제거에 잘 반응하지 않음).
+  h-naive-mcp-secret: 만든 서버가 `db_readonly.py` 를 옆에 두고 `connect_postgres`/`connect_mysql` 과 `fetch` 를 씀, 검증 통과, 판정의 "읽기 전용이 풀림" 지적 사라짐(바로 쓸 수 있는지 4 → 4). 기준판 서버도 이미 세 DB 모두 읽기 전용으로 열었기 때문에 점수 차이는 기대하지 않았고, 앞으로 빠뜨리는 것을 검증기가 막는 쪽입니다.
+- 채택: 예 (v0.3.10). 목표인 새 세션의 전체 경로 노출이 13/17 → 0/16 으로 사라졌고, 고정 시험지의 바로 쓸 수 있는지(4.0 → 4.0)·결과 문서(3.9 → 4.0)·팀 양식(4.2 → 4.4)은 내려가지 않았습니다. 개발 통과 수와 바로 쓸 수 있는지 평균의 하락은 원인을 하나씩 확인한 결과 턴 한도 반복과 주입 문구 미보고(기준판에도 있던 지적)에서 나왔고, 재실행으로 3개가 통과로 돌아왔습니다. 규칙의 "아무것도 내려가지 않음"을 원값으로만 보면 개발 평균 0.09 하락이 남는다는 점을 그대로 적어 둡니다. 다음 회차에서 ec-returns-harness 와 개발 평균을 다시 보고, 내려가면 1번을 되돌립니다.
+- 기존 기능과의 충돌 확인: 단위 테스트 140개, `forge_validate.py` plugin·marketplace(경고 0), `claude plugin validate`, 고정 시험지 해시 그대로, 시험은 플러그인 복사본으로만(`plugin_untouched` 모두 true, 사용자 범위 MCP·플러그인 새어 나감 0, 결과 폴더 밖 쓰기 0). 기준판 결과물의 MCP 서버 4개에 새 검증기를 돌려 모두 통과(HTTP API 3개는 DB 검사 대상 아님, DB 서버 1개는 이미 읽기 전용).
+- 배운 점
+  1. **결정적으로 셀 수 있는 소음은 세어서 고칩니다.** 판정 메모에 흩어져 있던 "전체 경로" 지적은 로그를 세어 보니 새 세션 답장의 76% 였고, 한 줄 규칙으로 0 이 됐습니다. 판정 평균은 거의 움직이지 않으므로, 이런 항목은 센 값을 목표로 둡니다.
+  2. 채점 장치가 도구 입력을 자르면 긴 Bash 명령으로 쓴 파일을 놓칩니다. 자른 길이를 늘릴 때는 다른 검사(push·비밀 파일)가 새 글자에 오탐하지 않게 예전 범위를 유지해야 합니다.
+  3. 전체 측정은 시나리오마다 흔들림이 큽니다(같은 v0.3.9 고정 시험지가 같은 날 3/5 와 5/5). 개발 세트 실패는 재실행으로 가르고, 턴 한도 실패는 대화를 읽어 원인을 봅니다.
+  4. 판정 모델은 `${CLAUDE_SKILL_DIR}` 가 "보장되지 않는 변수"라고 5번 감점했지만, 새 세션 기록을 보면 실제로 스킬 폴더 경로로 바뀌어 실행됩니다. 판정의 오해입니다.
+- 다음에 시도할 것
+  1. 판정 요청에 하네스가 확인한 사실 추가: 새 세션에서 `${CLAUDE_SKILL_DIR}` 가 실제 경로로 바뀌어 실행됐는지(11월 12일 MCP import 확인과 같은 방식). 바꾼 뒤 기준판도 같은 판정으로 다시 매겨 비교.
+  2. ec-returns-harness: 예시 파일에서 지시문처럼 보이는 글을 찾으면 사람에게 한 줄로 알리기(기준판·변경판 모두 지적). 오늘 채택분 확인도 겸함.
+  3. 플러그인 README 의 저장소 주소(어제 다음 할 일 1번, 오늘 ec-returns-harness·pm-spec-review-harness 판정에도 `<owner>/<repo>` 지적): 저장소 폴더와 git origin 을 스크립트로 읽어 실제 값이 있을 때만 채우고, 없으면 "이 컴퓨터에서 먼저 써 보기" + `[확인 필요]` 한 줄.
+  4. 같은 내용을 여러 번 확인받는 대화(pm-spec-review-harness 9번, dd-sql-review)에서 "남은 확인을 한 번에 묶어 받을까요?" 한 번 묻기.
+- 연속 미채택: 0회 (오늘 채택). 14회가 되면 루틴을 멈춥니다.
+- 비용: 시험 약 $255 (기준판 전체 $97.4, 기준판 고정 2회차 $11.0, 변경판 전체 $124.1, 변경판 실패 4개 재실행 $22.4). 이 작업 세션 자체의 사용량은 빠져 있습니다. 약 3시간.
+- 커밋: 이 기록과 같은 커밋.
+
 ## 2026-11-21 (매일 루틴 15회차, 토요일 가벼운 측정): MCP 서버 README 를 "바로 쓰기(사람용) → 개발 담당용" 순서로, 자리표시 경로는 검증기가 오류로, 채택 (v0.3.9)
 
 - 모드: sweep (sonnet / haiku / claude-sonnet-4-6 고정), 플러그인 v0.3.8 (`main` `91f2365`) 기준. 단위 테스트 132개(2개 건너뜀), `forge_validate.py` plugin·marketplace, `claude plugin validate`, 고정 시험지 해시 모두 통과로 시작.

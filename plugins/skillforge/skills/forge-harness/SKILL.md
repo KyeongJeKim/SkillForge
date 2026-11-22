@@ -62,7 +62,7 @@ asks about the hard parts and plays back the summary before anything is built.
 ## Hand-over (in the person's language, short)
 
 The stages and who does each, the automatic checks, the approval points, that validation and the
-local install passed, and what's left for them.
+local install passed, and what's left for them. Name every file by its path inside the working folder (`.claude/skills/<name>/SKILL.md`, `reports/...`), never the full path from the computer's root (`/Users/...`, `/tmp/...`).
 
 ## Rules
 

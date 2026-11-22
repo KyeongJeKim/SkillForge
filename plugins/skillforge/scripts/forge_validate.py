@@ -523,6 +523,25 @@ def check_marketplace(repo_dir: Path, rep: Report) -> None:
             rep.error(mp, f"'{pname}' needs a 'source'")
 
 
+# 2026-11-21: the held-out reviewer said a generated POS sales server's read-only setting would not
+# hold once autocommit started new transactions. A server that talks to a database must make the
+# connection itself refuse writes (forge-mcp templates/python/db_readonly.py).
+DB_DRIVER_RE = re.compile(
+    r"^\s*(?:import|from)\s+(psycopg2?|asyncpg|pymysql|MySQLdb|mysql\.connector|aiomysql|sqlite3|aiosqlite|"
+    r"pyodbc|pymssql|oracledb|cx_Oracle|snowflake\.connector|sqlalchemy)\b", re.M)
+# Drivers with a per-connection switch that makes the database itself refuse writes.
+DB_SESSION_RO = {"psycopg", "psycopg2", "asyncpg", "pymysql", "MySQLdb", "mysql.connector", "aiomysql",
+                 "sqlite3", "aiosqlite"}
+DB_RO_MARKERS = re.compile(
+    # `SET TRANSACTION READ ONLY` without SESSION covers only the next transaction, so it is not enough.
+    r"default_transaction_read_only|SESSION\s+(?:CHARACTERISTICS\s+AS\s+)?TRANSACTION\s+READ\s+ONLY|"
+    r"mode=ro|query_only|read_?only\s*=\s*True|"
+    r"set_session\([^)]*readonly|connect_(?:postgres|mysql|sqlite)\(", re.I)
+# A write tool's docstring must say it changes data (forge-mcp step 3); only then is a writable
+# connection expected.
+WRITE_DOC_RE = re.compile(r"\bchanges?\s+(?:real\s+|the\s+)?data|\bwrites?\s+to\b|"
+                          r"(?:수정|변경|삭제|등록|저장)합니다|데이터를\s*(?:바꿉|바꾸|변경|수정)", re.I)
+
 # Built-in exceptions whose text MCP SDK 2.x does not pass to the client (only ToolError's is shown).
 HIDDEN_ERRORS = {
     "Exception", "RuntimeError", "ValueError", "KeyError", "LookupError", "TypeError",
@@ -571,6 +590,7 @@ def check_mcp_server(target: Path, rep: Report) -> None:
         rep.error(server, "never calls .run(); the server would exit immediately (add mcp.run() under __main__)")
     if SECRET_RE.search(text):
         rep.error(server, "looks like a hard-coded secret; read it from an environment variable")
+    _check_db_read_only(server, tools, rep)
     if "MCPServer" in text:
         hidden = sorted({
             name for n in ast.walk(tree) if isinstance(n, ast.Raise) and n.exc is not None
@@ -598,6 +618,27 @@ def check_mcp_server(target: Path, rep: Report) -> None:
 
 
 # ---------------------------------------------------------------- helpers
+
+def _check_db_read_only(server: Path, tools: list, rep: Report) -> None:
+    """A server that opens a database connection must open it read-only (unless it has write tools)."""
+    code = "\n".join(p.read_text(encoding="utf-8", errors="replace") for p in sorted(server.parent.glob("*.py")))
+    drivers = {m.group(1) for m in DB_DRIVER_RE.finditer(code)}
+    if not drivers:
+        return
+    writes = [t.name for t in tools if WRITE_DOC_RE.search(ast.get_docstring(t) or "")]
+    if writes:  # the spec asked for write tools; their docstrings say so (forge-mcp step 3)
+        return
+    if drivers & DB_SESSION_RO and not DB_RO_MARKERS.search(code):
+        rep.error(server, f"connects to a database ({', '.join(sorted(drivers))}) but the connection is not "
+                          "read-only, so one wrong query can change real data. Open it with the matching "
+                          "connect_* function from forge-mcp's templates/python/db_readonly.py (PostgreSQL "
+                          "default_transaction_read_only, MySQL SET SESSION TRANSACTION READ ONLY with "
+                          "autocommit on, SQLite mode=ro)")
+    elif not drivers & DB_SESSION_RO and "check_sql" not in code:
+        rep.warn(server, f"connects to a database ({', '.join(sorted(drivers))}) with no per-connection read-only "
+                         "switch; keep db_readonly.check_sql() in front and say in the README that it needs a "
+                         "SELECT-only account ([확인 필요: 조회 전용 계정 - DB 담당자])")
+
 
 def _check_readme_standins(readme: Path, rep: Report) -> None:
     """Fail an MCP server README that still says /abs/path, /절대경로/ or <이 폴더 경로>."""

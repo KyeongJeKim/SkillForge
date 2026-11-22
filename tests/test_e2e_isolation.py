@@ -154,6 +154,23 @@ class FreshWriteCheck(unittest.TestCase):
         self.assertFalse(wf(['Bash {"command": "ls reports 2>/dev/null; cat a.csv >/dev/null"}']))
         self.assertFalse(wf(['Read {"file_path": "a.md"}']))
 
+    def test_late_redirect_in_long_bash_is_kept_and_counts(self):
+        # 2026-11-22: drive.py kept only 300 characters of each tool call, so a fresh turn that wrote
+        # its minutes with a heredoc ~600 characters in was scored "wrote no file".
+        import importlib.util
+        import json as _json
+        from unittest import mock
+        spec = importlib.util.spec_from_file_location("drive_eval", Path(__file__).resolve().parent / "e2e" / "drive.py")
+        drive = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(drive)
+        cmd = "P=/tmp/x\n" + "echo checking; " * 50 + "cat > meetings/2026-11-22.md <<'EOF'\n# 회의록\nEOF"
+        event = {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {"command": cmd}}]}}
+        done = mock.Mock(stdout=_json.dumps(event) + "\n")
+        with mock.patch.object(drive.subprocess, "run", return_value=done):
+            rec = drive.run_turn("회의록 정리해 주세요", ".", None)
+        self.assertTrue(self._check().wrote_file(rec["tools"]), rec["tools"][0][-80:])
+
     def test_real_writes_count(self):
         wf = self._check().wrote_file
         self.assertTrue(wf(['Write {"file_path": "reports/a.md"}']))

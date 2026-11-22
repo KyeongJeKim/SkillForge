@@ -121,7 +121,8 @@ Packaging an existing skill as a ZIP (step 11 alone) needs no spec.
 
 ## Hand-over (in the person's language, short)
 
-1. Where the skill is, in one line.
+1. Where the skill is, in one line, as a path inside the working folder (`.claude/skills/<name>/`),
+   never the full path from the computer's root. Same for every file you mention.
 2. Two example sentences that start it, and one that should not.
 3. What you assumed, as a short list.
 4. One line: when they correct a result, the skill remembers it, and "이 스킬 개선해 줘" makes it permanent.

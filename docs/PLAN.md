@@ -93,9 +93,10 @@
 | 대화로 필요 파악, 부족한 정보 안내 | `forge-intake` skill |
 | 추천 방식 / 선택 방식 | `forge-intake` (유형 설명: `reference/artifact-types.md`) |
 | Skill · MCP · Plugin · Harness 자동 생성 | `forge-skill`, `forge-mcp`, `forge-plugin`, `forge-harness` + 템플릿 |
-| 생성 결과 검증 | `scripts/forge_validate.py` (모든 생성 skill이 사용; 스킬이 실행하는 스크립트가 스킬 안에 있는지, 따로 쓰는 스킬이 SkillForge 경로를 쓰지 않는지도 확인, v0.3.3; 수정 기록을 쓰는 스킬·MCP 서버에 `corrections.md` 가 있는지 확인, v0.3.5·v0.3.6) |
+| 생성 결과 검증 | `scripts/forge_validate.py` (모든 생성 skill이 사용; 스킬이 실행하는 스크립트가 스킬 안에 있는지, 따로 쓰는 스킬이 SkillForge 경로를 쓰지 않는지도 확인, v0.3.3; 수정 기록을 쓰는 스킬·MCP 서버에 `corrections.md` 가 있는지 확인, v0.3.5·v0.3.6; DB 에 붙는 MCP 서버의 연결이 읽기 전용인지 확인(`forge-mcp` 의 `db_readonly.py`), v0.3.10) |
 | 문서 예시에서 convention 추출 | `learn-doc-conventions` (값 채우기 규칙: `scripts/compare_examples.py`, v0.3.1; 재사용 요청이면 forge-intake 를 먼저, v0.3.2); 예시가 Word·Excel·PowerPoint·한글 파일이면 만든 스킬에 `extract_text.py` 를 함께 넣음, v0.3.3; 번호가 이어지는 문서면 `next_number.py` 를 넣어 저장 폴더와 예시 폴더에서 다음 번호, v0.3.8) |
 | 화면 screenshot에서 디자인 양식 추출, 선두 기업 비교 | `learn-design-system` (기존 명세서가 있으면 새 화면 명세를 그 다음 번호·같은 섹션으로 쓰고 `compare_examples.py --check` 로 점검, v0.3.4) |
+| 결과 파일 위치 안내 | 만든 스킬과 SkillForge 의 답장은 파일을 작업 폴더 안 경로(`reports/...`)로 알려 줌, 컴퓨터 전체 경로는 쓰지 않음 (v0.3.10) |
 | 서브팀별 출발점 | `templates/teams/` (데이터·개발, 이커머스, PM·QA, POS) |
 | Plugin 형태로 설치, 자연어 트리거 | `.claude-plugin/marketplace.json` + 각 skill의 description |
 | Proactive 모드 | 미구현, 설계 메모만 ([PROACTIVE.md](PROACTIVE.md)) |

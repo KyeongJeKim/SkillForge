@@ -413,6 +413,43 @@ class McpChecks(TempDir):
         rep = run("mcp", d)
         self.assertTrue(rep.ok, rep.errors)
 
+    def _db_server(self, connect: str, extra_tool: str = "") -> str:
+        text = self._filled().replace("import os\n", "import os\nimport pymysql\n", 1)
+        return text.replace("if __name__ == \"__main__\":", f"def _conn():\n    return {connect}\n\n{extra_tool}\n"
+                            "if __name__ == \"__main__\":", 1)
+
+    def test_database_without_read_only_connection_fails(self):
+        # 2026-11-21: held-out reviewer: a POS sales server's read-only didn't hold at the connection.
+        for connect in ('pymysql.connect(host="h", autocommit=True)',
+                        'pymysql.connect(host="h", init_command="SET TRANSACTION READ ONLY")'):
+            rep = run("mcp", self._server(self._db_server(connect)))
+            self.assertTrue(any("not read-only" in e for e in rep.errors), (connect, rep.errors))
+
+    def test_database_read_only_connection_passes(self):
+        for connect in ('pymysql.connect(host="h", autocommit=True, init_command="SET SESSION TRANSACTION READ ONLY")',
+                        'connect_mysql("POS")'):
+            rep = run("mcp", self._server(self._db_server(connect)))
+            self.assertTrue(rep.ok, (connect, rep.errors))
+
+    def test_database_template_next_to_server_passes(self):
+        d = self._server(self._db_server("db_readonly.connect_mysql('POS')").replace(
+            "import pymysql\n", "import db_readonly\n", 1))
+        shutil.copy(self.TPL / "db_readonly.py", d / "db_readonly.py")
+        rep = run("mcp", d)
+        self.assertTrue(rep.ok, rep.errors)
+
+    def test_database_write_tool_is_exempt(self):
+        tool = ('@mcp.tool()\ndef set_price(item_id: str, price: int) -> dict:\n'
+                '    """Set the price of one item. This changes real data."""\n    return {}\n')
+        rep = run("mcp", self._server(self._db_server('pymysql.connect(host="h")', tool)))
+        self.assertTrue(rep.ok, rep.errors)
+
+    def test_database_read_only_docstring_is_not_a_write_tool(self):
+        tool = ('@mcp.tool()\ndef sales(day: str) -> dict:\n'
+                '    """Read-only. Never writes; nothing is changed or deleted."""\n    return {}\n')
+        rep = run("mcp", self._server(self._db_server('pymysql.connect(host="h")', tool)))
+        self.assertTrue(any("not read-only" in e for e in rep.errors), rep.errors)
+
     def test_missing_corrections_file_fails(self):
         d = self._server(self._filled())
         (d / "corrections.md").unlink()

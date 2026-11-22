@@ -45,6 +45,18 @@ asks about the hard parts and plays back the summary before anything is built.
    - One clear verb per tool (`get_order`, `search_products`), typed parameters, and a docstring
      that says when to use it; Claude reads the docstring to choose tools.
    - Start **read-only**. Add write tools only if the spec asks; their docstring must say they change data.
+   - **A database** (not an HTTP API): copy [templates/python/db_readonly.py](templates/python/db_readonly.py)
+     next to `server.py`, open the connection with its `connect_postgres` / `connect_mysql` /
+     `connect_sqlite` and run queries through `fetch()`. The database itself then refuses writes for
+     that connection (PostgreSQL `default_transaction_read_only`, MySQL `SET SESSION TRANSACTION READ
+     ONLY` with autocommit on, SQLite `mode=ro`), with one statement per call, a timeout and a row
+     cap. Put the person's values (date, store code) in `params`, never into the SQL text. Add the
+     driver to `requirements.txt` (`psycopg[binary]>=3.1` or `pymysql>=1.1`). Connection details are
+     separate env vars (`POS_HOST`, `POS_DB`, `POS_USER`, `POS_PASSWORD`). The real boundary is a
+     SELECT-only DB account, so the README's one thing left asks the DB owner for one
+     (`[확인 필요: 조회 전용 계정 - DB 담당자]`). Without a session switch (SQL Server, Snowflake, others),
+     keep `check_sql()` and say the account must be SELECT-only. The validator fails a database
+     server whose connection isn't read-only.
    - Read secrets from environment variables and fail with a clear message if missing. Never hard-code one.
    - Raise `ToolError` (`from mcp.server.mcpserver.exceptions import ToolError`) for every failure you
      expect (missing env var, bad input, refused query, system not reachable). SDK 2.x hides the text of
