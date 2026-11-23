@@ -169,6 +169,7 @@ skillforge/
 │       ├── forge_validate.py           # 모든 생성 단계가 쓰는 검증기
 │       ├── extract_text.py             # .docx / .xlsx / .pptx / .hwpx / .hwp 텍스트 추출
 │       ├── compare_examples.py         # 예시 문서 비교: 늘 같은 값, 순번, 날짜, 매번 다른 값
+│       ├── scan_examples.py            # 예시 안의 AI용 명령·숨은 글자 찾기
 │       ├── next_number.py              # 번호가 이어지는 문서의 다음 파일 이름 (만든 스킬에 복사)
 │       └── package_skill.py            # Claude 앱(웹·데스크톱 채팅) 업로드용 스킬 압축
 ├── scripts/readme_assets.py            # README 이미지 빌드·넘침 검사
@@ -176,6 +177,7 @@ skillforge/
     ├── test_forge_validate.py          # 단위 테스트
     ├── test_compare_examples.py        # 예시 비교 스크립트 단위 테스트
     ├── test_next_number.py             # 다음 번호 스크립트 단위 테스트
+    ├── test_scan_examples.py           # 예시 안전 점검 스크립트 단위 테스트
     ├── test_readme_assets.py           # README 이미지 넘침·가림 검사
     └── e2e/                            # 채점 장치 (선택, Claude 사용량 발생)
         ├── scenarios/  heldout/        # 개발용 시나리오 / 고정 시험지 (수정 금지)

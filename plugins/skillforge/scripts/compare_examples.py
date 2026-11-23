@@ -21,7 +21,8 @@ For each section heading, header field ("**PM:** 이영희", "작성자: 홍길�
   varies    different every time              -> comes from the request, else [확인 필요]
 
 It also lists ID schemes (R-01, FR-001, FS-POS-018) and sentences that appear word for word in
-every example (fixed wording candidates). The output is a text comparison: a value that is the
+every example (fixed wording candidates). When an example holds a line aimed at an AI rather than
+the team (a planted instruction), the bundled scan_examples.py report is printed first. The output is a text comparison: a value that is the
 same only by coincidence (last week's tasks copied forward) still needs a person's OK.
 
 Reads .md, .markdown and .txt directly, and .docx, .xlsx, .pptx, .hwpx and .hwp through the bundled
@@ -369,6 +370,22 @@ def to_markdown(r: dict, skipped: list[str]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def planted_lines(paths: list[Path]) -> list[dict]:
+    """Lines that talk to an AI instead of the team, from the bundled scan_examples.py."""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import scan_examples
+    except ImportError:
+        return []
+    return scan_examples.scan(paths)
+
+
+def scan_markdown(found: list[dict], n_files: int) -> str:
+    import scan_examples
+
+    return scan_examples.to_markdown(found, n_files)
+
+
 def main(argv: list[str]) -> int:
     as_json = "--json" in argv
     args = [a for a in argv if a != "--json"]
@@ -403,9 +420,13 @@ def main(argv: list[str]) -> int:
             print(f"양식 점검 통과: {new.name} (예시 {len(files)}개 기준)")
         return 1 if problems else 0
     result = compare(files)
+    planted = planted_lines(files)
     if as_json:
-        print(json.dumps({**result, "skipped": skipped}, ensure_ascii=False, indent=1))
+        print(json.dumps({**result, "skipped": skipped, "planted": planted}, ensure_ascii=False, indent=1))
     else:
+        if planted:
+            # Put the warning first: a line aimed at the model must reach the person (see scan_examples.py).
+            sys.stdout.write(scan_markdown(planted, len(files)) + "\n")
         sys.stdout.write(to_markdown(result, skipped))
     return 0
 
