@@ -615,9 +615,74 @@ def check_mcp_server(target: Path, rep: Report) -> None:
     if not readme.is_file():
         rep.warn(server.parent, "no README.md with tools, env vars and the registration command")
     _check_readme_standins(readme, rep)
+    _check_register(server, tree, rep)
 
 
 # ---------------------------------------------------------------- helpers
+
+# db_readonly.connect_*("POS") reads POS_HOST, POS_DB, ... (PORT has a default, so it is optional).
+DB_CONNECT_ENVS = {
+    "connect_postgres": ("HOST", "DB", "USER", "PASSWORD"),
+    "connect_mysql": ("HOST", "DB", "USER", "PASSWORD"),
+    "connect_sqlite": ("PATH",),
+}
+
+
+def _required_env_names(tree: ast.AST) -> set[str]:
+    """Environment variables server.py reads: os.environ[...], os.environ.get/os.getenv without a
+    default (names held in module constants are resolved), and db_readonly.connect_*("PREFIX")."""
+    consts = {
+        t.id: n.value.value for n in ast.walk(tree) if isinstance(n, ast.Assign)
+        and isinstance(n.value, ast.Constant) and isinstance(n.value.value, str)
+        for t in n.targets if isinstance(t, ast.Name)
+    }
+
+    def value(node: ast.expr | None) -> str | None:
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return node.value
+        if isinstance(node, ast.Name):
+            return consts.get(node.id)
+        return None
+
+    names: set[str] = set()
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Subscript) and ast.unparse(n.value) == "os.environ":
+            names.add(value(n.slice) or "")
+        elif isinstance(n, ast.Call):
+            func = ast.unparse(n.func)
+            if func in ("os.environ.get", "os.getenv") and n.args and len(n.args) == 1:
+                names.add(value(n.args[0]) or "")
+            short = func.rsplit(".", 1)[-1]
+            if short in DB_CONNECT_ENVS and n.args and value(n.args[0]):
+                names.update(f"{value(n.args[0])}_{suffix}" for suffix in DB_CONNECT_ENVS[short])
+    return {x for x in names if re.fullmatch(r"[A-Z][A-Z0-9_]*", x)}
+
+
+def _check_register(server: Path, tree: ast.AST, rep: Report) -> None:
+    """A standalone server that needs env vars ships register.py (forge-mcp step 5): one command that
+    asks for every value without showing it and registers the server (2026-11-24: reviewers kept
+    marking 'how do I set the env var / the long claude mcp add command' for non-developers).
+    Servers inside a plugin get their values from userConfig instead."""
+    if any((p / ".claude-plugin" / "plugin.json").is_file() for p in list(server.resolve().parents)[:4]):
+        return
+    needed = _required_env_names(tree)
+    register = server.parent / "register.py"
+    if not needed:
+        return
+    if not register.is_file():
+        rep.error(server.parent, f"reads {', '.join(sorted(needed))} but has no register.py. Copy forge-mcp's "
+                                 "templates/python/register.template.py to register.py and fill it, so the person "
+                                 "registers with one command that asks for each value without showing it")
+        return
+    text = register.read_text(encoding="utf-8")
+    if PLACEHOLDER_RE.search(text):
+        rep.error(register, "unfilled {{SF: ...}} placeholder left in register.py")
+    missing = sorted(n for n in needed if not re.search(rf"[\"']{n}[\"']", text))
+    if missing:
+        rep.error(register, f"SETTINGS does not ask for {', '.join(missing)}, which server.py reads; the server "
+                            "would start registered but fail on its first call")
+    if SECRET_RE.search(text):
+        rep.error(register, "looks like a hard-coded secret; register.py must ask for it, not contain it")
 
 def _check_db_read_only(server: Path, tools: list, rep: Report) -> None:
     """A server that opens a database connection must open it read-only (unless it has write tools)."""

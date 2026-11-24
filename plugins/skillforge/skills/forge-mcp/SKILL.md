@@ -34,6 +34,12 @@ asks about the hard parts and plays back the summary before anything is built.
    to `<name>/requirements.txt`. Replace every `{{SF: ...}}` blank; use one env prefix everywhere
    (e.g. `INVENTORY` → `INVENTORY_TOKEN`). Replace the example tool with one tool per operation.
    The template uses SDK 2.x (`from mcp.server.mcpserver import MCPServer`); keep `mcp.run()`.
+   Copy [templates/python/register.template.py](templates/python/register.template.py) to
+   `<name>/register.py` and fill it: `SERVER_NAME`, one `SETTINGS` entry per environment variable
+   `server.py` reads (name; what it is and who has it, in the person's words, e.g. "재고 시스템 조회용
+   토큰 - 개발팀"; `True` for a token or password so it is typed hidden; a default only for a value
+   everyone shares, like a port), and `EXAMPLES` (the README's example questions). The validator fails
+   a standalone server that reads an env var `register.py` doesn't ask for.
    Also copy [templates/python/corrections.md](templates/python/corrections.md) unchanged to
    `<name>/corrections.md`, and keep `_instructions()`: Claude Code reads the server's instructions
    at start, so the person's "다음부터 ~" rules saved there hold in every later session (the
@@ -69,26 +75,25 @@ asks about the hard parts and plays back the summary before anything is built.
    - Cover the spec's 예외 처리 cases (no result, too many rows, system down) with a clear `ToolError`
      or an empty result that says why, and keep every 금지 item (e.g. no customer phone numbers) out
      of what the tools return.
-4. **Install and start it once** (you run these, don't hand them over):
+4. **Install and start it once** (you run this, don't hand it over):
 
    ```bash
-   cd <name> && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
-   .venv/bin/python -c "import runpy, asyncio; ns = runpy.run_path('server.py', run_name='check'); print([t.name for t in asyncio.run(ns['mcp'].list_tools())])"
+   cd <name> && python3 register.py --check
    ```
 
-   This lists the tools without touching the real system. If install fails (no network, old Python),
-   say exactly what failed.
-5. **Register it.** Standalone, for all of this person's projects:
-
-   ```bash
-   claude mcp add <name> -s user -e <PREFIX>_TOKEN=<value> -- /abs/path/<name>/.venv/bin/python /abs/path/<name>/server.py
-   ```
-
-   In the README, write it so it works wherever the folder sits: `cd` into `<name>/` first, then
-   `-- "$(pwd)/.venv/bin/python" "$(pwd)/server.py"` (PowerShell: `"$PWD\.venv\Scripts\python.exe"`).
-   Don't paste the build session's absolute path (it may be a temporary folder, and the person may
-   move the folder), and never `/abs/path`.
-   Run this only with the person's go-ahead, and let them type the token value themselves.
+   It creates `.venv`, installs `requirements.txt` and lists the tools without touching the real
+   system; it asks for nothing and registers nothing. If install fails (no network, old Python), say
+   exactly what failed.
+5. **Register it.** Standalone, for all of this person's projects, registration is **one command the
+   person (or whoever has the values) runs once in a terminal in that folder**:
+   `python3 register.py` (Windows: `py -3 register.py`). It asks for each value without showing it,
+   registers the server with `claude mcp add -s user`, and replaces the old values when run again.
+   Never ask for a value in chat and don't run it yourself without `--check` (it refuses outside a
+   terminal so a value is never typed where it is shown or saved). The manual equivalent goes in
+   the README's developer part only: `cd` into `<name>/` first, then
+   `claude mcp add <name> -s user -e <PREFIX>_TOKEN=... -- "$(pwd)/.venv/bin/python" "$(pwd)/server.py"`
+   (PowerShell: `"$PWD\.venv\Scripts\python.exe"`). Don't paste the build session's absolute path
+   (it may be a temporary folder, and the person may move the folder), and never `/abs/path`.
    Inside a plugin, use `.mcp.json` plus a sensitive `userConfig` entry so Claude Code asks each
    teammate for the token when they enable the plugin and stores it securely:
 
@@ -114,11 +119,17 @@ asks about the hard parts and plays back the summary before anything is built.
    developer second (the person may not know what a terminal is):
    - **바로 쓰기** at the top: one line on what it connects to; what you already did (installed in
      this folder, registered or not, checked with sample data or not); the **one** thing left and who
-     does it in plain words (e.g. "개발팀에서 API 주소와 토큰을 받아 오시면 됩니다"), with no command
-     unless the person runs it themselves; and two or three example questions to ask Claude
+     does it in plain words (e.g. "개발팀에서 API 주소와 토큰을 받아 오시면 됩니다"); then how to
+     finish it, as numbered steps a non-developer can follow: open a terminal in this folder (Mac:
+     응용 프로그램 → 유틸리티 → 터미널을 열고 `cd ` (뒤에 한 칸) 입력 후 이 폴더를 터미널 창에 끌어다 놓고
+     Enter / Windows: 이 폴더 주소창에 `cmd` 입력 후 Enter; Finder 의 "폴더에서 새로운 터미널" 메뉴는
+     설정에서 켜야 보이는 Mac 이 많아 쓰지 않음), type `python3 register.py` (Windows `py -3 register.py`), paste each value when
+     asked (it won't show on screen), reopen Claude Code. Say that running it again changes a value.
+     No other command here. End with two or three example questions to ask Claude
      ("품절 임박 상품 보여 줘").
    - **개발 담당용** below it: the tools, the env vars (names only), the values marked `# [확인 필요]`
-     in `server.py` and what to check, install and registration commands, and the Windows notes.
+     in `server.py` and what to check, the manual install and `claude mcp add` commands (the same
+     thing `register.py` does), and the Windows notes.
    - Commands must run as written: `cd` into the folder, then `"$(pwd)/..."` paths. Never leave
      `/abs/path`, `/절대경로/`, `<이 폴더 경로>` or `<owner>/<repo>` for the reader to fill; the
      validator fails them. A secret the person types themselves is the env var name in words
@@ -136,7 +147,8 @@ asks about the hard parts and plays back the summary before anything is built.
 
 What they can ask Claude now, the one thing left and who does it (e.g. the dev team sends the
 address and token), whether it's registered, and what was checked, in the same plain words as the
-README's 바로 쓰기 part; no commands for a person who doesn't use a terminal. Remind them that write tools act on real data. Add one line that if they say
+README's 바로 쓰기 part. The only command you give is `python3 register.py` with the open-a-terminal
+step, and only when they or the value holder will run it; say values are typed there, never in chat. Remind them that write tools act on real data. Add one line that if they say
 "다음부터는 ~" about how results are shown, the server remembers it (`corrections.md`).
 
 ## Rules

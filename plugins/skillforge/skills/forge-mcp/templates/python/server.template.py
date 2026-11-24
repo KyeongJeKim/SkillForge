@@ -1,10 +1,8 @@
 """{{SF: server-name}}: MCP server that connects Claude to {{SF: system}}.
 
-Requires Python 3.10+ and the official MCP SDK 2.x:
-    python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
-
-Register with Claude Code (all projects for this user):
-    claude mcp add {{SF: server-name}} -s user -e {{SF: ENV_PREFIX}}_TOKEN=... -- /absolute/path/.venv/bin/python /absolute/path/server.py
+Requires Python 3.10+ and the official MCP SDK 2.x. Set up and register with Claude Code (all
+projects for this user) by running, in a terminal in this folder:
+    python3 register.py        (Windows: py -3 register.py; --check only installs and lists tools)
 """
 
 from __future__ import annotations

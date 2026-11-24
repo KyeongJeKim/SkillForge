@@ -389,7 +389,64 @@ class McpChecks(TempDir):
         shutil.copy(self.TPL / "requirements.txt", d / "requirements.txt")
         shutil.copy(self.TPL / "corrections.md", d / "corrections.md")
         write(d / "README.md", "# inventory\n")
+        reg = fill((self.TPL / "register.template.py").read_text(encoding="utf-8"),
+                   **{"server-name": "inventory", "ENV_PREFIX": "INVENTORY"})
+        # The DB tests connect with connect_mysql("POS"), which reads POS_HOST/DB/USER/PASSWORD.
+        reg = reg.replace('SETTINGS = [\n', 'SETTINGS = [\n' + "".join(
+            f'    ("POS_{k}", "POS {k}", {k == "PASSWORD"}, ""),\n' for k in ("HOST", "DB", "USER", "PASSWORD")), 1)
+        write(d / "register.py", reg)
         return d
+
+    def test_missing_register_fails(self):
+        # 2026-11-24: held-out reviewer (h-naive-mcp-secret, usability 3 twice): a non-developer
+        # can't set env vars or type the long claude mcp add command.
+        d = self._server(self._filled())
+        (d / "register.py").unlink()
+        rep = run("mcp", d)
+        self.assertTrue(any("register.py" in e for e in rep.errors), rep.errors)
+
+    def test_register_must_ask_for_every_env_var(self):
+        d = self._server(self._db_server('connect_mysql("SALES")'))
+        rep = run("mcp", d)
+        self.assertTrue(any("SALES_PASSWORD" in e and "SALES_HOST" in e for e in rep.errors), rep.errors)
+        self.assertFalse(any("INVENTORY_TOKEN" in e for e in rep.errors), rep.errors)
+
+    def test_register_resolves_env_name_constants_and_skips_defaults(self):
+        text = self._filled().replace("import os\n", 'import os\nURL_ENV = "INVENTORY_URL"\n'
+                                      'BASE = os.environ.get(URL_ENV)\nTIMEOUT = os.environ.get("INVENTORY_TIMEOUT", "10")\n', 1)
+        rep = run("mcp", self._server(text))
+        self.assertTrue(any("INVENTORY_URL" in e for e in rep.errors), rep.errors)
+        self.assertFalse(any("INVENTORY_TIMEOUT" in e for e in rep.errors), rep.errors)
+
+    def test_unfilled_register_fails(self):
+        d = self._server(self._filled())
+        write(d / "register.py", (self.TPL / "register.template.py").read_text(encoding="utf-8"))
+        rep = run("mcp", d)
+        self.assertTrue(any("register.py" in e and "placeholder" in e for e in rep.errors), rep.errors)
+
+    def test_server_in_plugin_needs_no_register(self):
+        write(self.tmp / "kit" / ".claude-plugin" / "plugin.json", '{"name": "kit"}')
+        d = self.tmp / "kit" / "servers" / "inventory"
+        write(d / "server.py", self._filled())
+        shutil.copy(self.TPL / "corrections.md", d / "corrections.md")
+        shutil.copy(self.TPL / "requirements.txt", d / "requirements.txt")
+        write(d / "README.md", "# inventory\n")
+        rep = run("mcp", d)
+        self.assertFalse(any("register.py" in e for e in rep.errors), rep.errors)
+
+    def test_register_check_mode_runs_without_prompts(self):
+        # --check prepares and lists tools; it must never ask for a value or call claude.
+        import subprocess
+        d = self._server(self._filled())
+        reg = (d / "register.py").read_text(encoding="utf-8")
+        write(d / "register.py", reg.replace("def prepare() -> None:", "def prepare() -> None:\n    return\n\n\ndef _unused() -> None:", 1))
+        out = subprocess.run([sys.executable, str(d / "register.py"), "--check"], capture_output=True, text=True,
+                             stdin=subprocess.DEVNULL, timeout=60)
+        self.assertEqual(out.returncode, 0, out.stdout + out.stderr)
+        self.assertIn("--check", out.stdout)
+        out = subprocess.run([sys.executable, str(d / "register.py")], capture_output=True, text=True,
+                             stdin=subprocess.DEVNULL, timeout=60)
+        self.assertEqual(out.returncode, 2, out.stdout + out.stderr)  # not a terminal: refuses to ask
 
     def test_readme_stand_in_paths_fail(self):
         # 2026-11-21: hand-over READMEs left /abs/path and /절대경로/ for a non-developer to fill.

@@ -118,7 +118,7 @@ Claude Code에서 아래 두 줄을 입력합니다.
 | 이렇게 말하면 | 시작되는 것 | 결과 |
 | --- | --- | --- |
 | "매달 프로모션 기획서 쓰는 게 오래 걸려요. 우리 양식대로 써 주는 걸 만들고 싶어요" | `forge-intake` → `learn-doc-conventions` → `forge-skill` | 기획서 스킬 |
-| "우리 재고 시스템이랑 Claude를 연결하고 싶어요" | `forge-intake` → `forge-mcp` | 읽기 전용 MCP 서버 뼈대 |
+| "우리 재고 시스템이랑 Claude를 연결하고 싶어요" | `forge-intake` → `forge-mcp` | 읽기 전용 MCP 서버 + 키를 숨겨 받아 한 줄로 등록하는 `register.py` |
 | "기존 POS 화면이랑 톤 맞춰서 새 화면 만들어 줘" | `learn-design-system` | 디자인 양식 + 화면 명세 + HTML 시안 |
 | "이 스킬들 팀원들이 설치해서 쓰게 묶어 줘" | `forge-plugin` | 팀 설치용 플러그인 |
 | "명세서 쓰고 리뷰어가 검토하는 흐름 만들어 줘" | `forge-harness` | 작성·검토 에이전트 + 자동 점검 훅 |
@@ -130,7 +130,7 @@ Claude Code에서 아래 두 줄을 입력합니다.
 만드는 모든 결과물은 넘겨 드리기 전에 검증합니다.
 
 - **검증기** `forge_validate.py`: 스킬 설명과 자동 실행 문구, 빈칸 남김, 깨진 링크, 훅·MCP가 부르는 파일이 실제로 있는지,
-  하드코딩된 토큰, 팀원 설정(userConfig)까지 확인합니다. Claude Code 공식 검증(`claude plugin validate`)도 함께 돌립니다.
+  하드코딩된 토큰, 팀원 설정(userConfig), 만든 MCP 서버의 등록 도우미(`register.py`)가 필요한 값을 모두 묻는지까지 확인합니다. Claude Code 공식 검증(`claude plugin validate`)도 함께 돌립니다.
 - **예시 비교** `compare_examples.py`: 예시 문서 2개 이상을 글자 그대로 비교해 늘 같은 값(프로젝트, 담당자), 하나씩 늘어나는 번호(W41 → W44),
   날짜, 매번 다른 값을 나눕니다. 만든 스킬은 이 표대로 칸을 채워서 `[확인 필요]` 는 정말 모르는 값에만 남깁니다.
   `--check <새 문서>` 는 새 문서가 예시 양식(섹션 이름·순서, 머리말 항목, 다음 번호, 파일 이름)을 지켰는지 점검합니다.
