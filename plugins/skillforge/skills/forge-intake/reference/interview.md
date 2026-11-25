@@ -60,16 +60,26 @@ C = critical, I = important, - = not needed. Columns: Skill / MCP / Plugin / Har
   먼저 알림" as an option: a skill that refuses the team's usual input fails on day one. If the
   person asks for no draft themselves, keep it, and tell them in one line that the skill will then
   write nothing for that input.
-- **Aim for 5 to 10 turns.** Spend questions only where the answer changes what you build. Merge a
-  tiny follow-up into the same turn rather than spending a new one.
+- **Aim for 5 to 10 turns in total, playback included.** Spend questions only where the answer changes
+  what you build. Merge a tiny follow-up into the same turn rather than spending a new one.
 - **Examples beat questions.** When 5, 6 or 7 is open, ask for 2 to 5 recent documents or
   screenshots first (or look in `examples/`). Read them, score what they settle, then *confirm* what
   you saw instead of asking from scratch: "기존 기획서 3개 모두 마지막에 '리스크' 장이 있습니다. 새 기획서에도
   꼭 넣을까요?"
 - Ask about **the hard parts**, not only the happy path: "정보가 빠진 채로 요청이 오면 어떻게 할까요?",
   "부장님이 제일 자주 고치라고 하시는 부분이 어디인가요?"
-- Each turn ends with a one-line progress note that counts only the C and I dimensions of the chosen
-  type (a Skill has 10), e.g. `(확인된 항목 6/10, 남은 것: 예외 처리, 결과물 저장 위치, 톤)`.
+- **Ask in order of impact, settle the rest in the playback.** Before each question, rank the open
+  dimensions by impact (would a different answer change what you build, or what a reviewer sends
+  back?) times uncertainty (the request, the examples and earlier answers don't settle it). Spend a
+  question turn only on items high on both: usually the goal, the input, the odd cases and the rules
+  that must never be broken. Items low on either, for example where to save the file, the tone when
+  the examples already show it, who uses it when they told you, or approvals for a tool that only
+  writes drafts, don't get their own turn: write each as a concrete proposed default marked
+  `(기본값)` in the playback, so one "네" or one correction settles them all (their OK scores them D).
+  A precise person who answers fully should reach the playback after about 3 to 6 questions.
+- The board is your own working tool. Never show counts, scores, dimension names or how many
+  questions are left (no "확인된 항목 6/10", no "질문 2개쯤 더"): the person sees one question at a
+  time and then the playback. End a question turn with the question itself.
 - Don't ask about a dimension marked `-` for the type, and don't ask which Claude app or how to share
   unless it changes what you build; propose a default in the playback instead.
 
@@ -95,4 +105,6 @@ never ask about something you could read from the examples.
 
 When ready, show a full summary of your understanding (10 to 15 short lines, grouped: 목표, 사용자,
 입력, 결과물, 양식, 품질 기준, 예외, 제약, 유형과 이유) and ask "이대로 만들까요? 고칠 부분이 있으면 말씀해
-주세요." Build only after their yes. Record each dimension's score and source in the spec.
+주세요." Put every default you chose on its own line with `(기본값)` and a few words of reason, so a
+wrong guess is easy to spot; a correction fixes that line only. Build only after their yes. Record
+each dimension's score and source in the spec's appendix (SkillForge 기록), not in its main part.

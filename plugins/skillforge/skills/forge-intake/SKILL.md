@@ -15,9 +15,11 @@ going until the ambiguity is really gone, not until you have asked "a few" quest
 - Reply in the person's language (most users write Korean; use polite 존댓말).
 - Assume they are not developers. Use plain words, no file paths or commands unless needed.
 - **One focused question per turn**, with 2 to 4 numbered options from their real work and
-  "잘 모르겠어요 → 추천대로" naming what you would choose. End each turn with a one-line progress note.
-  The full method, scoring and question bank are in [reference/interview.md](reference/interview.md);
-  read it before your first question.
+  "잘 모르겠어요 → 추천대로" naming what you would choose. Ask the questions that change what you build
+  first; low-impact details become `(기본값)` lines in the playback instead of their own turns. Keep
+  the board to yourself: no counts, scores or "how many questions are left" lines; end each turn with
+  the question itself. The full method, scoring and question bank are in
+  [reference/interview.md](reference/interview.md); read it before your first question.
 - Never ask what you could read from their examples, their folder or an earlier answer.
 
 ## 1. Read what is already there
@@ -85,7 +87,8 @@ Follow [reference/interview.md](reference/interview.md):
 - **Examples beat questions.** When format or quality is open, ask for 2 to 5 recent examples
   before anything else. After reading them, confirm everything they settle in **one** numbered list
   ("예시에서 이렇게 확인했습니다: 1. … 2. … 맞으면 '네', 다르면 번호만 알려 주세요"), then ask one
-  question per turn about what is still open. Aim for 5 to 10 turns in total.
+  question per turn about what is still open, highest impact first. Aim for 5 to 10 turns in total,
+  playback included.
 - Always cover the hard parts: what is often missing in the input, what reviewers send back, what
   must never appear, and what a person must approve.
 - Vague answers ("알아서", "적당히") get one concrete default with a reason and need an OK.
@@ -99,8 +102,8 @@ Follow [reference/interview.md](reference/interview.md):
 
 When the board says ready, play back your understanding in 10 to 15 short lines grouped as
 목표, 사용자, 입력, 결과물, 양식, 품질 기준, 예외, 제약, 유형과 이유, and ask
-"이대로 만들까요? 고칠 부분이 있으면 말씀해 주세요." If they correct something, fix it and play back
-only what changed.
+"이대로 만들까요? 고칠 부분이 있으면 말씀해 주세요." Mark each default you chose yourself with `(기본값)`
+so a wrong guess stands out. If they correct something, fix it and play back only what changed.
 
 Write `forge-spec.md` in the current folder (or where the person asks), in the person's language:
 
@@ -130,15 +133,22 @@ Write `forge-spec.md` in the current folder (or where the person asks), in the p
 ## 절차 (Procedure)
 1. ...
 
-## 인터뷰 점수판 (Dimension board)
+## 가정과 열린 질문 (Assumptions and open questions)
+- <defaults the person OK'd (기본값) and why; anything left for later>
+
+## 부록: SkillForge 기록 (Appendix: interview board)
+<details><summary>인터뷰 점수판 (SkillForge 내부 기록, 읽지 않으셔도 됩니다)</summary>
+
 | 항목 | 점수 | 근거 |
 | --- | --- | --- |
 | 목표와 완료 기준 | 2 | 사용자 답변 (3번째 질문) |
 | ... | D | 기본값 제안 후 OK |
 
-## 가정과 열린 질문 (Assumptions and open questions)
-- <defaults chosen and why; anything left for later>
+</details>
 ```
+
+Keep the board in that appendix only: the main part of the spec holds what was decided, in the
+person's words, with no scores.
 
 When they confirm the playback, or already said to go ahead with defaults, start the generator
 with the Skill tool: `skillforge:forge-skill`, `skillforge:forge-mcp`, `skillforge:forge-plugin`
