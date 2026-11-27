@@ -117,7 +117,10 @@ def main() -> int:
     for k, v in MODES[a.mode].items():
         env.setdefault(k, v)
     os.environ.update({k: env[k] for k in MODES[a.mode]})
-    out = Path(a.out or tempfile.mkdtemp(prefix=f"skillforge-eval-{a.mode}-"))
+    # Absolute: each session runs inside its scenario folder, so a relative --out would hand claude a
+    # --plugin-dir that does not exist there and every scenario would run without SkillForge
+    # (2026-11-27: `--out ../out/cand1` gave 4 of 4 "forge-intake did not run").
+    out = Path(a.out or tempfile.mkdtemp(prefix=f"skillforge-eval-{a.mode}-")).resolve()
     (out / "runs").mkdir(parents=True, exist_ok=True)
     shutil.rmtree(out / "plugin", ignore_errors=True)
     shutil.copytree(ROOT / "plugins" / "skillforge", out / "plugin", ignore=shutil.ignore_patterns("__pycache__"))
