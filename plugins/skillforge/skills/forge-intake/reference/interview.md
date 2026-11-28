@@ -106,5 +106,6 @@ never ask about something you could read from the examples.
 When ready, show a full summary of your understanding (10 to 15 short lines, grouped: 목표, 사용자,
 입력, 결과물, 양식, 품질 기준, 예외, 제약, 유형과 이유) and ask "이대로 만들까요? 고칠 부분이 있으면 말씀해
 주세요." Put every default you chose on its own line with `(기본값)` and a few words of reason, so a
-wrong guess is easy to spot; a correction fixes that line only. Build only after their yes. Record
-each dimension's score and source in the spec's appendix (SkillForge 기록), not in its main part.
+wrong guess is easy to spot; a correction fixes that line only. Build only after their yes. Don't
+write the board or any score into the spec: the OK'd `(기본값)` lines go under 가정과 열린 질문, the rest
+of the spec holds what was decided in the person's words.

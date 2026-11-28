@@ -134,21 +134,12 @@ Write `forge-spec.md` in the current folder (or where the person asks), in the p
 1. ...
 
 ## 가정과 열린 질문 (Assumptions and open questions)
-- <defaults the person OK'd (기본값) and why; anything left for later>
-
-## 부록: SkillForge 기록 (Appendix: interview board)
-<details><summary>인터뷰 점수판 (SkillForge 내부 기록, 읽지 않으셔도 됩니다)</summary>
-
-| 항목 | 점수 | 근거 |
-| --- | --- | --- |
-| 목표와 완료 기준 | 2 | 사용자 답변 (3번째 질문) |
-| ... | D | 기본값 제안 후 OK |
-
-</details>
+- <each (기본값) the person OK'd, with its short reason; anything left for later>
 ```
 
-Keep the board in that appendix only: the main part of the spec holds what was decided, in the
-person's words, with no scores.
+The spec holds only what was decided, in the person's words. The board, its scores and dimension
+names stay in your head: no score table, no appendix, no "D / N/A / 0~2" anywhere in the spec or
+in what you say.
 
 When they confirm the playback, or already said to go ahead with defaults, start the generator
 with the Skill tool: `skillforge:forge-skill`, `skillforge:forge-mcp`, `skillforge:forge-plugin`
